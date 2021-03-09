@@ -2,26 +2,63 @@ import Steve from '@/plugins/steve';
 import {
   COUNT, NAMESPACE, NORMAN, MANAGEMENT, FLEET
 } from '@/config/types';
-import { CLUSTER as CLUSTER_PREF, NAMESPACE_FILTERS, LAST_NAMESPACE, WORKSPACE } from '@/store/prefs';
 import { allHash } from '@/utils/promise';
 import { ClusterNotFoundError, ApiError } from '@/utils/error';
 import { sortBy } from '@/utils/sort';
 import { filterBy, findBy } from '@/utils/array';
-import { BOTH, CLUSTER_LEVEL, NAMESPACED } from '@/store/type-map';
 import { NAME as EXPLORER } from '@/config/product/explorer';
 import { TIMED_OUT } from '@/config/query-params';
+import Vuex, { Store } from 'vuex';
+import Vue from 'vue';
+import { getModule, config } from 'vuex-module-decorators';
+import * as actionMenu from './action-menu';
+import * as auth from './auth';
+// import * as aws from './aws';
+import * as catalog from './catalog';
+// import * as github from './github';
+import * as growl from './growl';
+import * as prefs from './prefs';
+import * as typeMap from './type-map';
+import * as wm from './wm';
+import { CLUSTER as CLUSTER_PREF, NAMESPACE_FILTERS, LAST_NAMESPACE, WORKSPACE } from './prefs';
+import { BOTH, CLUSTER_LEVEL, NAMESPACED } from '~/typed-store/type-map';
+import storeAccessor from '~/utils/store-accessor';
+import DemoVuexModuleDecorator from '~/typed-store/DemoVuexModuleDecorator';
+// import { II18n } from '~/typed-store/i18n';
+
+// Set rawError to true by default on all @Action decorators // TODO: RC remove
+config.rawError = true;
 
 // Disables strict mode for all store instances to prevent warning about changing state outside of mutations
 // becaues it's more efficient to do that sometimes.
 export const strict = false;
 
-export const plugins = [
+Vue.use(Vuex);
+
+const initialiseStores = (store: Store<any>) => {
+  // store.registerModule('demo', );
+  storeAccessor.demo = getModule(DemoVuexModuleDecorator, store);
+
+  // gets around chicken / egg scenario. i18n needs store... store needs i18n. This ensures we have the store
+  // when we need i818n
+  const i18n = require('~/typed-store/i18n').default;
+
+  storeAccessor.i18n = getModule(i18n, store);
+};
+
+const plugins = [
+  // initialiseStores,
+  // (store: Store<any>) => storeAccessor.init(store),
   Steve({ namespace: 'management', baseUrl: '/v1' }),
   Steve({ namespace: 'cluster', baseUrl: '' }), // url set later
   Steve({ namespace: 'rancher', baseUrl: '/v3' }),
 ];
 
-export const state = () => {
+interface RootState {
+  // i18n: II18n
+}
+
+const state: () => RootState = () => {
   return {
     managementReady:  false,
     clusterReady:     false,
@@ -34,10 +71,11 @@ export const state = () => {
     workspace:        null,
     error:            null,
     cameFromError:    false,
+    // i18n:             null,
   };
 };
 
-export const getters = {
+const getters = {
   clusterReady(state) {
     return state.clusterReady === true;
   },
@@ -315,7 +353,7 @@ export const getters = {
   },
 };
 
-export const mutations = {
+const mutations = {
   managementChanged(state, { ready, isMultiCluster }) {
     state.managementReady = ready;
     state.isMultiCluster = isMultiCluster;
@@ -372,7 +410,7 @@ export const mutations = {
   }
 };
 
-export const actions = {
+const actions = {
   async loadManagement({
     getters, state, commit, dispatch
   }) {
@@ -560,14 +598,24 @@ export const actions = {
     }
   },
 
-  nuxtServerInit({ dispatch, rootState }, nuxt) {
+  nuxtServerInit(store, nuxt) {
+    const { dispatch, rootState } = store;
+
+    console.error('nuxtServerInit', Object.keys(store), Object.keys(nuxt.store));
+    initialiseStores(nuxt.store);
+
     // Models in SSR server mode have no way to get to the route or router, so hack one in...
     Object.defineProperty(rootState, '$router', { value: nuxt.app.router });
     Object.defineProperty(rootState, '$route', { value: nuxt.route });
     dispatch('prefs/loadCookies');
   },
 
-  nuxtClientInit({ dispatch, rootState }, nuxt) {
+  nuxtClientInit(store, nuxt) {
+    const { dispatch, rootState } = store;
+
+    console.error('nuxtClientInit', Object.keys(store), Object.keys(nuxt.store));
+    initialiseStores(nuxt.store);
+
     Object.defineProperty(rootState, '$router', { value: nuxt.app.router });
     Object.defineProperty(rootState, '$route', { value: nuxt.route });
 
@@ -588,3 +636,31 @@ export const actions = {
     router.replace('/fail-whale');
   }
 };
+
+const store = new Vuex.Store<RootState>({
+  /*
+  Ideally if all your modules are dynamic
+  then your store is registered initially
+  as a completely empty object
+  */
+  plugins,
+  state,
+  getters,
+  mutations,
+  actions,
+  modules: {
+    'action-menu': actionMenu.default,
+    auth:          auth.default,
+    catalog:       catalog.default,
+    growl:         growl.default,
+    prefs:         prefs.default,
+    'type-map':    typeMap.default,
+    wm:            wm.default
+  }
+});
+
+export const createStore = (): Store<RootState> => {
+  return store;
+};
+
+export default store;

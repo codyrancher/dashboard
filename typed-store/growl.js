@@ -10,3 +10,9 @@ export const actions = {
     alert(`${ title }: ${ stringify(err) }`);
   }
 };
+
+export default {
+  state,
+  actions,
+  namespaced: true
+};

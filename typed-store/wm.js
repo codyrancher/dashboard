@@ -83,3 +83,11 @@ export const actions = {
     commit('addTab', tab);
   }
 };
+
+export default {
+  state,
+  getters,
+  mutations,
+  actions,
+  namespaced: true
+};

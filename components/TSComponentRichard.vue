@@ -1,8 +1,10 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
+import storeAccessor from '~/utils/store-accessor';
 import { COUNT, NAMESPACE } from '~/config/types';
 import { ProxiedResource } from '~/plugins/steve/resource.types';
-import { NamespaceModel, KubeNamespace } from '~/models/namespace';
+import { NamespaceModel, KubeNamespace, DashboardNamespaceType } from '~/models/namespace';
+import i18n from '~/typed-store/i18n';
 
 export interface Value {
   label: String;
@@ -16,6 +18,10 @@ class TSComponentRichard extends Vue {
   namespace: any;
   namespaceTyped: ProxiedResource<NamespaceModel, KubeNamespace>;
 
+  // TODO: RC Cannot access in template without exposing. If this stays it should be in a mixin/super
+  private storeAccessor = storeAccessor;
+  private a = i18n;
+
   constructor() {
     super();
 
@@ -25,17 +31,29 @@ class TSComponentRichard extends Vue {
 
     this.initModel();
 
-    console.log(this);
-  }
-
-  $fetch() {
-    return {};
+    this.initStore();
   }
 
   private initModel() {
     this.counts = this.$store.getters[`cluster/all`](COUNT)[0].counts[NAMESPACE];
     this.namespace = this.$store.getters['cluster/byId'](NAMESPACE, 'ds4-4-1-charts');
-    this.namespaceTyped = this.namespace as ProxiedResource<NamespaceModel, KubeNamespace>;
+    this.namespaceTyped = this.namespace as DashboardNamespaceType;
+    console.log(this.namespaceTyped.isSystem);
+    console.log(this.namespaceTyped.availableActions);
+  }
+
+  private initStore() {
+    // DemoVuexModuleDecorator currently does not work now for some reason...
+    console.log('storeAccessor.demo: ', !!storeAccessor.demo);
+    console.log(Object.keys(storeAccessor.demo));
+    console.log('storeAccessor.demo.axles: ', !!storeAccessor.demo.axles);
+    console.log('storeAccessor.demo.incrWheels: ', !!storeAccessor.demo.incrWheels);
+    console.log('storeAccessor.demo.axles: ', storeAccessor.demo.axles);
+    storeAccessor.demo.incrWheels(2);
+    console.log(storeAccessor.demo);
+
+    // This works fine
+    console.log(`storeAccessor.i18n.t('generic.add'): `, storeAccessor.i18n.t('generic.add'));
   }
 }
 
@@ -71,6 +89,14 @@ export default TSComponentRichard;
     <tr>
       <td>namespaceTyped.injectionEnabled</td>
       <td>{{ namespaceTyped.injectionEnabled }}</td>
+    </tr>
+    <tr>
+      <td>storeAccessor.demo.axles</td>
+      <td>
+        {{ storeAccessor.demo.axles }} <button class="btn bg-primary" @click="storeAccessor.demo.incrWheels(2)">
+          demo.incrWheels
+        </button>
+      </td>
     </tr>
   </table>
 </template>

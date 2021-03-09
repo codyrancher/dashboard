@@ -224,7 +224,7 @@ export const actions = {
     }
   },
 
-  loadCookies({ state, commit }) {
+  loadCookies({ state, commit, ...ress }) {
     if ( state.cookiesLoaded ) {
       return;
     }
@@ -359,4 +359,12 @@ export const actions = {
 
     return dispatch('set', { key: THEME, value });
   },
+};
+
+export default {
+  state,
+  getters,
+  mutations,
+  actions,
+  namespaced: true
 };

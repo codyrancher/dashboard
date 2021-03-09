@@ -238,3 +238,11 @@ export const actions = {
     dispatch('onLogout', null, { root: true });
   }
 };
+
+export default {
+  state,
+  getters,
+  mutations,
+  actions,
+  namespaced: true
+};
