@@ -12,6 +12,7 @@ interface ProxyOverrides<T> {
   _type: string;
   __rehydrate: string;
   transitioning?: boolean; // TODO: RC
+  $dispatch: (key: string, args: any, options: any) => Promise<any>;
 }
 
 type Labels = { [key: string]: string; };
@@ -28,6 +29,7 @@ export type BaseResource = {
     annotations: Annotations;
     labels: Labels;
     state: any;
+    namespace: string;
   };
 };
 

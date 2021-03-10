@@ -26,6 +26,8 @@ export default {
       if (!toFilter.includes(action.action)) {
         return action;
       }
+
+      return false;
     });
 
     return out;

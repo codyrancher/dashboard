@@ -1,4 +1,9 @@
+import { BaseResource, ProxiedResource, ProxyResourceInstance } from '~/plugins/steve/resource.types';
+
 export default {
+  data:       {},
+  binaryData: {},
+
   keysDisplay() {
     const keys = [
       ...Object.keys(this.data || []),
@@ -16,3 +21,11 @@ export default {
     return keys.join(', ');
   }
 };
+
+export interface ConfigMapModel extends ProxyResourceInstance {
+  keysDisplay: string[];
+  binaryData: {};
+  data: {};
+}
+
+export type ConfigMapType = ProxiedResource<ConfigMapModel, BaseResource>

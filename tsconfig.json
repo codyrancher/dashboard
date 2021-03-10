@@ -28,7 +28,8 @@
       "types": [
         "@types/node",
         "@nuxt/types",
-        "./types/vue-shim.ts"
+        "./types/vue-shim.ts",
+        "./types/plugins.ts",
       ]
     },
     "exclude": [

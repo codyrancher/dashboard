@@ -16,6 +16,8 @@ export default {
       if (!toFilter.includes(action.action)) {
         return action;
       }
+
+      return false;
     });
 
     const t = this.$rootGetters['i18n/t'];

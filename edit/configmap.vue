@@ -1,28 +1,34 @@
-<script>
-import CreateEditView from '@/mixins/create-edit-view';
-import CruResource from '@/components/CruResource';
-import NameNsDescription from '@/components/form/NameNsDescription';
-import KeyValue from '@/components/form/KeyValue';
-import Labels from '@/components/form/Labels';
-import Tab from '@/components/Tabbed/Tab';
-import Tabbed from '@/components/Tabbed';
+<script lang="ts">
+import CreateEditView from '@/mixins/create-edit-view/typed';
 import { asciiLike } from '@/utils/string';
 import { base64Encode, base64Decode } from '@/utils/crypto';
+import { Component, Watch } from 'vue-property-decorator';
+import NameNsDescription from '@/components/form/NameNsDescription.vue';
+import KeyValue from '@/components/form/KeyValue.vue';
+import Labels from '@/components/form/Labels.vue';
+import Tab from '@/components/Tabbed/Tab.vue';
+import Tabbed from '@/components/Tabbed/index.vue';
+import CruResource from '@/components/CruResource.vue';
+import { ConfigMapType } from '@/models/configmap';
 
-export default {
-  name: 'CruConfigMap',
-
+@Component({
   components: {
     CruResource,
     NameNsDescription,
     KeyValue,
     Labels,
     Tab,
-    Tabbed,
-  },
+    Tabbed
+  }
+})
+export default class ConfigMap extends CreateEditView<ConfigMapType> {
+  allData: {};
 
-  mixins: [CreateEditView],
-  data() {
+  fetch() {
+    console.log('testing');
+  }
+
+  data(): any {
     const { binaryData = {}, data = {} } = this.value;
 
     const decodedBinaryData = {};
@@ -31,30 +37,27 @@ export default {
       decodedBinaryData[key] = base64Decode(binaryData[key]);
     });
 
-    return { allData: { ...decodedBinaryData, ...data } };
-  },
+    return { ...super.data(), allData: { ...decodedBinaryData, ...data } };
+  }
 
-  watch: {
-    allData(neu, old) {
-      this.$set(this.value, 'data', {});
-      this.$set(this.value, 'binaryData', {});
+  @Watch('allData')
+  onAllData(neu, old) {
+    this.$set(this.value, 'data', {});
+    this.$set(this.value, 'binaryData', {});
 
-      Object.keys(neu).forEach((key) => {
-        if (this.isBinary(neu[key])) {
-          const encoded = base64Encode(neu[key]);
+    Object.keys(neu).forEach((key) => {
+      if (this.isBinary(neu[key])) {
+        const encoded = base64Encode(neu[key]);
 
-          this.$set(this.value.binaryData, key, encoded);
-        } else {
-          this.$set(this.value.data, key, neu[key]);
-        }
-      });
-    }
-  },
+        this.$set(this.value.binaryData, key, encoded);
+      } else {
+        this.$set(this.value.data, key, neu[key]);
+      }
+    });
+  }
 
-  methods: {
-    isBinary(value) {
-      return typeof value === 'string' && !asciiLike(value);
-    }
+  isBinary(value) {
+    return typeof value === 'string' && !asciiLike(value);
   }
 };
 </script>

@@ -73,7 +73,7 @@ export function proxyFor(ctx, obj, isClone = false) {
       let fn;
 
       if ( model && Object.prototype.hasOwnProperty.call(model, name) ) {
-        fn = model[name];
+        fn = model.prototype?.[name] || model[name];
       } else if (nativeProperties.includes(name) && obj[name] !== undefined) {
         // If there's not a model specific override for this property check if it exists natively in the object... otherwise fall back on
         // the default resource instance property/fn. This ensures it's correctly stored over fetch/clone/etc and sent when persisted
