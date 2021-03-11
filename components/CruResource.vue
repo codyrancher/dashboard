@@ -173,6 +173,9 @@ export default {
     },
 
     createResourceYaml(resource) {
+      if (resource.isTypescript) {
+        return 'yaml not supported yet';
+      }
       const inStore = this.$store.getters['currentProduct'].inStore;
       const schemas = this.$store.getters[`${ inStore }/all`](SCHEMA);
       const clonedResource = clone(resource);

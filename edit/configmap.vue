@@ -25,7 +25,7 @@ export default class ConfigMap extends CreateEditView<ConfigMapModel> {
   allData: {};
 
   fetch() {
-    console.log('testing');
+
   }
 
   data(): any {
@@ -81,7 +81,6 @@ export default class ConfigMap extends CreateEditView<ConfigMapModel> {
       :mode="mode"
       :register-before-hook="registerBeforeHook"
     />
-
     <Tabbed :side-tabs="true">
       <Tab name="data" :label="t('configmap.tabs.data.label')" :weight="2">
         <KeyValue

@@ -1,7 +1,20 @@
 import BaseModel from '~/models/base-model';
 export default class ConfigMapModel extends BaseModel {
-  data: {};
-  binaryData: {};
+  get data(): {} {
+    return this.obj.data;
+  }
+
+  set data(value) {
+    this.obj.data = value;
+  }
+
+  get binaryData(): {} {
+    return this.obj.binaryData;
+  }
+
+  set binaryData(value) {
+    this.obj.binaryData = value;
+  }
 
   get keysDisplay() {
     const keys = [

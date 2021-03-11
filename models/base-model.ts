@@ -4,23 +4,41 @@ import omitBy from 'lodash/omitBy';
 import { matchesSomeRegex } from '@/utils/string';
 import { removeAt } from '@/utils/array';
 import Vue from 'vue';
+import {
+  AS, _YAML, MODE, _CLONE, _EDIT, _VIEW, _UNFLAG, _CONFIG
+} from '@/config/query-params';
+
+export const SELF = '__[[SELF]]__';
+export const ALREADY_A_PROXY = '__[[PROXY]]__';
+export const PRIVATE = '__[[PRIVATE]]__';
 
 export type Metadata = any;
 
+declare let process: any;
+
 class BaseModel {
+  ctx: any;
+  obj: any;
   isTypescript = true;
-  metadata: Metadata;
-  type: string;
-  id: string;
-  $getters: any;
-  $rootGetters: any;
+  [ALREADY_A_PROXY] = true;
   displayName?: string;
   spec: any;
 
-  constructor(object?: any, ctx?: any) {
-    const context = { $getters: ctx.getters, $rootGetters: ctx.rootGetters };
+  constructor(obj: any, ctx: any) {
+    this.obj = obj;
+    this.ctx = ctx;
+  }
 
-    Object.assign(this, object, context);
+  get $rootState() {
+    return this.ctx?.rootState;
+  }
+
+  get $getters() {
+    return this.ctx?.getters;
+  }
+
+  get $rootGetters() {
+    return this.ctx?.rootGetters;
   }
 
   get customValidationRules() {
@@ -67,7 +85,7 @@ class BaseModel {
     };
   }
 
-  get detailLocation() {
+  get detailLocation(): any {
     return this._detailLocation;
   }
 
@@ -77,6 +95,22 @@ class BaseModel {
 
   $dispatch(a: any, b: any, c:any) {
 
+  }
+
+  get type(): string {
+    return this.obj.type;
+  }
+
+  get id(): string {
+    return this.obj.id;
+  }
+
+  get metadata(): Metadata {
+    return this.obj.metadata;
+  }
+
+  set metadata(value: Metadata) {
+    this.obj.metadata = value;
   }
 
   get nameDisplay() {
@@ -150,15 +184,11 @@ class BaseModel {
   }
 
   get schema() {
-    console.log('got to schema');
-
     return this.$getters['schemaFor'](this.type);
   }
 
-  get toString() {
-    return () => {
-      return `[${ this.type }: ${ this.id }]`;
-    };
+  toString = () => {
+    return `[${ this.type }: ${ this.id }]`;
   }
 
   get availableActions() {
@@ -233,12 +263,35 @@ class BaseModel {
     return this.$rootGetters?.['i18n/t'](key, placeholders, options) || 'failed to get string';
   }
 
+  goToEdit = (moreQuery = {}) => {
+    const location = this.detailLocation;
+
+    location.query = {
+      ...location.query,
+      [MODE]: _EDIT,
+      [AS]:   _UNFLAG,
+      ...moreQuery
+    };
+
+    this.currentRouter().push(location);
+  }
+
+  get currentRouter() {
+    return () => {
+      if ( process.server ) {
+        return this.$rootState.$router;
+      } else {
+        return (window as any).$nuxt.$router;
+      }
+    };
+  }
+
   get _standardActions() {
     const all = [
       { divider: true },
       {
         action:  this.canUpdate ? 'goToEdit' : 'goToViewConfig',
-        label:   this.canUpdate ? 'action.edit' : 'action.view',
+        label:   this.t(this.canUpdate ? 'action.edit' : 'action.view'),
         icon:    'icon icon-edit',
         enabled:  this.canCustomEdit,
       },
