@@ -25,7 +25,7 @@ export function lookup(type, appSpecializationName) {
   }
 
   try {
-    const model = instantiate(type);
+    const model = loadModel(type);
 
     // @TODO this doesn't work at all, types are cached by only the type name, and the name of apps is `project.cattle.io.app`.
     if (type === 'app' && appSpecializationName) {
@@ -47,14 +47,8 @@ export function lookup(type, appSpecializationName) {
   return null;
 }
 
-function instantiate(type) {
+function loadModel(type) {
   const base = require(`@/models/${ type }`);
 
-  try {
-    return new base.default();
-  } catch (ex) {
-    console.log('got right here');
-
-    return { ...base.default };
-  }
+  return base.default.isTypescript ? base.default : { ...base.default };
 }

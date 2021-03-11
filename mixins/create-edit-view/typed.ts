@@ -3,10 +3,10 @@ import { _CREATE, _EDIT, _VIEW, _YAML } from '@/config/query-params';
 import { exceptionToErrorsArray } from '@/utils/error';
 import { RawLocation } from 'vue-router';
 import { LAST_NAMESPACE } from '@/typed-store/prefs';
-import { ProxiedResource } from '@/plugins/steve/resource.types';
 import ChildHook from '@/mixins/child-hook-typed';
+import BaseModel from '~/models/base-model';
 
-export default class CreateEditViewTyped<T extends ProxiedResource> extends ChildHook {
+export default class CreateEditViewTyped<T extends BaseModel> extends ChildHook {
     @Prop({ default: _EDIT, type: String }) mode: string;
     @Prop({ default: _EDIT, type: String }) realMode: string;
     @Prop({ default: _YAML, type: String }) as: string;

@@ -27,6 +27,7 @@ export function init(store) {
     product,
     basicType,
     ignoreType,
+    groupBy,
     mapGroup,
     mapType,
     weightGroup,
@@ -134,6 +135,7 @@ export function init(store) {
 
   headers(PV, [STATE, NAME_COL, PERSISTENT_VOLUME_SOURCE, AGE]);
   headers(CONFIG_MAP, [NAME_COL, NAMESPACE_COL, KEYS, AGE]);
+  groupBy(CONFIG_MAP, 'namespace');
   headers(SECRET, [
     STATE,
     NAME_COL,

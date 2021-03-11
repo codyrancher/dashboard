@@ -325,6 +325,10 @@ export default {
   },
 
   clone(ctx, { resource } = {}) {
+    if (resource.isTypescript) {
+      return resource;
+    }
+
     const copy = cloneDeep(resource[SELF]);
 
     return proxyFor(ctx, copy, true);

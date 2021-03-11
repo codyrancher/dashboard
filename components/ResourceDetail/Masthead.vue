@@ -176,6 +176,8 @@ export default {
         location.name = this.parentRouteOverride;
       }
 
+      console.log(this.resource, ' sdfsdfs', displayName, product);
+
       const typeOptions = this.$store.getters[`type-map/optionsFor`]( this.resource );
       const out = {
         displayName, location, ...typeOptions

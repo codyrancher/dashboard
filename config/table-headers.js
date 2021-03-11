@@ -36,6 +36,7 @@ export const NAME = {
   value:         'nameDisplay',
   sort:          ['nameSort'],
   formatter:     'LinkDetail',
+  width:         300,
   canBeVariable: true,
 };
 

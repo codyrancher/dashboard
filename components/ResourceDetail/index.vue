@@ -55,6 +55,24 @@ export default {
       default: null,
     },
   },
+
+  data() {
+    return {
+      resourceSubtype: null,
+
+      // Set by fetch
+      hasCustomDetail: null,
+      hasCustomEdit:   null,
+      resource:        null,
+      asYaml:          null,
+      yaml:            null,
+      originalModel:   null,
+      mode:            null,
+      as:              null,
+      value:           null,
+      model:           null,
+    };
+  },
   async fetch() {
     const store = this.$store;
     const route = this.$route;
@@ -112,6 +130,8 @@ export default {
       originalModel = await store.dispatch(`${ inStore }/create`, data);
       model = originalModel;
 
+      console.log('fdfffffetch', originalModel, model);
+
       if ( as === _YAML ) {
         yaml = createYaml(schemas, resource, data);
       }
@@ -131,6 +151,7 @@ export default {
       if (realMode === _VIEW) {
         model = originalModel;
       } else {
+        console.log('jdfjkdfjkdf', model, originalModel);
         model = await store.dispatch(`${ inStore }/clone`, { resource: originalModel });
       }
 
@@ -175,24 +196,6 @@ export default {
     if ( this.mode === _CREATE ) {
       this.value.applyDefaults(this, realMode);
     }
-  },
-
-  data() {
-    return {
-      resourceSubtype: null,
-
-      // Set by fetch
-      hasCustomDetail: null,
-      hasCustomEdit:   null,
-      resource:        null,
-      asYaml:          null,
-      yaml:            null,
-      originalModel:   null,
-      mode:            null,
-      as:              null,
-      value:           null,
-      model:           null,
-    };
   },
 
   computed: {

@@ -9,7 +9,7 @@ import Labels from '@/components/form/Labels.vue';
 import Tab from '@/components/Tabbed/Tab.vue';
 import Tabbed from '@/components/Tabbed/index.vue';
 import CruResource from '@/components/CruResource.vue';
-import { ConfigMapType } from '@/models/configmap';
+import ConfigMapModel from '~/models/configmap';
 
 @Component({
   components: {
@@ -21,7 +21,7 @@ import { ConfigMapType } from '@/models/configmap';
     Tabbed
   }
 })
-export default class ConfigMap extends CreateEditView<ConfigMapType> {
+export default class ConfigMap extends CreateEditView<ConfigMapModel> {
   allData: {};
 
   fetch() {
@@ -30,6 +30,8 @@ export default class ConfigMap extends CreateEditView<ConfigMapType> {
 
   data(): any {
     const { binaryData = {}, data = {} } = this.value;
+
+    console.log('dooiujikjkojk', this.value);
 
     const decodedBinaryData = {};
 

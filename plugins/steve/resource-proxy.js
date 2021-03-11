@@ -14,6 +14,17 @@ FAKE_CONSTRUCTOR.toString = function() {
 const nativeProperties = ['description'];
 
 export function proxyFor(ctx, obj, isClone = false) {
+  if (obj?.isTypescript) {
+    return obj;
+  }
+
+  if (obj?.type === 'configmap') {
+    const mappedType = ctx.rootGetters['type-map/componentFor'](obj.type);
+    const model = lookup(mappedType, obj?.metadata?.name);
+
+    return new model(obj, ctx);
+  }
+
   // Attributes associated to the proxy, but not stored on the actual backing object
   let priv;
 
