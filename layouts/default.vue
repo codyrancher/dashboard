@@ -272,6 +272,8 @@ export default {
     <div class="wm">
       <WindowManager />
     </div>
+
+    <img src="http//165.232.159.35:8080/matomo.php?idsite=1&amp;rec=1" style="border:0;" alt="" />
   </div>
 </template>
 

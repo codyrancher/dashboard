@@ -277,6 +277,7 @@ module.exports = {
     '~/plugins/vue-clipboard2',
     '~/plugins/v-select',
     '~/plugins/transitions',
+    '~/plugins/matomo',
     { src: '~plugins/vue-js-modal' },
     { src: '~/plugins/js-yaml', ssr: false },
     { src: '~/plugins/resize', ssr: false },
