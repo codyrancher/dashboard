@@ -1,10 +1,23 @@
 import Vue from 'vue';
 import VueMatomo from 'vue-matomo';
+import { parse } from '@/utils/url';
+
+const KEY = 'UX_USER_ID';
 
 export default ({ app }) => {
+  const url = parse(window.location.href);
+  const urlUserId = url.query.userId;
+  const localStorageUserId = window.localStorage.getItem(KEY);
+
+  if (urlUserId) {
+    window.localStorage.setItem(KEY, urlUserId);
+  }
+
+  const userId = urlUserId || localStorageUserId;
+
   Vue.use(VueMatomo, {
     // Configure your matomo server and site by providing
-    host:   'http://165.232.159.35:8080',
+    host:   'https://matomo.ourhome.dev',
     siteId: 1,
 
     // Changes the default .js and .php endpoint's filename
@@ -29,7 +42,7 @@ export default ({ app }) => {
 
     // Require consent before sending tracking information to matomo
     // Default: false
-    requireConsent: true,
+    requireConsent: false,
 
     // Whether to track the initial page view
     // Default: true
@@ -53,7 +66,7 @@ export default ({ app }) => {
 
     // UserID passed to Matomo (see https://developer.matomo.org/guides/tracking-javascript-guide#user-id)
     // Default: undefined
-    userId: undefined,
+    userId,
 
     // Tell Matomo the website domain so that clicks on these domains are not tracked as 'Outlinks'
     // Default: undefined, example: '*.example.com'
