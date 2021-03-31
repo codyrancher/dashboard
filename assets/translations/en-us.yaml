@@ -35,6 +35,11 @@ generic:
     one  {resource}
     other {resources}
     }
+  resourceCount: |-
+    {count, plural,
+    one  {1 resource}
+    other {# resources}
+    }
   save: Save
   type: Type
   unknown: Unknown
@@ -66,6 +71,7 @@ locale:
 nav:
   title: Dashboard
   backToRancher: Cluster Manager
+  clusterTools: Cluster Tools
   shell: Kubectl Shell
   import: Import YAML
   group:
@@ -608,6 +614,13 @@ catalog:
     url:
       label: Index URL
       placeholder: 'e.g. https://charts.rancher.io'
+  tools:
+    header: Cluster Tools
+    action:
+      install: Install
+      upgrade: Upgrade/Edit
+      edit: Edit
+      remove: Remove
 
 changePassword:
   title: Change Password
