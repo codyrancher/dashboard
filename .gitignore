@@ -69,6 +69,7 @@ typings/
 # nuxt.js build output
 .nuxt
 .nuxt-prod
+.nuxthelloworld
 
 # Nuxt generate
 dist
