@@ -81,8 +81,8 @@ export async function getLogs() {
 
   return response.rawResponse.hits.hits.map((hit) => {
     return {
-      timestamp:  hit._source.timestamp,
-      message:   hit._source.message,
+      timestamp:  hit._source.timestamp.toString(),
+      message:   hit._source.message.split('|')[1].trim(),
       level:     hit._source.anomaly_level,
       component: hit._source.kubernetes_component
     };
@@ -98,7 +98,7 @@ export async function getWorkloadLogs() {
 
   return response.rawResponse.hits.hits.map((hit) => {
     return {
-      timestamp:  hit._source.timestamp,
+      timestamp:  hit._source.timestamp.toString(),
       message:   hit._source.message,
       level:     hit._source.anomaly_level,
       component: hit._source.kubernetes_component
