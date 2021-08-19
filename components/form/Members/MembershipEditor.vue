@@ -52,7 +52,7 @@ export default {
 
   async fetch() {
     const userHydration = [
-      this.schema ? await this.$store.dispatch(`management/findAll`, { type: this.type }) : [],
+      this.schema ? await this.$store.dispatch(`management/findAll`, { type: this.type, opt: { force: true } }) : [],
       this.$store.dispatch(`management/findAll`, { type: MANAGEMENT.ROLE_TEMPLATE }),
       this.$store.dispatch('rancher/findAll', { type: NORMAN.PRINCIPAL }),
       this.$store.dispatch(`management/findAll`, { type: MANAGEMENT.USER })
