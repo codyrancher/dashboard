@@ -244,6 +244,17 @@ export default {
   },
 
   methods: {
+    iconClass(icon) {
+      if (!icon) {
+        return;
+      }
+
+      if (icon.startsWith('icon-')) {
+        return icon;
+      }
+
+      return `icon-${ icon }`;
+    },
     async setClusterAsLastRoute() {
       const route = {
         name:   this.$route.name,
@@ -343,6 +354,7 @@ export default {
               label:    this.$store.getters['i18n/withFallback'](`product.${ productId }`, null, ucFirst(productId)),
               children: [...(root?.children || []), ...other],
               weight:   productMap[productId]?.weight || 0,
+              icon:     productMap[productId]?.icon
             };
 
             addObject(out, group);
@@ -509,7 +521,7 @@ export default {
               @expand="groupSelected($event)"
             >
               <template #header>
-                <h6>{{ g.label }}</h6>
+                <h6><i v-if="g.icon" class="icon" :class="{[iconClass(g.icon)]: true}" /> {{ g.label }}</h6>
               </template>
             </Group>
           </template>

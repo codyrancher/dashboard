@@ -616,6 +616,7 @@ export const getters = {
         }
 
         let group = findBy(tree.children, 'name', name);
+        const options = getters.optionsFor(name);
 
         if ( !group ) {
           group = {
@@ -628,6 +629,9 @@ export const getters = {
           tree.children.push(group);
         }
 
+        if ( options ) {
+          Object.assign(group, options);
+        }
         if ( isRoot ) {
           group.isRoot = true;
         }
