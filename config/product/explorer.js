@@ -145,7 +145,8 @@ export function init(store) {
       name:    'c-cluster-product-resource',
       params:  { resource: 'workload' },
     },
-    resource: WORKLOAD_TYPES.DEPLOYMENT
+    resource: WORKLOAD_TYPES.DEPLOYMENT,
+    icon:     'globe'
   });
 
   headers(PV, [STATE, NAME_COL, RECLAIM_POLICY, PERSISTENT_VOLUME_CLAIM, PERSISTENT_VOLUME_SOURCE, PV_REASON, AGE]);

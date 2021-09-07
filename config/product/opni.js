@@ -7,7 +7,7 @@ export const CHART_NAME = 'opni';
 export function init(store) {
   const { product, basicType, virtualType } = DSL(store, NAME);
 
-  product({ icon: 'longhorn' });
+  product({ icon: 'globe' });
 
   virtualType({
     label:      'Insights',
