@@ -456,6 +456,10 @@ asyncButton:
     action: Apply
     success: Applied
     waiting: Applying&hellip;
+  clone:
+    action: Clone
+    success: Cloned
+    waiting: Cloning
   continue:
     action: Continue
     success: Saved
@@ -4074,6 +4078,7 @@ tableHeaders:
     clusterDefault: Cluster Creator Default
     projectDefault: Project Creator Default
   branch: Branch
+  budget: Budget
   builtIn: Built In
   bundlesReady: Bundles
   bundleDeploymentsReady: Deployments
@@ -4205,6 +4210,7 @@ tableHeaders:
   target: Target
   targetKind: Target Type
   targetPort: Target
+  time: Time
   type: Type
   updated: Updated
   upgrade: Upgradable
@@ -6142,9 +6148,15 @@ opni:
     roles: Roles
     roleBindings: Role Bindings
     tokens: Tokens
+    slos: Service Level Objectives
   workloadVsControlPlaneChart:
     workload: Workload
     controlPlane: Control Plane
-
+  slo:
+    tab:
+      source: Source
+      target: Target
+      alert: Alert
+      preview: Preview
     
 

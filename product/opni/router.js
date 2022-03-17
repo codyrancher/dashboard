@@ -11,6 +11,8 @@ import Role from './pages/Role';
 import RoleBindings from './pages/RoleBindings';
 import RoleBinding from './pages/RoleBinding';
 import Configuration from './pages/Configuration';
+import SLO from './pages/SLO';
+import SLOs from './pages/SLOs';
 
 Vue.use(Router);
 
@@ -18,7 +20,7 @@ export const NAVIGATION = {
   routes: [
     {
       path:      '/',
-      redirect: { name: 'clusters' },
+      redirect: { name: 'slos' },
       display:  false
     },
     {
@@ -95,6 +97,22 @@ export const NAVIGATION = {
       labelKey:  'opni.nav.configuration',
       icon:      'globe',
       component: Configuration,
+      display:   false
+    },
+    {
+      name:      'slos',
+      path:      '/slos',
+      labelKey:  'opni.nav.slos',
+      icon:      'globe',
+      component: SLOs,
+      display:   true
+    },
+    {
+      name:      'slo',
+      path:      '/slos/create',
+      labelKey:  'opni.nav.slo',
+      icon:      'globe',
+      component: SLO,
       display:   false
     },
     // {
