@@ -1,0 +1,3 @@
+{
+  "extends": "@rancher/shell/tsconfig.json",
+}

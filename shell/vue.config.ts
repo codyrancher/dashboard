@@ -437,8 +437,7 @@ export default function(dir: any, _appConfig: any) {
       const babelPlugins: (string | ([] | Object)[])[] = [
         // TODO: Browser support
         // ['@babel/plugin-transform-modules-commonjs'],
-        ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
-        ['@babel/plugin-proposal-class-properties', { loose: true }]
+        ['@babel/plugin-proposal-private-property-in-object']
       ];
 
       if (instrumentCode) {
@@ -472,21 +471,15 @@ export default function(dir: any, _appConfig: any) {
         },
         {
           test:    /\.m?[tj]sx?$/,
-          exclude: /node_modules/,
+          exclude: [/node_modules/, /@rancher/],
           use:     [
-            {
-              loader:  'cache-loader',
-              options: {
-                cacheDirectory:  'node_modules/.cache/babel-loader',
-                cacheIdentifier: 'e93f32da'
-              }
-            },
+            { loader: 'cache-loader' },
             {
               loader:  'babel-loader',
               options: {
                 presets: [
                   [
-                    require.resolve('@nuxt/babel-preset-app'),
+                    '@vue/cli-plugin-babel/preset',
                     {
                       corejs:  { version: 3 },
                       targets: { browsers: ['last 2 versions'] },
@@ -503,13 +496,7 @@ export default function(dir: any, _appConfig: any) {
         {
           test: /\.tsx?$/,
           use:  [
-            {
-              loader:  'cache-loader',
-              options: {
-                cacheDirectory:  'node_modules/.cache/ts-loader',
-                cacheIdentifier: '3596741e'
-              }
-            },
+            { loader: 'cache-loader' },
             {
               loader:  'ts-loader',
               options: {
@@ -517,8 +504,7 @@ export default function(dir: any, _appConfig: any) {
                 happyPackMode:     false,
                 appendTsxSuffixTo: [
                   '\\.vue$'
-                ],
-                configFile: path.join(SHELL_ABS, 'tsconfig.json')
+                ]
               }
             }
           ]
@@ -550,6 +536,7 @@ export default function(dir: any, _appConfig: any) {
       ];
 
       config.module.rules.push(...loaders);
+      fs.writeFileSync('./floof.txt', JSON.stringify(config, null, 2));
     },
   };
 

@@ -1,0 +1,1538 @@
+{
+  "mode": "development",
+  "context": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test",
+  "devtool": "cheap-module-source-map",
+  "node": {
+    "setImmediate": false,
+    "process": "mock",
+    "dgram": "empty",
+    "fs": "empty",
+    "net": "empty",
+    "tls": "empty",
+    "child_process": "empty"
+  },
+  "output": {
+    "path": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/dist",
+    "filename": "js/[name].js",
+    "publicPath": "/",
+    "chunkFilename": "js/[name].js",
+    "globalObject": "(typeof self !== 'undefined' ? self : this)"
+  },
+  "resolve": {
+    "alias": {
+      "@": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test",
+      "vue$": "vue/dist/vue.runtime.esm.js",
+      "~": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test",
+      "~assets": "/home/sxenog/rancher/code/dashboard/shell/assets",
+      "~shell": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/@rancher/shell",
+      "@shell": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/@rancher/shell",
+      "@pkg": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/pkg",
+      "./node_modules": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules",
+      "@components": "/home/sxenog/rancher/code/dashboard/pkg/rancher-components/src/components"
+    },
+    "extensions": [
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".vue",
+      ".json",
+      ".wasm",
+      ".tsx",
+      ".ts",
+      ".js",
+      ".vue",
+      ".scss"
+    ],
+    "modules": [
+      "node_modules",
+      "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules",
+      "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/@vue/cli-service/node_modules",
+      "/home/sxenog/rancher/code/dashboard/shell"
+    ],
+    "plugins": [
+      {
+        "topLevelLoader": {}
+      }
+    ],
+    "symlinks": false
+  },
+  "resolveLoader": {
+    "modules": [
+      "node_modules",
+      "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules",
+      "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/@vue/cli-service/node_modules"
+    ],
+    "plugins": [
+      {}
+    ]
+  },
+  "module": {
+    "noParse": {},
+    "rules": [
+      {
+        "test": {},
+        "type": "javascript/auto",
+        "include": [
+          {}
+        ]
+      },
+      {
+        "test": {},
+        "use": [
+          {
+            "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/cache-loader/dist/cjs.js",
+            "options": {
+              "cacheDirectory": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/.cache/vue-loader",
+              "cacheIdentifier": "7ee06136"
+            }
+          },
+          {
+            "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-loader/lib/index.js",
+            "options": {
+              "compilerOptions": {
+                "whitespace": "condense"
+              },
+              "cacheDirectory": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/.cache/vue-loader",
+              "cacheIdentifier": "7ee06136"
+            }
+          }
+        ]
+      },
+      {
+        "test": {},
+        "use": [
+          {
+            "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/url-loader/dist/cjs.js",
+            "options": {
+              "limit": 4096,
+              "fallback": {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/file-loader/dist/cjs.js",
+                "options": {
+                  "name": "img/[name].[hash:8].[ext]"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "test": {},
+        "use": [
+          {
+            "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/file-loader/dist/cjs.js",
+            "options": {
+              "name": "img/[name].[hash:8].[ext]"
+            }
+          }
+        ]
+      },
+      {
+        "test": {},
+        "use": [
+          {
+            "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/url-loader/dist/cjs.js",
+            "options": {
+              "limit": 4096,
+              "fallback": {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/file-loader/dist/cjs.js",
+                "options": {
+                  "name": "media/[name].[hash:8].[ext]"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "test": {},
+        "use": [
+          {
+            "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/url-loader/dist/cjs.js",
+            "options": {
+              "limit": 4096,
+              "fallback": {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/file-loader/dist/cjs.js",
+                "options": {
+                  "name": "fonts/[name].[hash:8].[ext]"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "test": {},
+        "oneOf": [
+          {
+            "resourceQuery": {},
+            "use": [
+              {
+                "loader": "pug-plain-loader"
+              }
+            ]
+          },
+          {
+            "use": [
+              {
+                "loader": "raw-loader"
+              },
+              {
+                "loader": "pug-plain-loader"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "test": {},
+        "oneOf": [
+          {
+            "resourceQuery": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2,
+                  "modules": {
+                    "localIdentName": "[name]_[local]_[hash:base64:5]"
+                  }
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "resourceQuery": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "test": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2,
+                  "modules": {
+                    "localIdentName": "[name]_[local]_[hash:base64:5]"
+                  }
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "test": {},
+        "oneOf": [
+          {
+            "resourceQuery": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2,
+                  "modules": {
+                    "localIdentName": "[name]_[local]_[hash:base64:5]"
+                  }
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "resourceQuery": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "test": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2,
+                  "modules": {
+                    "localIdentName": "[name]_[local]_[hash:base64:5]"
+                  }
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "test": {},
+        "oneOf": [
+          {
+            "resourceQuery": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2,
+                  "modules": {
+                    "localIdentName": "[name]_[local]_[hash:base64:5]"
+                  }
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/sass-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "implementation": {
+                    "sassNull": {},
+                    "sassTrue": {
+                      "value": true
+                    },
+                    "sassFalse": {
+                      "value": false
+                    },
+                    "Logger": {
+                      "silent": {}
+                    },
+                    "info": "dart-sass\t1.51.0\t(Sass Compiler)\t[Dart]\ndart2js\t2.16.2\t(Dart Compiler)\t[Dart]",
+                    "types": {},
+                    "NULL": {},
+                    "TRUE": {
+                      "value": true
+                    },
+                    "FALSE": {
+                      "value": false
+                    }
+                  },
+                  "additionalData": "\n            @use 'sass:math';\n            @import \"~shell/assets/styles/base/_variables.scss\";\n            @import \"~shell/assets/styles/base/_functions.scss\";\n            @import \"~shell/assets/styles/base/_mixins.scss\";\n          "
+                }
+              }
+            ]
+          },
+          {
+            "resourceQuery": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/sass-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "implementation": {
+                    "sassNull": {},
+                    "sassTrue": {
+                      "value": true
+                    },
+                    "sassFalse": {
+                      "value": false
+                    },
+                    "Logger": {
+                      "silent": {}
+                    },
+                    "info": "dart-sass\t1.51.0\t(Sass Compiler)\t[Dart]\ndart2js\t2.16.2\t(Dart Compiler)\t[Dart]",
+                    "types": {},
+                    "NULL": {},
+                    "TRUE": {
+                      "value": true
+                    },
+                    "FALSE": {
+                      "value": false
+                    }
+                  },
+                  "additionalData": "\n            @use 'sass:math';\n            @import \"~shell/assets/styles/base/_variables.scss\";\n            @import \"~shell/assets/styles/base/_functions.scss\";\n            @import \"~shell/assets/styles/base/_mixins.scss\";\n          "
+                }
+              }
+            ]
+          },
+          {
+            "test": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2,
+                  "modules": {
+                    "localIdentName": "[name]_[local]_[hash:base64:5]"
+                  }
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/sass-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "implementation": {
+                    "sassNull": {},
+                    "sassTrue": {
+                      "value": true
+                    },
+                    "sassFalse": {
+                      "value": false
+                    },
+                    "Logger": {
+                      "silent": {}
+                    },
+                    "info": "dart-sass\t1.51.0\t(Sass Compiler)\t[Dart]\ndart2js\t2.16.2\t(Dart Compiler)\t[Dart]",
+                    "types": {},
+                    "NULL": {},
+                    "TRUE": {
+                      "value": true
+                    },
+                    "FALSE": {
+                      "value": false
+                    }
+                  },
+                  "additionalData": "\n            @use 'sass:math';\n            @import \"~shell/assets/styles/base/_variables.scss\";\n            @import \"~shell/assets/styles/base/_functions.scss\";\n            @import \"~shell/assets/styles/base/_mixins.scss\";\n          "
+                }
+              }
+            ]
+          },
+          {
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/sass-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "implementation": {
+                    "sassNull": {},
+                    "sassTrue": {
+                      "value": true
+                    },
+                    "sassFalse": {
+                      "value": false
+                    },
+                    "Logger": {
+                      "silent": {}
+                    },
+                    "info": "dart-sass\t1.51.0\t(Sass Compiler)\t[Dart]\ndart2js\t2.16.2\t(Dart Compiler)\t[Dart]",
+                    "types": {},
+                    "NULL": {},
+                    "TRUE": {
+                      "value": true
+                    },
+                    "FALSE": {
+                      "value": false
+                    }
+                  },
+                  "additionalData": "\n            @use 'sass:math';\n            @import \"~shell/assets/styles/base/_variables.scss\";\n            @import \"~shell/assets/styles/base/_functions.scss\";\n            @import \"~shell/assets/styles/base/_mixins.scss\";\n          "
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "test": {},
+        "oneOf": [
+          {
+            "resourceQuery": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2,
+                  "modules": {
+                    "localIdentName": "[name]_[local]_[hash:base64:5]"
+                  }
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/sass-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "implementation": {
+                    "sassNull": {},
+                    "sassTrue": {
+                      "value": true
+                    },
+                    "sassFalse": {
+                      "value": false
+                    },
+                    "Logger": {
+                      "silent": {}
+                    },
+                    "info": "dart-sass\t1.51.0\t(Sass Compiler)\t[Dart]\ndart2js\t2.16.2\t(Dart Compiler)\t[Dart]",
+                    "types": {},
+                    "NULL": {},
+                    "TRUE": {
+                      "value": true
+                    },
+                    "FALSE": {
+                      "value": false
+                    }
+                  },
+                  "additionalData": "\n            @use 'sass:math';\n            @import \"~shell/assets/styles/base/_variables.scss\";\n            @import \"~shell/assets/styles/base/_functions.scss\";\n            @import \"~shell/assets/styles/base/_mixins.scss\";\n          ",
+                  "sassOptions": {
+                    "indentedSyntax": true
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "resourceQuery": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/sass-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "implementation": {
+                    "sassNull": {},
+                    "sassTrue": {
+                      "value": true
+                    },
+                    "sassFalse": {
+                      "value": false
+                    },
+                    "Logger": {
+                      "silent": {}
+                    },
+                    "info": "dart-sass\t1.51.0\t(Sass Compiler)\t[Dart]\ndart2js\t2.16.2\t(Dart Compiler)\t[Dart]",
+                    "types": {},
+                    "NULL": {},
+                    "TRUE": {
+                      "value": true
+                    },
+                    "FALSE": {
+                      "value": false
+                    }
+                  },
+                  "additionalData": "\n            @use 'sass:math';\n            @import \"~shell/assets/styles/base/_variables.scss\";\n            @import \"~shell/assets/styles/base/_functions.scss\";\n            @import \"~shell/assets/styles/base/_mixins.scss\";\n          ",
+                  "sassOptions": {
+                    "indentedSyntax": true
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "test": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2,
+                  "modules": {
+                    "localIdentName": "[name]_[local]_[hash:base64:5]"
+                  }
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/sass-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "implementation": {
+                    "sassNull": {},
+                    "sassTrue": {
+                      "value": true
+                    },
+                    "sassFalse": {
+                      "value": false
+                    },
+                    "Logger": {
+                      "silent": {}
+                    },
+                    "info": "dart-sass\t1.51.0\t(Sass Compiler)\t[Dart]\ndart2js\t2.16.2\t(Dart Compiler)\t[Dart]",
+                    "types": {},
+                    "NULL": {},
+                    "TRUE": {
+                      "value": true
+                    },
+                    "FALSE": {
+                      "value": false
+                    }
+                  },
+                  "additionalData": "\n            @use 'sass:math';\n            @import \"~shell/assets/styles/base/_variables.scss\";\n            @import \"~shell/assets/styles/base/_functions.scss\";\n            @import \"~shell/assets/styles/base/_mixins.scss\";\n          ",
+                  "sassOptions": {
+                    "indentedSyntax": true
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/sass-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "implementation": {
+                    "sassNull": {},
+                    "sassTrue": {
+                      "value": true
+                    },
+                    "sassFalse": {
+                      "value": false
+                    },
+                    "Logger": {
+                      "silent": {}
+                    },
+                    "info": "dart-sass\t1.51.0\t(Sass Compiler)\t[Dart]\ndart2js\t2.16.2\t(Dart Compiler)\t[Dart]",
+                    "types": {},
+                    "NULL": {},
+                    "TRUE": {
+                      "value": true
+                    },
+                    "FALSE": {
+                      "value": false
+                    }
+                  },
+                  "additionalData": "\n            @use 'sass:math';\n            @import \"~shell/assets/styles/base/_variables.scss\";\n            @import \"~shell/assets/styles/base/_functions.scss\";\n            @import \"~shell/assets/styles/base/_mixins.scss\";\n          ",
+                  "sassOptions": {
+                    "indentedSyntax": true
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "test": {},
+        "oneOf": [
+          {
+            "resourceQuery": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2,
+                  "modules": {
+                    "localIdentName": "[name]_[local]_[hash:base64:5]"
+                  }
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              },
+              {
+                "loader": "less-loader",
+                "options": {
+                  "sourceMap": false
+                }
+              }
+            ]
+          },
+          {
+            "resourceQuery": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              },
+              {
+                "loader": "less-loader",
+                "options": {
+                  "sourceMap": false
+                }
+              }
+            ]
+          },
+          {
+            "test": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2,
+                  "modules": {
+                    "localIdentName": "[name]_[local]_[hash:base64:5]"
+                  }
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              },
+              {
+                "loader": "less-loader",
+                "options": {
+                  "sourceMap": false
+                }
+              }
+            ]
+          },
+          {
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              },
+              {
+                "loader": "less-loader",
+                "options": {
+                  "sourceMap": false
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "test": {},
+        "oneOf": [
+          {
+            "resourceQuery": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2,
+                  "modules": {
+                    "localIdentName": "[name]_[local]_[hash:base64:5]"
+                  }
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              },
+              {
+                "loader": "stylus-loader",
+                "options": {
+                  "sourceMap": false,
+                  "preferPathResolver": "webpack"
+                }
+              }
+            ]
+          },
+          {
+            "resourceQuery": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              },
+              {
+                "loader": "stylus-loader",
+                "options": {
+                  "sourceMap": false,
+                  "preferPathResolver": "webpack"
+                }
+              }
+            ]
+          },
+          {
+            "test": {},
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2,
+                  "modules": {
+                    "localIdentName": "[name]_[local]_[hash:base64:5]"
+                  }
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              },
+              {
+                "loader": "stylus-loader",
+                "options": {
+                  "sourceMap": false,
+                  "preferPathResolver": "webpack"
+                }
+              }
+            ]
+          },
+          {
+            "use": [
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/vue-style-loader/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "shadowMode": false
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/css-loader/dist/cjs.js",
+                "options": {
+                  "sourceMap": false,
+                  "importLoaders": 2
+                }
+              },
+              {
+                "loader": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/postcss-loader/src/index.js",
+                "options": {
+                  "sourceMap": false,
+                  "plugins": [
+                    null
+                  ]
+                }
+              },
+              {
+                "loader": "stylus-loader",
+                "options": {
+                  "sourceMap": false,
+                  "preferPathResolver": "webpack"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "test": {},
+        "loader": "worker-loader",
+        "options": {
+          "inline": "fallback"
+        }
+      },
+      {
+        "test": {},
+        "loader": "csv-loader",
+        "options": {
+          "dynamicTyping": true,
+          "header": true,
+          "skipEmptyLines": true
+        }
+      },
+      {
+        "test": {},
+        "loader": "js-yaml-loader",
+        "options": {
+          "name": "[path][name].[ext]"
+        }
+      },
+      {
+        "test": {},
+        "exclude": [
+          {},
+          {}
+        ],
+        "use": [
+          {
+            "loader": "cache-loader"
+          },
+          {
+            "loader": "babel-loader",
+            "options": {
+              "presets": [
+                [
+                  "@vue/cli-plugin-babel/preset",
+                  {
+                    "corejs": {
+                      "version": 3
+                    },
+                    "targets": {
+                      "browsers": [
+                        "last 2 versions"
+                      ]
+                    },
+                    "modern": true
+                  }
+                ],
+                "@babel/preset-typescript"
+              ],
+              "plugins": [
+                [
+                  "@babel/plugin-proposal-private-property-in-object"
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "test": {},
+        "use": [
+          {
+            "loader": "cache-loader"
+          },
+          {
+            "loader": "ts-loader",
+            "options": {
+              "transpileOnly": true,
+              "happyPackMode": false,
+              "appendTsxSuffixTo": [
+                "\\.vue$"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "test": {},
+        "use": [
+          {
+            "loader": "url-loader",
+            "options": {
+              "name": "[path][name].[ext]",
+              "limit": 1,
+              "esModule": false
+            }
+          }
+        ]
+      },
+      {
+        "test": {},
+        "use": [
+          {
+            "loader": "frontmatter-markdown-loader",
+            "options": {
+              "mode": [
+                "body"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "optimization": {
+    "splitChunks": {
+      "cacheGroups": {
+        "vendors": {
+          "name": "chunk-vendors",
+          "test": {},
+          "priority": -10,
+          "chunks": "initial"
+        },
+        "common": {
+          "name": "chunk-common",
+          "minChunks": 2,
+          "priority": -20,
+          "chunks": "initial",
+          "reuseExistingChunk": true
+        }
+      }
+    },
+    "minimizer": [
+      {
+        "options": {
+          "test": {},
+          "extractComments": false,
+          "sourceMap": true,
+          "cache": true,
+          "parallel": true,
+          "terserOptions": {
+            "output": {
+              "comments": {}
+            },
+            "compress": {
+              "arrows": false,
+              "collapse_vars": false,
+              "comparisons": false,
+              "computed_props": false,
+              "hoist_funs": false,
+              "hoist_props": false,
+              "hoist_vars": false,
+              "inline": false,
+              "loops": false,
+              "negate_iife": false,
+              "properties": false,
+              "reduce_funcs": false,
+              "reduce_vars": false,
+              "switches": false,
+              "toplevel": false,
+              "typeofs": false,
+              "booleans": true,
+              "if_return": true,
+              "sequences": true,
+              "unused": true,
+              "conditionals": true,
+              "dead_code": true,
+              "evaluate": true
+            },
+            "mangle": {
+              "safari10": true
+            }
+          }
+        }
+      }
+    ]
+  },
+  "plugins": [
+    {},
+    {
+      "definitions": {
+        "process.env": {
+          "NODE_ENV": "\"dev\"",
+          "BASE_URL": "\"/\""
+        }
+      }
+    },
+    {
+      "options": {},
+      "logger": {},
+      "pathCache": {},
+      "fsOperations": 0,
+      "primed": false
+    },
+    {
+      "compilationSuccessInfo": {},
+      "shouldClearConsole": true,
+      "formatters": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "transformers": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "previousEndTimes": {}
+    },
+    {
+      "options": {
+        "template": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/@rancher/shell/public/index.html",
+        "filename": "index.html",
+        "hash": false,
+        "inject": true,
+        "compile": true,
+        "favicon": false,
+        "minify": false,
+        "cache": true,
+        "showErrors": true,
+        "chunks": [
+          "chunk-vendors",
+          "chunk-common",
+          "index"
+        ],
+        "excludeChunks": [],
+        "chunksSortMode": "auto",
+        "meta": {},
+        "title": "test",
+        "xhtml": false
+      }
+    },
+    {
+      "options": {
+        "rel": "preload",
+        "include": {
+          "type": "initial",
+          "entries": [
+            "index"
+          ]
+        },
+        "excludeHtmlNames": [],
+        "fileBlacklist": [
+          {},
+          {}
+        ],
+        "includeHtmlNames": [
+          "index.html"
+        ]
+      }
+    },
+    {
+      "options": {
+        "rel": "prefetch",
+        "include": {
+          "type": "asyncChunks",
+          "entries": [
+            "index"
+          ]
+        },
+        "excludeHtmlNames": [],
+        "fileBlacklist": [
+          {}
+        ],
+        "includeHtmlNames": [
+          "index.html"
+        ]
+      }
+    },
+    {
+      "options": {},
+      "fullBuildTimeout": 200,
+      "requestTimeout": 10000
+    },
+    {
+      "profile": false,
+      "modulesCount": 500,
+      "showEntries": false,
+      "showModules": true,
+      "showActiveModules": true
+    },
+    {
+      "_compiler": null,
+      "_watcher": null,
+      "_staticModules": {
+        "node_modules/@rancher/dynamic.js": "export default function ($plugin) {  };"
+      }
+    },
+    {
+      "resourceRegExp": {}
+    },
+    {
+      "_compiler": null,
+      "_watcher": null,
+      "_staticModules": {}
+    },
+    {
+      "resourceRegExp": {}
+    },
+    {
+      "definitions": {
+        "process.client": "true",
+        "process.env.commit": "\"head\"",
+        "process.env.dev": "true",
+        "process.env.pl": "1",
+        "process.env.perfTest": "false",
+        "process.env.rancherEnv": "\"web\"",
+        "process.env.api": "\"https://localhost:8443\"",
+        "nuxt.publicRuntimeConfig": "{\"rancherEnv\":\"web\"}"
+      }
+    },
+    {
+      "patterns": [
+        {
+          "from": "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/@rancher/shell/static",
+          "to": "public"
+        }
+      ],
+      "options": {}
+    }
+  ],
+  "entry": {
+    "index": [
+      "/home/sxenog/rancher/code/dashboard/shell/creators/app/test/node_modules/@rancher/shell/nuxt/client.js"
+    ]
+  },
+  "watchOptions": {
+    "ignored": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ]
+  }
+}
