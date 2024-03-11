@@ -4,13 +4,12 @@ import { cleanHtmlDirective } from '@shell/plugins/clean-html-directive';
 
 describe('component: vmwarevsphere', () => {
   const defaultGetters = { 'i18n/t': jest.fn().mockImplementation((key: string) => key) };
-  const defaultSetup = {
+  const poolId = 'poolId';
+  const baseSetup = {
     propsData: {
-      poolId:       'poolId',
+      poolId,
       credentialId: 'credentialId',
       disabled:     false,
-      mode:         'create',
-      value:        { initted: false },
       provider:     'vmwarevsphere'
     },
     mocks: {
@@ -20,54 +19,86 @@ describe('component: vmwarevsphere', () => {
     stubs:      { CodeMirror: true },
     directives: { cleanHtmlDirective }
   };
+  const defaultCreateSetup = {
+    ...baseSetup,
+    propsData: {
+      ...baseSetup.propsData,
+      mode:           'create',
+      poolCreateMode: true,
+      value:          { initted: false },
+    }
+  };
+  const defaultEditSetup = {
+    ...baseSetup,
+    propsData: {
+      ...baseSetup.propsData,
+      mode:           'edit',
+      poolCreateMode: false,
+      value:          { initted: false },
+    }
+  };
+  const editModeWithPoolInCreateModeSetup = {
+    ...defaultEditSetup,
+    propsData: {
+      ...defaultEditSetup.propsData,
+      poolCreateMode: true
+    }
+  };
 
-  it('should mount successfully with correct default values', () => {
-    const wrapper = mount(vmwarevsphere, defaultSetup);
+  describe('default values', () => {
+    const testCases = [
+      defaultCreateSetup,
+      editModeWithPoolInCreateModeSetup
+    ];
 
-    const dataCenterElement = wrapper.find(`[data-testid="datacenter"]`).element;
-    const resourcePoolElement = wrapper.find(`[data-testid="resourcePool"]`).element;
-    const dataStoreElement = wrapper.find(`[data-testid="dataStore"]`).element;
-    const folderElement = wrapper.find(`[data-testid="folder"]`).element;
-    const hostElement = wrapper.find(`[data-testid="host"]`).element;
-    const gracefulShutdownTimeoutElement = wrapper.find(`[data-testid="gracefulShutdownTimeout"]`).element;
+    it.each(testCases)('should mount successfully with correct default values', (setup) => {
+      const wrapper = mount(vmwarevsphere, setup);
 
-    expect(dataCenterElement).toBeDefined();
-    expect(resourcePoolElement).toBeDefined();
-    expect(dataStoreElement).toBeDefined();
-    expect(folderElement).toBeDefined();
-    expect(hostElement).toBeDefined();
-    expect(gracefulShutdownTimeoutElement).toBeDefined();
+      const dataCenterElement = wrapper.find(`[data-testid="datacenter"]`).element;
+      const resourcePoolElement = wrapper.find(`[data-testid="resourcePool"]`).element;
+      const dataStoreElement = wrapper.find(`[data-testid="dataStore"]`).element;
+      const folderElement = wrapper.find(`[data-testid="folder"]`).element;
+      const hostElement = wrapper.find(`[data-testid="host"]`).element;
+      const gracefulShutdownTimeoutElement = wrapper.find(`[data-testid="gracefulShutdownTimeout"]`).element;
 
-    const {
-      cpuCount: defaultCpuCount,
-      diskSize: defaultDiskSize,
-      memorySize: defaultMemorySize,
-      hostsystem: defaultHostsystem,
-      cloudConfig: defaultCloudConfig,
-      gracefulShutdownTimeout: defaultGracefulShutdownTimeout,
-      cfgparam: defaultCfgparam,
-      os: defaultOs
-    } = DEFAULT_VALUES;
+      expect(dataCenterElement).toBeDefined();
+      expect(resourcePoolElement).toBeDefined();
+      expect(dataStoreElement).toBeDefined();
+      expect(folderElement).toBeDefined();
+      expect(hostElement).toBeDefined();
+      expect(gracefulShutdownTimeoutElement).toBeDefined();
 
-    const {
-      cpuCount,
-      diskSize,
-      memorySize,
-      hostsystem,
-      cloudConfig,
-      gracefulShutdownTimeout,
-      cfgparam,
-      os
-    } = wrapper.vm.$options.propsData.value;
+      const {
+        cpuCount: defaultCpuCount,
+        diskSize: defaultDiskSize,
+        memorySize: defaultMemorySize,
+        hostsystem: defaultHostsystem,
+        cloudConfig: defaultCloudConfig,
+        gracefulShutdownTimeout: defaultGracefulShutdownTimeout,
+        cfgparam: defaultCfgparam,
+        os: defaultOs
+      } = DEFAULT_VALUES;
 
-    expect(cpuCount).toStrictEqual(defaultCpuCount);
-    expect(diskSize).toStrictEqual(defaultDiskSize);
-    expect(memorySize).toStrictEqual(defaultMemorySize);
-    expect(hostsystem).toStrictEqual(defaultHostsystem);
-    expect(cloudConfig).toStrictEqual(defaultCloudConfig);
-    expect(gracefulShutdownTimeout).toStrictEqual(defaultGracefulShutdownTimeout);
-    expect(cfgparam).toStrictEqual(defaultCfgparam);
-    expect(os).toStrictEqual(defaultOs);
+      const {
+        cpuCount,
+        diskSize,
+        memorySize,
+        hostsystem,
+        cloudConfig,
+        gracefulShutdownTimeout,
+        cfgparam,
+        os
+      } = wrapper.vm.$options.propsData.value;
+
+      expect(cpuCount).toStrictEqual(defaultCpuCount);
+      expect(diskSize).toStrictEqual(defaultDiskSize);
+      expect(memorySize).toStrictEqual(defaultMemorySize);
+      expect(hostsystem).toStrictEqual(defaultHostsystem);
+      expect(cloudConfig).toStrictEqual(defaultCloudConfig);
+      expect(gracefulShutdownTimeout).toStrictEqual(defaultGracefulShutdownTimeout);
+      expect(cfgparam).toStrictEqual(defaultCfgparam);
+      expect(os).toStrictEqual(defaultOs);
+    });
   });
 
   describe('mapPathOptionsToContent', () => {
@@ -78,7 +109,7 @@ describe('component: vmwarevsphere', () => {
     ];
 
     it.each(testCases)('should generate label/value object without manipultion', (rawData, expected) => {
-      const wrapper = mount(vmwarevsphere, defaultSetup);
+      const wrapper = mount(vmwarevsphere, defaultCreateSetup);
 
       expect(wrapper.vm.mapPathOptionsToContent(rawData)).toStrictEqual(expected);
     });
@@ -95,7 +126,7 @@ describe('component: vmwarevsphere', () => {
     ];
 
     it.each(testCases)('should generate label/value object for host options properly', (rawData, expected) => {
-      const wrapper = mount(vmwarevsphere, defaultSetup);
+      const wrapper = mount(vmwarevsphere, defaultCreateSetup);
 
       expect(wrapper.vm.mapHostOptionsToContent(rawData)).toStrictEqual(expected);
     });
@@ -114,7 +145,7 @@ describe('component: vmwarevsphere', () => {
     ];
 
     it.each(testCases)('should generate label/value object for folder options properly', (rawData, expected) => {
-      const wrapper = mount(vmwarevsphere, defaultSetup);
+      const wrapper = mount(vmwarevsphere, defaultCreateSetup);
 
       expect(wrapper.vm.mapFolderOptionsToContent(rawData)).toStrictEqual(expected);
     });
@@ -127,7 +158,7 @@ describe('component: vmwarevsphere', () => {
     ];
 
     it.each(testCases)('should generate label/value object for custom attributes options properly', (rawData, expected) => {
-      const wrapper = mount(vmwarevsphere, defaultSetup);
+      const wrapper = mount(vmwarevsphere, defaultCreateSetup);
 
       expect(wrapper.vm.mapCustomAttributesToContent(rawData)).toStrictEqual(expected);
     });
@@ -143,9 +174,71 @@ describe('component: vmwarevsphere', () => {
       const expectedReslut = [{
         ...tag, label: `${ tag.category } / ${ tag.name }`, value: tag.id
       }];
-      const wrapper = mount(vmwarevsphere, defaultSetup);
+      const wrapper = mount(vmwarevsphere, defaultCreateSetup);
 
       expect(wrapper.vm.mapTagsToContent([tag])).toStrictEqual(expectedReslut);
+    });
+  });
+
+  describe('resetValueIfNecessary', () => {
+    const hostsystemOptions = ['', '/Datacenter/host/Cluster/111.11.11.1'];
+    const folderOptions = ['', '/Datacenter/vm', '/Datacenter/vm/sub-folder'];
+
+    it('should add errors to validationError collection when values are no in the options', () => {
+      const setup = {
+        ...defaultEditSetup,
+        propsData: {
+          ...defaultEditSetup.propsData,
+          value: {
+            ...defaultEditSetup.propsData.value,
+            hostsystem: 'something that is not included in the options',
+            folder:     'again, something that is not included in the options'
+          }
+        }
+      };
+
+      const wrapper = mount(vmwarevsphere, setup);
+
+      const hostsystemContent = wrapper.vm.mapHostOptionsToContent(hostsystemOptions);
+
+      wrapper.vm.resetValueIfNecessary('hostsystem', hostsystemContent, hostsystemOptions);
+
+      const folderContent = wrapper.vm.mapHostOptionsToContent(folderOptions);
+
+      wrapper.vm.resetValueIfNecessary('folder', folderContent, folderOptions);
+
+      expect(wrapper.vm.$data.validationErrors[poolId]).toContain('hostsystem');
+      expect(wrapper.vm.$data.validationErrors[poolId]).toContain('folder');
+    });
+
+    describe('hostsystem and folder', () => {
+      const testCases = [null, ''];
+
+      it.each(testCases)('should NOT be added to validationError collection if they are null or ""', (data) => {
+        const setup = {
+          ...defaultEditSetup,
+          propsData: {
+            ...defaultEditSetup.propsData,
+            value: {
+              ...defaultEditSetup.propsData.value,
+              hostsystem: data,
+              folder:     data
+            }
+          }
+        };
+
+        const wrapper = mount(vmwarevsphere, setup);
+
+        const hostsystemContent = wrapper.vm.mapHostOptionsToContent(hostsystemOptions);
+
+        wrapper.vm.resetValueIfNecessary('hostsystem', hostsystemContent, hostsystemOptions);
+
+        const folderContent = wrapper.vm.mapHostOptionsToContent(folderOptions);
+
+        wrapper.vm.resetValueIfNecessary('folder', folderContent, folderOptions);
+
+        expect(wrapper.vm.$data.validationErrors[poolId]).toBeUndefined();
+      });
     });
   });
 });

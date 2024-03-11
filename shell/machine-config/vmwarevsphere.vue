@@ -168,7 +168,11 @@ export default {
     },
     disabled: {
       type:    Boolean,
-      default: false
+      default: false,
+    },
+    poolCreateMode: {
+      type:     Boolean,
+      required: true,
     },
   },
 
@@ -223,7 +227,7 @@ export default {
       },
     ];
 
-    if (this.mode === _CREATE && !this.value.initted) {
+    if ((this.mode === _CREATE || this.poolCreateMode) && !this.value.initted) {
       Object.defineProperty(this.value, 'initted', { value: true, enumerable: false });
 
       const {
@@ -444,13 +448,13 @@ export default {
       const valueInContent = content.find((c) => c.value === this.value.datacenter );
 
       if (!valueInContent) {
-        if (this.mode === _CREATE) {
+        if (this.mode === _CREATE || this.poolCreateMode) {
           set(this.value, 'datacenter', options[0]);
           set(this.value, 'cloneFrom', undefined);
           set(this.value, 'useDataStoreCluster', false);
         }
 
-        if ([_EDIT, _VIEW].includes(this.mode)) {
+        if ([_EDIT, _VIEW].includes(this.mode) && !this.poolCreateMode) {
           this.manageErrors(errorActions.CREATE, 'datacenter');
         }
       } else {
@@ -650,15 +654,16 @@ export default {
       };
 
       if (!isValueInContent()) {
-        if (this.mode === _CREATE) {
-          const value = isArray ? [] : content[0]?.value;
+        const value = isArray ? [] : content[0]?.value;
+        // null and "" are valid values for hostsystem and folder
+        const isNullOrEmpty = ['folder', 'hostsystem'].includes(key) && (this.value[key] === null || this.value[key] === '');
+        const shouldHandleError = [_EDIT, _VIEW].includes(this.mode) && !isNullOrEmpty && !this.poolCreateMode;
 
-          if (value !== SENTINEL) {
-            set(this.value, key, value);
-          }
+        if ((this.mode === _CREATE || this.poolCreateMode) && value !== SENTINEL) {
+          set(this.value, key, value);
         }
 
-        if ([_EDIT, _VIEW].includes(this.mode)) {
+        if (shouldHandleError) {
           this.manageErrors(errorActions.CREATE, key);
         }
       } else {
