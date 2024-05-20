@@ -5,7 +5,7 @@ import Vue from 'vue';
 import { createRouter } from '@shell/config/router';
 import NuxtChild from '@shell/components/nuxt/nuxt-child';
 import App from '@shell/initialize/App.js';
-import { setContext, getLocation, getRouteData, normalizeError } from '@shell/utils/nuxt';
+import { setContext, getLocation, normalizeError } from '@shell/utils/nuxt';
 import { createStore } from '@shell/config/store';
 import { UPGRADED, _FLAGGED, _UNFLAG } from '@shell/config/query-params';
 import { loadDirectives } from '@shell/directives/index';
@@ -99,32 +99,13 @@ async function createApp() {
   await installPlugins(app, Vue);
 
   // Wait for async component to be resolved first
-  await new Promise((resolve, reject) => {
+  await new Promise((resolve) => {
     // Ignore 404s rather than blindly replacing URL in browser
     const { route } = router.resolve(app.context.route.fullPath);
 
     if (!route.matched.length) {
       return resolve();
     }
-
-    router.replace(app.context.route.fullPath, resolve, (err) => {
-      // https://github.com/vuejs/vue-router/blob/v3.4.3/src/util/errors.js
-      if (!err._isRouter) {
-        return reject(err);
-      }
-      if (err.type !== 2 /* NavigationFailureType.redirected */) {
-        return resolve();
-      }
-
-      // navigated to a different route in router guard
-      const unregister = router.afterEach(async(to, from) => {
-        app.context.route = await getRouteData(to);
-        app.context.params = to.params || {};
-        app.context.query = to.query || {};
-        unregister();
-        resolve();
-      });
-    });
 
     router.afterEach((to) => {
       const upgraded = to.query[UPGRADED] === _FLAGGED;
