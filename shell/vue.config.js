@@ -7,6 +7,7 @@ const serverMiddlewares = require('./server/server-middleware.js');
 const configHelper = require('./vue-config-helper.js');
 const har = require('./server/har-file');
 const VirtualModulesPlugin = require('webpack-virtual-modules');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 // Suppress info level logging messages from http-proxy-middleware
 // This hides all of the "[HPM Proxy created] ..." messages
@@ -223,8 +224,9 @@ const getDevServerConfig = (proxy) => {
     } : null),
     port:   (devPorts ? 8005 : 80),
     host:   '0.0.0.0',
-    public: `https://0.0.0.0:${ devPorts ? 8005 : 80 }`,
-    before(app, server) {
+    client: { webSocketURL: `https://0.0.0.0:${ devPorts ? 8005 : 80 }` },
+    onBeforeSetupMiddleware(server) {
+      const app = server.app;
       const socketProxies = {};
 
       // Close down quickly in response to CTRL + C
@@ -240,7 +242,7 @@ const getDevServerConfig = (proxy) => {
         console.log('Installing HAR file middleware'); // eslint-disable-line no-console
         app.use(har.harProxy(harData, process.env.HAR_DIR));
 
-        server.websocketProxies.push({
+        server.webSocketProxies.push({
           upgrade(req, socket, head) {
             const responseHeaders = ['HTTP/1.1 101 Web Socket Protocol Handshake', 'Upgrade: WebSocket', 'Connection: Upgrade'];
 
@@ -261,7 +263,7 @@ const getDevServerConfig = (proxy) => {
         app.use(p, px);
       });
 
-      server.websocketProxies.push({
+      server.webSocketProxies.push({
         upgrade(req, socket, head) {
           const path = Object.keys(socketProxies).find((path) => req.url.startsWith(path));
 
@@ -411,7 +413,7 @@ const preserveWhitespace = (config) => {
     if (loader.use) {
       loader.use.forEach((use) => {
         if (use.loader.includes('vue-loader')) {
-          use.options.compilerOptions.whitespace = 'preserve';
+          use.options.compilerOptions = { ...use.options.compilerOptions, whitespace: 'preserve' };
         }
       });
     }
@@ -453,10 +455,10 @@ module.exports = function(dir, _appConfig) {
   const appConfig = _appConfig || {};
   const excludes = appConfig.excludes || [];
   const watcherIgnores = [
-    /.shell/,
-    /dist-pkg/,
-    /scripts\/standalone/,
-    ...excludes.map((e) => new RegExp(`/pkg.${ e }`))
+    '.shell/**/*',
+    'dist-pkg/**/*',
+    '/scripts/standalone/**/*',
+    ...excludes.map((e) => `/pkg.${ e }/**/*`)
   ];
 
   const includePkg = (name) => {
@@ -521,10 +523,11 @@ module.exports = function(dir, _appConfig) {
       config.plugins.push(getAutoImport());
       config.plugins.push(getVirtualModulesAutoImport(dir));
       config.plugins.push(getPackageImport(dir));
+      config.plugins.push(new NodePolyfillPlugin()); // required from Webpack 5 to polyfill node modules)
       config.plugins.push(createEnvVariablesPlugin(routerBasePath, rancherEnv));
 
       // The static assets need to be in the built assets directory in order to get served (primarily the favicon)
-      config.plugins.push(new CopyWebpackPlugin([{ from: path.join(SHELL_ABS, 'static'), to: '.' }]));
+      config.plugins.push(new CopyWebpackPlugin({ patterns: [{ from: path.join(SHELL_ABS, 'static'), to: '.' }] }));
 
       config.resolve.extensions.push(...['.tsx', '.ts', '.js', '.vue', '.scss']);
       config.watchOptions = config.watchOptions || {};
