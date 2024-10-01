@@ -57,13 +57,13 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: Parse Extension Name
-        if: github.ref_type == 'tag'
-        id: parsed-name
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          yarn parse-tag-name ${{ github.ref_name }} ${{ github.run_id }} "charts"
+      # - name: Parse Extension Name
+      #   if: github.ref_type == 'tag'
+      #   id: parsed-name
+      #   env:
+      #     GH_TOKEN: ${{ github.token }}
+      #   run: |
+      #     yarn parse-tag-name ${{ inputs.tagged_release }} ${{ github.run_id }} "charts"
 
       - name: Run build script
         shell: bash
