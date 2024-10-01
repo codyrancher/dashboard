@@ -63,7 +63,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          yarn parse-tag-name ${{ inputs.tagged_release }} ${{ github.run_id }} "charts"
+          yarn parse-tag-name ${{ github.ref_name }} ${{ github.run_id }} "charts"
 
       - name: Run build script
         shell: bash
