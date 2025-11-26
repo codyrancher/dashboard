@@ -2,8 +2,8 @@
 /**
  * An item for a dropdown menu. Used in conjunction with RcDropdown.
  */
-import { Checkbox as RcCheckbox } from '@componentsForm/Checkbox';
-import { useDropdownItem } from '@componentsRcDropdown/useDropdownItem';
+import { Checkbox as RcCheckbox } from '@components/Form/Checkbox';
+import { useDropdownItem } from '@components/RcDropdown/useDropdownItem';
 
 const props = defineProps({ modelValue: Boolean, disabled: Boolean });
 const emits = defineEmits(['click']);

@@ -1,6 +1,6 @@
 import { Ref, ref } from 'vue';
-import type { RcButtonType } from '@componentsRcButton';
-import { ButtonRoleProps, ButtonSizeProps } from '@componentsRcButton/types';
+import type { RcButtonType } from '@components/RcButton';
+import { ButtonRoleProps, ButtonSizeProps } from '@components/RcButton/types';
 
 export type DropdownContext = {
   handleKeydown: () => void;

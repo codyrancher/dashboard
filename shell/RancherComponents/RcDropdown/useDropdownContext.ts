@@ -1,6 +1,6 @@
 import { ref, provide, nextTick, defineEmits } from 'vue';
 import { useDropdownCollection } from './useDropdownCollection';
-import { RcButtonType } from '@componentsRcButton';
+import { RcButtonType } from '@components/RcButton';
 
 const rcDropdownEmits = defineEmits(['update:open']);
 

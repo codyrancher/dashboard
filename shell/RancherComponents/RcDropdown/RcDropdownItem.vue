@@ -2,7 +2,7 @@
 /**
  * An item for a dropdown menu. Used in conjunction with RcDropdown.
  */
-import { useDropdownItem } from '@componentsRcDropdown/useDropdownItem';
+import { useDropdownItem } from '@components/RcDropdown/useDropdownItem';
 
 const props = defineProps({ disabled: Boolean });
 const emits = defineEmits(['click']);

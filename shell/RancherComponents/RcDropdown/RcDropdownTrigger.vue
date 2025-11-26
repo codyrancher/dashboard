@@ -3,7 +3,7 @@
  * A button that opens a menu. Used in conjunction with `RcDropdown.vue`.
  */
 import { inject, onMounted, ref } from 'vue';
-import { RcButton, RcButtonType } from '@componentsRcButton';
+import { RcButton, RcButtonType } from '@components/RcButton';
 import { DropdownContext, defaultContext } from './types';
 
 const {

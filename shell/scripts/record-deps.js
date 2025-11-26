@@ -18,7 +18,7 @@ if (mainPkg._requires) {
   const out = {};
 
   mainPkg._requires.forEach((name) => {
-    let ver = topPkg.dependencies?.[name] || topPkg.devDependencies?.[name];
+    const ver = topPkg.dependencies?.[name] || topPkg.devDependencies?.[name];
 
     out[name] = ver;
   });

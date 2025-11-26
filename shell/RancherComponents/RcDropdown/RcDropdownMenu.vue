@@ -4,7 +4,7 @@ import {
   RcDropdownItem,
   RcDropdownSeparator,
   RcDropdownTrigger
-} from '@componentsRcDropdown';
+} from '@components/RcDropdown';
 import { RcDropdownMenuComponentProps, DropdownOption } from './types';
 import IconOrSvg from '@shell/components/IconOrSvg';
 

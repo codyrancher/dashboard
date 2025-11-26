@@ -3,7 +3,7 @@
  * An item for a dropdown menu. Used in conjunction with RcDropdown.
  */
 import LabeledSelect from '@shell/components/form/LabeledSelect';
-import { useDropdownItem } from '@componentsRcDropdown/useDropdownItem';
+import { useDropdownItem } from '@components/RcDropdown/useDropdownItem';
 import { ref } from 'vue';
 
 type LabeledSelectComponent = {
