@@ -18,6 +18,7 @@ shell/assets/fonts
 assets/fonts
 shell/pkg/import.js
 shell/types/shell/index.d.ts
+shell/scripts
 dist/
 coverage/
 build/
