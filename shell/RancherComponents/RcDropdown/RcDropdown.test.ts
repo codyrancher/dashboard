@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { defineComponent } from 'vue';
-import { RcDropdown } from '@shell/RancherComponents/RcDropdown';
+import { RcDropdown } from '@componentsRcDropdown';
 
 const vDropdownMock = defineComponent({
   template: `

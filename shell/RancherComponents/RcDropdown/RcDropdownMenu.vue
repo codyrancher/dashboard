@@ -4,7 +4,7 @@ import {
   RcDropdownItem,
   RcDropdownSeparator,
   RcDropdownTrigger
-} from '@shell/RancherComponents/RcDropdown';
+} from '@componentsRcDropdown';
 import { RcDropdownMenuComponentProps, DropdownOption } from './types';
 import IconOrSvg from '@shell/components/IconOrSvg';
 

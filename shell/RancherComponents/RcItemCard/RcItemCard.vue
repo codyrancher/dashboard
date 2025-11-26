@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from '@shell/composables/useI18n';
 import LazyImage from '@shell/components/LazyImage.vue';
-import { DropdownOption } from '@shell/RancherComponents/RcDropdown/types';
+import { DropdownOption } from '@componentsRcDropdown/types';
 import ActionMenu from '@shell/components/ActionMenuShell.vue';
 import RcItemCardAction from './RcItemCardAction';
 

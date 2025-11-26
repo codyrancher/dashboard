@@ -1,6 +1,6 @@
 import { ref, provide, nextTick, defineEmits } from 'vue';
 import { useDropdownCollection } from './useDropdownCollection';
-import { RcButtonType } from '@shell/RancherComponents/RcButton';
+import { RcButtonType } from '@componentsRcButton';
 
 const rcDropdownEmits = defineEmits(['update:open']);
 
