@@ -38,7 +38,7 @@ const perfTest = (process.env.PERF_TEST === 'true'); // Enable performance testi
  */
 const getShellPaths = (dir) => {
   let SHELL_ABS = path.join(dir, 'node_modules/@rancher/shell');
-  let COMPONENTS_DIR = path.join(SHELL_ABS, 'rancher-components');
+  let COMPONENTS_DIR = path.join(SHELL_ABS, 'RancherComponents');
 
   if (fs.existsSync(SHELL_ABS)) {
     const stat = fs.lstatSync(SHELL_ABS);
@@ -47,7 +47,7 @@ const getShellPaths = (dir) => {
     if (stat.isSymbolicLink()) {
       const REAL_SHELL_ABS = fs.realpathSync(SHELL_ABS); // In case the shell is being linked via 'yarn link'
 
-      COMPONENTS_DIR = path.join(REAL_SHELL_ABS, '..', 'pkg', 'rancher-components', 'src', 'components');
+      COMPONENTS_DIR = path.join(REAL_SHELL_ABS, 'RancherComponents');
     }
   }
 
@@ -55,7 +55,7 @@ const getShellPaths = (dir) => {
   // This will be the case in the main dashboard repository.
   if (fs.existsSync(path.join(dir, 'shell'))) {
     SHELL_ABS = path.join(dir, 'shell');
-    COMPONENTS_DIR = path.join(dir, 'pkg', 'rancher-components', 'src', 'components');
+    COMPONENTS_DIR = path.join(dir, 'RancherComponents');
   }
 
   return { SHELL_ABS, COMPONENTS_DIR };

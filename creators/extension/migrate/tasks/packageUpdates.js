@@ -67,7 +67,6 @@ function packageUpdatesLibraries(file, oldContent) {
   // [Where to apply, Library name, new version or new library, new library version]
   const librariesUpdates = [
     [['root', 'dependencies'], '@rancher/shell', '^3.0.0'],
-    [['root', 'dependencies'], '@rancher/components', '^0.3.0-alpha.1'],
     [['root', 'dependencies'], '@nuxt/babel-preset-app', removePlaceholder],
     [['root', 'dependencies'], '@typescript-eslint/eslint-plugin', removePlaceholder],
     [['root', 'dependencies'], '@typescript-eslint/parser', removePlaceholder],

@@ -2,21 +2,27 @@
 /**
  * An item for a dropdown menu. Used in conjunction with RcDropdown.
  */
-import { Checkbox as RcCheckbox } from '@components/Form/Checkbox';
-import { useDropdownItem } from '@components/RcDropdown/useDropdownItem';
+import { useDropdownItem } from '@shell/RancherComponents/RcDropdown/useDropdownItem';
 
-const props = defineProps({ modelValue: Boolean, disabled: Boolean });
+const props = defineProps({ disabled: Boolean });
 const emits = defineEmits(['click']);
 
-const { handleKeydown, handleActivate, scrollIntoView } = useDropdownItem();
+const {
+  handleKeydown,
+  close,
+  handleActivate,
+  scrollIntoView,
+} = useDropdownItem();
 
-const handleClick = () => {
+const handleClick = (e: MouseEvent) => {
   if (props.disabled) {
     return;
   }
 
-  emits('click', !props.modelValue);
+  emits('click', e);
+  close();
 };
+
 </script>
 
 <template>
@@ -24,21 +30,21 @@ const handleClick = () => {
     ref="dropdownMenuItem"
     dropdown-menu-item
     tabindex="-1"
-    role="menuitemcheckbox"
+    role="menuitem"
     :disabled="disabled || null"
     :aria-disabled="disabled || false"
     @click.stop="handleClick"
     @keydown.enter.space="handleActivate"
     @keydown.up.down.prevent.stop="handleKeydown"
+    @mousedown.prevent="() => {/*We use this to prevent clicks from triggering the @focusin below. When we scroll on a click it prevents the action from occurring on the first click.*/}"
     @focusin="scrollIntoView"
   >
-    <rc-checkbox :value="modelValue">
-      <template #label>
-        <slot name="default">
-          <!--Empty slot content-->
-        </slot>
-      </template>
-    </rc-checkbox>
+    <slot name="before">
+      <!--Empty slot content-->
+    </slot>
+    <slot name="default">
+      <!--Empty slot content-->
+    </slot>
   </div>
 </template>
 

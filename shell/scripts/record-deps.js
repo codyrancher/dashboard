@@ -20,13 +20,6 @@ if (mainPkg._requires) {
   mainPkg._requires.forEach((name) => {
     let ver = topPkg.dependencies?.[name] || topPkg.devDependencies?.[name];
 
-    if (name === '@rancher/components') {
-      const componentsPkgFile = path.join(topDir, 'pkg', 'rancher-components', 'package.json');
-      const componentsPkg = JSON.parse(fs.readFileSync(componentsPkgFile));
-
-      ver = componentsPkg.version;
-    }
-
     out[name] = ver;
   });
 

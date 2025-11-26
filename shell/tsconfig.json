@@ -30,8 +30,8 @@
     "./**/*.d.ts",
     "./**/*.tsx",
     "./**/*.vue",
-    "../pkg/rancher-components/src/**/*"
-  ],
+    "RancherComponents/src/**/*"
+, "RancherComponents/Accordion", "RancherComponents/BadgeState", "RancherComponents/Banner"  ],
   "exclude": [
     "node_modules",
     "dist",

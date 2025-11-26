@@ -1,4 +1,4 @@
-import { Status } from '@components/utils/status';
+import { Status } from '@shell/RancherComponents/utils/status';
 
 export type Shape = 'disc' | 'horizontal-bar' | 'vertical-bar';
 

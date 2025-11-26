@@ -16,8 +16,7 @@
   "_requires": [
     "core-js",
     "css-loader",
-    "@types/lodash",
-    "@rancher/components"
+    "@types/lodash"
   ],
   "dependencies": {
     "fs-extra": "^10.0.0"

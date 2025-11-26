@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RcStatusIndicatorProps } from './types';
-import { useStatusColors } from '@components/utils/status';
+import { useStatusColors } from '@shell/RancherComponents/utils/status';
 
 const props = defineProps<RcStatusIndicatorProps>();
 

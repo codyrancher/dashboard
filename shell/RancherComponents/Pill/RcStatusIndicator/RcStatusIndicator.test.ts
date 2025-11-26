@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import RcStatusIndicator, { Shape } from './index';
-import { Status } from '@components/Pill/types';
+import { Status } from '@shell/RancherComponents/Pill/types';
 
 describe('component: RcStatusIndicator', () => {
   const shapes: Shape[] = ['disc', 'horizontal-bar', 'vertical-bar'];

@@ -22,7 +22,7 @@
  */
 import { ref } from 'vue';
 import { useClickOutside } from '@shell/composables/useClickOutside';
-import { useDropdownContext } from '@components/RcDropdown/useDropdownContext';
+import { useDropdownContext } from '@shell/RancherComponents/RcDropdown/useDropdownContext';
 
 import type { Placement } from 'floating-vue';
 

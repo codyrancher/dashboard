@@ -18,8 +18,7 @@
   "_requires": [
     "core-js",
     "css-loader",
-    "@types/lodash",
-    "@rancher/components"
+    "@types/lodash"
   ],
   "dependencies": {
     "diff": "^7.0.0",

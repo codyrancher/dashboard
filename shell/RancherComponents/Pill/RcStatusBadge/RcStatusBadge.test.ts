@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import RcStatusBadge from './index';
-import { Status } from '@components/Pill/types';
+import { Status } from '@shell/RancherComponents/Pill/types';
 
 describe('component: RcStatusBadge', () => {
   const statuses: Status[] = ['info', 'success', 'warning', 'error', 'unknown', 'none'];
