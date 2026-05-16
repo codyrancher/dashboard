@@ -1,0 +1,12 @@
+{
+  "cursor": {"kind/enhancement": 4},
+  "runs": [
+    {
+      "date": "2026-05-16",
+      "labeled": 1,
+      "unlabeled": 1,
+      "closed": 1,
+      "skipped": 1
+    }
+  ]
+}
