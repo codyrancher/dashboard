@@ -1,4 +1,4 @@
-# gh-aw-metadata: {"schema_version":"v3","frontmatter_hash":"348f2ea9586e2be449732fd77683c979ba9ddff4cf177d8606ec4e66ccb99f76","compiler_version":"v0.71.5","strict":true,"agent_id":"copilot"}
+# gh-aw-metadata: {"schema_version":"v3","frontmatter_hash":"67bd989e1dd801237310f22f6df5119c227e494f7eb9f943b934683af85bcf88","compiler_version":"v0.71.5","strict":true,"agent_id":"copilot"}
 # gh-aw-manifest: {"version":1,"secrets":["COPILOT_GITHUB_TOKEN","GH_AW_GITHUB_MCP_SERVER_TOKEN","GH_AW_GITHUB_TOKEN","GITHUB_TOKEN"],"actions":[{"repo":"actions/checkout","sha":"de0fac2e4500dabe0009e67214ff5f5447ce83dd","version":"v6.0.2"},{"repo":"actions/download-artifact","sha":"3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c","version":"v8.0.1"},{"repo":"actions/github-script","sha":"3a2844b7e9c422d3c10d287c895573f7108da1b3","version":"v9.0.0"},{"repo":"actions/github-script","sha":"d746ffe35508b1917358783b479e04febd2b8f71","version":"v9.0.0"},{"repo":"actions/setup-node","sha":"48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e","version":"v6.4.0"},{"repo":"actions/upload-artifact","sha":"043fb46d1a93c77aae656e7c1c64a875d1fc6a0a","version":"v7.0.1"},{"repo":"github/gh-aw-actions/setup","sha":"b8068426813005612b960b5ab0b8bd2c27142323","version":"v0.71.5"}],"containers":[{"image":"ghcr.io/github/gh-aw-firewall/agent:0.25.40","digest":"sha256:14ff567e8d9d4c2fbc5e55c973488381c71d7e0fdbe72d30ee7b8a738fd86504","pinned_image":"ghcr.io/github/gh-aw-firewall/agent:0.25.40@sha256:14ff567e8d9d4c2fbc5e55c973488381c71d7e0fdbe72d30ee7b8a738fd86504"},{"image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.25.40","digest":"sha256:2883ca3e5ae9f330cafdd9345bfd4ae17fc8da36c96d4c9a1f76e922b4c45280","pinned_image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.25.40@sha256:2883ca3e5ae9f330cafdd9345bfd4ae17fc8da36c96d4c9a1f76e922b4c45280"},{"image":"ghcr.io/github/gh-aw-firewall/squid:0.25.40","digest":"sha256:b084f4a2c771f584ee68084ced52fa6b3245197a1889645d817462d307d3ac51","pinned_image":"ghcr.io/github/gh-aw-firewall/squid:0.25.40@sha256:b084f4a2c771f584ee68084ced52fa6b3245197a1889645d817462d307d3ac51"},{"image":"ghcr.io/github/gh-aw-mcpg:v0.3.6","digest":"sha256:2bb8eef86006a4c5963c55616a9c51c32f27bfdecb023b8aa6f91f6718d9171c","pinned_image":"ghcr.io/github/gh-aw-mcpg:v0.3.6@sha256:2bb8eef86006a4c5963c55616a9c51c32f27bfdecb023b8aa6f91f6718d9171c"},{"image":"ghcr.io/github/github-mcp-server:v1.0.3","digest":"sha256:2ac27ef03461ef2b877031b838a7d1fd7f12b12d4ace7796d8cad91446d55959","pinned_image":"ghcr.io/github/github-mcp-server:v1.0.3@sha256:2ac27ef03461ef2b877031b838a7d1fd7f12b12d4ace7796d8cad91446d55959"},{"image":"node:lts-alpine","digest":"sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f","pinned_image":"node:lts-alpine@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f"}]}
 #    ___                   _   _      
 #   / _ \                 | | (_)     
@@ -58,7 +58,7 @@
 #   - ghcr.io/github/github-mcp-server:v1.0.3@sha256:2ac27ef03461ef2b877031b838a7d1fd7f12b12d4ace7796d8cad91446d55959
 #   - node:lts-alpine@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f
 
-name: "Stale Issue Manager"
+name: "Weekly Stale Issue Manager"
 "on":
   schedule:
   - cron: "37 12 * * 0"
@@ -76,7 +76,7 @@ permissions: {}
 concurrency:
   group: "gh-aw-${{ github.workflow }}"
 
-run-name: "Stale Issue Manager"
+run-name: "Weekly Stale Issue Manager"
 
 jobs:
   activation:
@@ -104,7 +104,7 @@ jobs:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
         env:
-          GH_AW_SETUP_WORKFLOW_NAME: "Stale Issue Manager"
+          GH_AW_SETUP_WORKFLOW_NAME: "Weekly Stale Issue Manager"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/weekly-stale-issue-manager.lock.yml@${{ github.ref }}
           GH_AW_INFO_VERSION: "1.0.40"
       - name: Generate agentic run info
@@ -116,7 +116,7 @@ jobs:
           GH_AW_INFO_VERSION: "1.0.40"
           GH_AW_INFO_AGENT_VERSION: "1.0.40"
           GH_AW_INFO_CLI_VERSION: "v0.71.5"
-          GH_AW_INFO_WORKFLOW_NAME: "Stale Issue Manager"
+          GH_AW_INFO_WORKFLOW_NAME: "Weekly Stale Issue Manager"
           GH_AW_INFO_EXPERIMENTAL: "false"
           GH_AW_INFO_SUPPORTS_TOOLS_ALLOWLIST: "true"
           GH_AW_INFO_STAGED: "false"
@@ -198,21 +198,21 @@ jobs:
         run: |
           bash "${RUNNER_TEMP}/gh-aw/actions/create_prompt_first.sh"
           {
-          cat << 'GH_AW_PROMPT_2e8832387a0036e3_EOF'
+          cat << 'GH_AW_PROMPT_8f092e8a272d11f1_EOF'
           <system>
-          GH_AW_PROMPT_2e8832387a0036e3_EOF
+          GH_AW_PROMPT_8f092e8a272d11f1_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/xpia.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/temp_folder_prompt.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/markdown.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/repo_memory_prompt.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/safe_outputs_prompt.md"
-          cat << 'GH_AW_PROMPT_2e8832387a0036e3_EOF'
+          cat << 'GH_AW_PROMPT_8f092e8a272d11f1_EOF'
           <safe-output-tools>
           Tools: add_comment(max:80), close_issue(max:80), add_labels(max:80), remove_labels(max:80), missing_tool, missing_data, noop
           </safe-output-tools>
-          GH_AW_PROMPT_2e8832387a0036e3_EOF
+          GH_AW_PROMPT_8f092e8a272d11f1_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/mcp_cli_tools_prompt.md"
-          cat << 'GH_AW_PROMPT_2e8832387a0036e3_EOF'
+          cat << 'GH_AW_PROMPT_8f092e8a272d11f1_EOF'
           <github-context>
           The following GitHub context information is available for this workflow:
           {{#if __GH_AW_GITHUB_ACTOR__ }}
@@ -241,12 +241,12 @@ jobs:
           {{/if}}
           </github-context>
           
-          GH_AW_PROMPT_2e8832387a0036e3_EOF
+          GH_AW_PROMPT_8f092e8a272d11f1_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/github_mcp_tools_with_safeoutputs_prompt.md"
-          cat << 'GH_AW_PROMPT_2e8832387a0036e3_EOF'
+          cat << 'GH_AW_PROMPT_8f092e8a272d11f1_EOF'
           </system>
           {{#runtime-import .github/workflows/weekly-stale-issue-manager.md}}
-          GH_AW_PROMPT_2e8832387a0036e3_EOF
+          GH_AW_PROMPT_8f092e8a272d11f1_EOF
           } > "$GH_AW_PROMPT"
       - name: Interpolate variables and render templates
         uses: actions/github-script@d746ffe35508b1917358783b479e04febd2b8f71 # v9.0.0
@@ -365,7 +365,7 @@ jobs:
           job-name: ${{ github.job }}
           trace-id: ${{ needs.activation.outputs.setup-trace-id }}
         env:
-          GH_AW_SETUP_WORKFLOW_NAME: "Stale Issue Manager"
+          GH_AW_SETUP_WORKFLOW_NAME: "Weekly Stale Issue Manager"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/weekly-stale-issue-manager.lock.yml@${{ github.ref }}
           GH_AW_INFO_VERSION: "1.0.40"
       - name: Set runtime paths
@@ -454,9 +454,9 @@ jobs:
           mkdir -p "${RUNNER_TEMP}/gh-aw/safeoutputs"
           mkdir -p /tmp/gh-aw/safeoutputs
           mkdir -p /tmp/gh-aw/mcp-logs/safeoutputs
-          cat > "${RUNNER_TEMP}/gh-aw/safeoutputs/config.json" << 'GH_AW_SAFE_OUTPUTS_CONFIG_4e6a32dcc5d5452e_EOF'
+          cat > "${RUNNER_TEMP}/gh-aw/safeoutputs/config.json" << 'GH_AW_SAFE_OUTPUTS_CONFIG_cb0673f548a1747b_EOF'
           {"add_comment":{"max":80,"target":"*"},"add_labels":{"allowed":["bot/stale-issue-manager/stale","bot/stale-issue-manager/closed"],"max":80},"close_issue":{"max":80},"create_report_incomplete_issue":{},"missing_data":{},"missing_tool":{},"noop":{"max":1,"report-as-issue":"true"},"push_repo_memory":{"memories":[{"dir":"/tmp/gh-aw/repo-memory/default","id":"default","max_file_count":100,"max_file_size":10240,"max_patch_size":10240}]},"remove_labels":{"allowed":["bot/stale-issue-manager/stale"],"max":80},"report_incomplete":{}}
-          GH_AW_SAFE_OUTPUTS_CONFIG_4e6a32dcc5d5452e_EOF
+          GH_AW_SAFE_OUTPUTS_CONFIG_cb0673f548a1747b_EOF
       - name: Generate Safe Outputs Tools
         env:
           GH_AW_TOOLS_META_JSON: |
@@ -702,7 +702,7 @@ jobs:
           
           mkdir -p /home/runner/.copilot
           GH_AW_NODE=$(which node 2>/dev/null || command -v node 2>/dev/null || echo node)
-          cat << GH_AW_MCP_CONFIG_a2b2238044a8f9b2_EOF | "$GH_AW_NODE" "${RUNNER_TEMP}/gh-aw/actions/start_mcp_gateway.cjs"
+          cat << GH_AW_MCP_CONFIG_09d9e0c10e7486b0_EOF | "$GH_AW_NODE" "${RUNNER_TEMP}/gh-aw/actions/start_mcp_gateway.cjs"
           {
             "mcpServers": {
               "github": {
@@ -712,7 +712,7 @@ jobs:
                   "GITHUB_HOST": "\${GITHUB_SERVER_URL}",
                   "GITHUB_PERSONAL_ACCESS_TOKEN": "\${GITHUB_MCP_SERVER_TOKEN}",
                   "GITHUB_READ_ONLY": "1",
-                  "GITHUB_TOOLSETS": "issues,search"
+                  "GITHUB_TOOLSETS": "issues,search,projects"
                 },
                 "guard-policies": {
                   "allow-only": {
@@ -746,7 +746,7 @@ jobs:
               "payloadDir": "${MCP_GATEWAY_PAYLOAD_DIR}"
             }
           }
-          GH_AW_MCP_CONFIG_a2b2238044a8f9b2_EOF
+          GH_AW_MCP_CONFIG_09d9e0c10e7486b0_EOF
       - name: Mount MCP servers as CLIs
         id: mount-mcp-clis
         continue-on-error: true
@@ -1015,7 +1015,7 @@ jobs:
           job-name: ${{ github.job }}
           trace-id: ${{ needs.activation.outputs.setup-trace-id }}
         env:
-          GH_AW_SETUP_WORKFLOW_NAME: "Stale Issue Manager"
+          GH_AW_SETUP_WORKFLOW_NAME: "Weekly Stale Issue Manager"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/weekly-stale-issue-manager.lock.yml@${{ github.ref }}
           GH_AW_INFO_VERSION: "1.0.40"
       - name: Download agent output artifact
@@ -1038,7 +1038,7 @@ jobs:
         env:
           GH_AW_AGENT_OUTPUT: ${{ steps.setup-agent-output-env.outputs.GH_AW_AGENT_OUTPUT }}
           GH_AW_NOOP_MAX: "1"
-          GH_AW_WORKFLOW_NAME: "Stale Issue Manager"
+          GH_AW_WORKFLOW_NAME: "Weekly Stale Issue Manager"
           GH_AW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           GH_AW_AGENT_CONCLUSION: ${{ needs.agent.result }}
           GH_AW_NOOP_REPORT_AS_ISSUE: "true"
@@ -1054,7 +1054,7 @@ jobs:
         uses: actions/github-script@d746ffe35508b1917358783b479e04febd2b8f71 # v9.0.0
         env:
           GH_AW_AGENT_OUTPUT: ${{ steps.setup-agent-output-env.outputs.GH_AW_AGENT_OUTPUT }}
-          GH_AW_WORKFLOW_NAME: "Stale Issue Manager"
+          GH_AW_WORKFLOW_NAME: "Weekly Stale Issue Manager"
           GH_AW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           GH_AW_DETECTION_CONCLUSION: ${{ needs.detection.outputs.detection_conclusion }}
           GH_AW_DETECTION_REASON: ${{ needs.detection.outputs.detection_reason }}
@@ -1071,7 +1071,7 @@ jobs:
         env:
           GH_AW_AGENT_OUTPUT: ${{ steps.setup-agent-output-env.outputs.GH_AW_AGENT_OUTPUT }}
           GH_AW_MISSING_TOOL_CREATE_ISSUE: "true"
-          GH_AW_WORKFLOW_NAME: "Stale Issue Manager"
+          GH_AW_WORKFLOW_NAME: "Weekly Stale Issue Manager"
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -1085,7 +1085,7 @@ jobs:
         env:
           GH_AW_AGENT_OUTPUT: ${{ steps.setup-agent-output-env.outputs.GH_AW_AGENT_OUTPUT }}
           GH_AW_REPORT_INCOMPLETE_CREATE_ISSUE: "true"
-          GH_AW_WORKFLOW_NAME: "Stale Issue Manager"
+          GH_AW_WORKFLOW_NAME: "Weekly Stale Issue Manager"
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -1099,7 +1099,7 @@ jobs:
         uses: actions/github-script@d746ffe35508b1917358783b479e04febd2b8f71 # v9.0.0
         env:
           GH_AW_AGENT_OUTPUT: ${{ steps.setup-agent-output-env.outputs.GH_AW_AGENT_OUTPUT }}
-          GH_AW_WORKFLOW_NAME: "Stale Issue Manager"
+          GH_AW_WORKFLOW_NAME: "Weekly Stale Issue Manager"
           GH_AW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           GH_AW_AGENT_CONCLUSION: ${{ needs.agent.result }}
           GH_AW_WORKFLOW_ID: "weekly-stale-issue-manager"
@@ -1153,7 +1153,7 @@ jobs:
           job-name: ${{ github.job }}
           trace-id: ${{ needs.activation.outputs.setup-trace-id }}
         env:
-          GH_AW_SETUP_WORKFLOW_NAME: "Stale Issue Manager"
+          GH_AW_SETUP_WORKFLOW_NAME: "Weekly Stale Issue Manager"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/weekly-stale-issue-manager.lock.yml@${{ github.ref }}
           GH_AW_INFO_VERSION: "1.0.40"
       - name: Download agent output artifact
@@ -1220,7 +1220,7 @@ jobs:
         if: always() && steps.detection_guard.outputs.run_detection == 'true'
         uses: actions/github-script@d746ffe35508b1917358783b479e04febd2b8f71 # v9.0.0
         env:
-          WORKFLOW_NAME: "Stale Issue Manager"
+          WORKFLOW_NAME: "Weekly Stale Issue Manager"
           WORKFLOW_DESCRIPTION: "Manages stale `kind/enhancement` issues. Replaces the\nactions/stale-based workflow with comment-aware staleness detection.\n- Runs weekly to label and close stale issues.\n- Only considers issues older than 548 days (1.5 years) to minimize API usage.\n- Determines staleness by checking for recent comments or reopen events (not the\n  updated_at field, which is bumped by milestone and label changes).\n- Adds the `bot/stale-issue-manager/stale` label and posts a warning comment when an issue becomes stale.\n- Closes and labels `bot/stale-issue-manager/closed` on issues that were already labeled `bot/stale-issue-manager/stale` with\n  no new activity since the label was applied.\n- Removes the `bot/stale-issue-manager/stale` label if meaningful activity is found, so it self-corrects.\n- Skips issues that are tracked on a GitHub Project board with a status at or beyond\n  Review, since those are actively being worked on."
           HAS_PATCH: ${{ needs.agent.outputs.has_patch }}
         with:
@@ -1347,7 +1347,7 @@ jobs:
           job-name: ${{ github.job }}
           trace-id: ${{ needs.activation.outputs.setup-trace-id }}
         env:
-          GH_AW_SETUP_WORKFLOW_NAME: "Stale Issue Manager"
+          GH_AW_SETUP_WORKFLOW_NAME: "Weekly Stale Issue Manager"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/weekly-stale-issue-manager.lock.yml@${{ github.ref }}
           GH_AW_INFO_VERSION: "1.0.40"
       - name: Checkout repository
@@ -1419,7 +1419,7 @@ jobs:
       GH_AW_ENGINE_MODEL: ${{ needs.agent.outputs.model }}
       GH_AW_ENGINE_VERSION: "1.0.40"
       GH_AW_WORKFLOW_ID: "weekly-stale-issue-manager"
-      GH_AW_WORKFLOW_NAME: "Stale Issue Manager"
+      GH_AW_WORKFLOW_NAME: "Weekly Stale Issue Manager"
     outputs:
       code_push_failure_count: ${{ steps.process_safe_outputs.outputs.code_push_failure_count }}
       code_push_failure_errors: ${{ steps.process_safe_outputs.outputs.code_push_failure_errors }}
@@ -1438,7 +1438,7 @@ jobs:
           job-name: ${{ github.job }}
           trace-id: ${{ needs.activation.outputs.setup-trace-id }}
         env:
-          GH_AW_SETUP_WORKFLOW_NAME: "Stale Issue Manager"
+          GH_AW_SETUP_WORKFLOW_NAME: "Weekly Stale Issue Manager"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/weekly-stale-issue-manager.lock.yml@${{ github.ref }}
           GH_AW_INFO_VERSION: "1.0.40"
       - name: Download agent output artifact
