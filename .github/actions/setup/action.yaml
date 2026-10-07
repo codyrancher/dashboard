@@ -4,10 +4,20 @@ description: Setup node, python and call bootstrap script
 runs:
   using: 'composite'
   steps:
+    - name: Restore installed packages
+      id: installed-packages
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: |
+          node_modules
+          pkg/rancher-components/node_modules
+          ~/.cache/Cypress
+        key: installed-packages-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.nvmrc', 'yarn.lock') }}
+
     - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
       with:
         node-version-file: '.nvmrc'
-        cache: 'yarn'
+        cache: ${{ steps.installed-packages.outputs.cache-hit != 'true' && 'yarn' || '' }}
 
     - name: Install packages
       shell: bash
