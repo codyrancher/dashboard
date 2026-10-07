@@ -5,9 +5,13 @@
  *
  * Tests tagged `@parallel` run first, split between E2E_PARALLEL_WORKERS processes that run
  * side by side. Every other test then runs in a single process. With fewer than two spec
- * files to run side by side, everything runs as `scripts/e2e` does. Tag a test `@parallel` only
- * when it neither changes nor depends on state another test could see at the same time, such
- * as a user preference, a global setting or a resource with a fixed name.
+ * files to run side by side, everything runs as `scripts/e2e` does.
+ *
+ * Each process logs in as a user of its own. The first is TEST_USERNAME; the others are copies
+ * of it with the same roles and preferences, removed again once the processes finish. So a
+ * test may be tagged `@parallel` when it neither changes nor depends on state that every user
+ * shares, such as a global setting or a resource with a fixed name, and does not care which
+ * user it runs as. State that belongs to the user, such as a preference, is not shared.
  *
  * Each process writes to its own folders (see E2E_WORKER in `cypress/base-config.ts`) and keeps
  * its own Cypress app data, and the reports are merged into `cypress/reports` afterwards.
@@ -21,8 +25,10 @@ const path = require('path');
 const readline = require('readline');
 const { spawn, spawnSync } = require('child_process');
 const { ROOT, matchingSpecs, withTag } = require('./e2e-specs');
+const { login, cloneUser, deleteUser } = require('./e2e-users');
 
 const PARALLEL_TAG = '@parallel';
+const ADMIN_USERNAME = 'admin';
 
 /**
  * Deals spec files out into the given number of groups
@@ -39,19 +45,20 @@ function split(specs, count) {
  * Starts one Cypress process and resolves with its exit code
  *
  * @param {string} worker label for the process's output, and the name of its folders
+ * @param {string} username the user the tests log in as
  */
-function run(worker, grepTags, specs) {
+function run(worker, grepTags, specs, username) {
   const hasXvfbRun = spawnSync('which', ['xvfb-run']).status === 0;
   const cypress = [path.join(ROOT, 'node_modules', '.bin', 'cypress'), 'run', '--browser', 'chrome', '--spec', specs.join(',')];
   const [command, ...args] = hasXvfbRun ? ['xvfb-run', '--auto-servernum', ...cypress] : cypress;
 
-  console.log(`[${ worker }] ${ specs.length } spec file(s) with tags "${ grepTags }"`);
+  console.log(`[${ worker }] ${ specs.length } spec file(s) as ${ username } with tags "${ grepTags }"`);
 
   return new Promise((resolve) => {
     const child = spawn(command, args, {
       cwd:   ROOT,
       env:   {
-        ...process.env, GREP_TAGS: grepTags, E2E_WORKER: worker, CYPRESS_CONFIG_ENV: worker
+        ...process.env, GREP_TAGS: grepTags, TEST_USERNAME: username, E2E_WORKER: worker, CYPRESS_CONFIG_ENV: worker
       },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
@@ -122,20 +129,47 @@ async function main() {
   const serialSpecs = matchingSpecs(serialTags);
   const codes = [];
 
-  if (workers < 2 || parallelSpecs.length < 2) {
+  const runAsBefore = () => {
     const single = spawnSync(path.join(__dirname, 'e2e'), [], {
       cwd: ROOT, env: { ...process.env, E2E_PARALLEL_WORKERS: '1' }, stdio: 'inherit'
     });
 
     process.exit(single.status === null ? 1 : single.status);
+  };
+
+  if (workers < 2 || parallelSpecs.length < 2) {
+    runAsBefore();
   }
 
   const groups = split(parallelSpecs, workers);
+  const api = (process.env.API || (process.env.TEST_BASE_URL || '').replace(/\/dashboard\/?$/, '')).replace(/\/$/, '');
+  const password = process.env.CATTLE_BOOTSTRAP_PASSWORD || process.env.TEST_PASSWORD;
+  const username = process.env.TEST_USERNAME || ADMIN_USERNAME;
+  const usernames = groups.map((_, index) => (index === 0 ? username : `${ username }-parallel-${ index + 1 }`));
+  const copies = [];
+  let adminToken;
 
-  codes.push(...await Promise.all(groups.map((specs, index) => run(`parallel-${ index + 1 }`, parallelTags, specs))));
+  try {
+    adminToken = await login(api, ADMIN_USERNAME, password);
+
+    for (const copy of usernames.slice(1)) {
+      copies.push(await cloneUser(api, adminToken, username, password, copy));
+      console.log(`Created ${ copy } with the access of ${ username }`);
+    }
+  } catch (err) {
+    console.log(`::warning::Running the e2e tests in one process, could not give each process a user: ${ err.message }`);
+    await Promise.all(copies.map((id) => deleteUser(api, adminToken, id).catch(() => {})));
+    runAsBefore();
+  }
+
+  try {
+    codes.push(...await Promise.all(groups.map((specs, index) => run(`parallel-${ index + 1 }`, parallelTags, specs, usernames[index]))));
+  } finally {
+    await Promise.all(copies.map((id) => deleteUser(api, adminToken, id).catch((err) => console.log(`::warning::Could not delete user ${ id }: ${ err.message }`))));
+  }
 
   if (serialSpecs.length) {
-    codes.push(await run('serial', serialTags, serialSpecs));
+    codes.push(await run('serial', serialTags, serialSpecs, username));
   }
 
   try {
