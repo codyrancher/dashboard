@@ -21,6 +21,7 @@
  */
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const readline = require('readline');
 const { spawn, spawnSync } = require('child_process');
@@ -41,26 +42,33 @@ function split(specs, count) {
   return groups.filter((group) => group.length);
 }
 
+const reportOf = (worker) => path.join(ROOT, 'cypress', 'reports', worker, 'index.json');
+
 /**
  * Starts one Cypress process and resolves with its exit code
  *
  * @param {string} worker label for the process's output, and the name of its folders
  * @param {string} username the user the tests log in as
+ * @param {boolean} ownAppData false to share Cypress's default app data folder
  */
-function run(worker, grepTags, specs, username) {
+function start(worker, grepTags, specs, username, ownAppData) {
   const hasXvfbRun = spawnSync('which', ['xvfb-run']).status === 0;
   const cypress = [path.join(ROOT, 'node_modules', '.bin', 'cypress'), 'run', '--browser', 'chrome', '--spec', specs.join(',')];
   const [command, ...args] = hasXvfbRun ? ['xvfb-run', '--auto-servernum', ...cypress] : cypress;
+  const env = {
+    ...process.env, GREP_TAGS: grepTags, TEST_USERNAME: username, E2E_WORKER: worker
+  };
+
+  if (ownAppData) {
+    // Cypress keeps compiled bundles under $XDG_CONFIG_HOME/Cypress, keyed on the project path
+    env.XDG_CONFIG_HOME = fs.mkdtempSync(path.join(os.tmpdir(), `e2e-${ worker }-`));
+  }
 
   console.log(`[${ worker }] ${ specs.length } spec file(s) as ${ username } with tags "${ grepTags }"`);
 
   return new Promise((resolve) => {
     const child = spawn(command, args, {
-      cwd:   ROOT,
-      env:   {
-        ...process.env, GREP_TAGS: grepTags, TEST_USERNAME: username, E2E_WORKER: worker, CYPRESS_CONFIG_ENV: worker
-      },
-      stdio: ['ignore', 'pipe', 'pipe'],
+      cwd: ROOT, env, stdio: ['ignore', 'pipe', 'pipe']
     });
 
     [child.stdout, child.stderr].forEach((stream) => {
@@ -71,8 +79,27 @@ function run(worker, grepTags, specs, username) {
       console.error(`[${ worker }] ${ err.message }`);
       resolve(1);
     });
-    child.on('close', (code) => resolve(code === null ? 1 : code));
+    child.on('close', (code) => {
+      console.log(`[${ worker }] exited with code ${ code }`);
+      resolve(code === null ? 1 : code);
+    });
   });
+}
+
+/**
+ * Runs one Cypress process, and runs it once more with Cypress's default app data folder if it
+ * failed before reporting on any spec
+ */
+async function run(worker, grepTags, specs, username) {
+  const code = await start(worker, grepTags, specs, username, true);
+
+  if (code === 0 || fs.existsSync(reportOf(worker))) {
+    return code;
+  }
+
+  console.log(`::warning::The ${ worker } Cypress process failed before running any spec, running its specs again`);
+
+  return start(worker, grepTags, specs, username, false);
 }
 
 /**
