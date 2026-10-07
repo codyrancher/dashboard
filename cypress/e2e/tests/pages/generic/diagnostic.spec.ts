@@ -5,7 +5,7 @@ import { qase } from '@/cypress/support/qase';
 const downloadsFolder = Cypress.config('downloadsFolder');
 const downloadedFilename = path.join(downloadsFolder, 'rancher-diagnostic-data.json');
 
-describe('Diagnostics Page', { tags: ['@generic', '@adminUser'] }, () => {
+describe('Diagnostics Page', { tags: ['@generic', '@adminUser', '@parallel'] }, () => {
   beforeEach(() => {
     cy.login();
     // Keep the downloads directory clean between tests.

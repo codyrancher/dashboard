@@ -43,7 +43,7 @@ const expiredCert = {
   }
 };
 
-describe('Certificates', { testIsolation: false, tags: ['@explorer', '@adminUser', '@standardUser'] }, () => {
+describe('Certificates', { testIsolation: false, tags: ['@explorer', '@adminUser', '@standardUser', '@parallel'] }, () => {
   const clusterDashboard = new ClusterDashboardPagePo('local');
 
   before(() => {

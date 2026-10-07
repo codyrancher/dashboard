@@ -1,5 +1,5 @@
 
-describe('Theme of loading indicator', { tags: ['@generic', '@adminUser', '@standardUser'] }, () => {
+describe('Theme of loading indicator', { tags: ['@generic', '@adminUser', '@standardUser', '@parallel'] }, () => {
   it('should have dark color', () => {
     cy.setCookie('R_THEME', 'dark');
     cy.visit(`${ Cypress.config().baseUrl }`);

@@ -13,7 +13,7 @@ describe('Home Page List', { testIsolation: false }, () => {
     cy.login();
   });
 
-  qase(8563, it('Validate home page with percy', { tags: ['@generic', '@adminUser'] }, () => {
+  qase(8563, it('Validate home page with percy', { tags: ['@generic', '@adminUser', '@parallel'] }, () => {
     // Navigate to home page and wait for page to be fully loaded.
     HomePagePo.goToAndWaitForGet();
 
@@ -21,7 +21,7 @@ describe('Home Page List', { testIsolation: false }, () => {
     cy.percySnapshot('Home Page');
   }));
 
-  qase(14900, it('Can see that cluster details match those in Cluster Management page', { tags: ['@generic', '@adminUser'] }, () => {
+  qase(14900, it('Can see that cluster details match those in Cluster Management page', { tags: ['@generic', '@adminUser', '@parallel'] }, () => {
     /**
        * Get cluster details from the Home page
        * Verify that the cluster details match those on the Cluster Management page
@@ -76,7 +76,7 @@ describe('Home Page List', { testIsolation: false }, () => {
     });
   }));
 
-  qase(4109, it('Can filter rows in the cluster list', { tags: ['@generic', '@adminUser'] }, () => {
+  qase(4109, it('Can filter rows in the cluster list', { tags: ['@generic', '@adminUser', '@parallel'] }, () => {
     /**
        * Filter rows in the cluster list
        */
@@ -94,7 +94,7 @@ describe('Home Page List', { testIsolation: false }, () => {
     });
   }));
 
-  qase(4108, it('Should show cluster description information in the cluster list', { tags: ['@generic', '@adminUser'] }, () => {
+  qase(4108, it('Should show cluster description information in the cluster list', { tags: ['@generic', '@adminUser', '@parallel'] }, () => {
     // since I wasn't able to fully mock a list of clusters
     // the next best thing is to add a description to the current local cluster
     // testing https://github.com/rancher/dashboard/issues/10441
@@ -126,7 +126,7 @@ describe('Home Page List', { testIsolation: false }, () => {
       .should('contain', longClusterDescription);
   }));
 
-  qase(4107, it('check table headers are visible', { tags: ['@generic', '@adminUser'] }, () => {
+  qase(4107, it('check table headers are visible', { tags: ['@generic', '@adminUser', '@parallel'] }, () => {
     homePage.goTo();
     homePage.waitForPage();
 

@@ -7,7 +7,7 @@ import { generateCertManagerEmpty, generateCertManagerWithData } from '@/cypress
  * (see blueprints/other-products/cert-manager). This exercises the page's aggregation and layout
  * without depending on a live cert-manager install.
  */
-describe('Cert Manager overview', { tags: ['@extensions', '@adminUser'] }, () => {
+describe('Cert Manager overview', { tags: ['@extensions', '@adminUser', '@parallel'] }, () => {
   beforeEach(() => {
     cy.login();
   });

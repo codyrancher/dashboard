@@ -7,7 +7,7 @@ import { generateCertManagerForCreate } from '@/cypress/e2e/blueprints/other-pro
  * blueprints/other-products/cert-manager) and the create request is stubbed. This exercises the
  * form's validation and the resource it builds without a live cert-manager install.
  */
-describe('Cert Manager certificate create', { tags: ['@extensions', '@adminUser'] }, () => {
+describe('Cert Manager certificate create', { tags: ['@extensions', '@adminUser', '@parallel'] }, () => {
   const CREATE_URL = '/k8s/clusters/local/v1/cert-manager.io.certificate';
 
   beforeEach(() => {

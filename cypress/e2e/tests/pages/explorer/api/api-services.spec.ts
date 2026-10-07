@@ -2,7 +2,7 @@ import { APIServicesPagePo } from '@/cypress/e2e/po/pages/explorer/api-services.
 
 const apiServicesPage = new APIServicesPagePo('local');
 
-describe('Cluster Explorer', { tags: ['@explorer', '@adminUser'] }, () => {
+describe('Cluster Explorer', { tags: ['@explorer', '@adminUser', '@parallel'] }, () => {
   beforeEach(() => {
     cy.login();
   });

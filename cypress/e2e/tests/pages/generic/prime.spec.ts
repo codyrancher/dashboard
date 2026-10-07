@@ -16,7 +16,7 @@ function interceptVersionAndSetToPrime() {
   });
 }
 
-describe('Prime Extension', { testIsolation: false, tags: ['@prime', '@generic', '@adminUser'] }, () => {
+describe('Prime Extension', { testIsolation: false, tags: ['@prime', '@generic', '@adminUser', '@parallel'] }, () => {
   const authProviderPo = new AuthProviderPo('_');
   const azureadPo = new AzureadPo('_');
 

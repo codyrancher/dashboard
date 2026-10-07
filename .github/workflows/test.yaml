@@ -157,6 +157,7 @@ jobs:
         env:
           RANCHER_VERSION: ${{ needs.extract-e2e-runtime-rancher-version.outputs.runtime-rancher-version }}
           TEST_SKIP: setup
+          E2E_PARALLEL_WORKERS: 2
           GREP_TAGS: ${{ matrix.role.tag }}+${{ matrix.features[0] }} --@jenkins${{ steps.detect-prime.outputs.is-prime == 'true' && ' --@noPrime' || '' }} ${{ matrix.role.tag }}+${{ matrix.features[1] || matrix.features[0] }} --@jenkins${{ steps.detect-prime.outputs.is-prime == 'true' && ' --@noPrime' || '' }}
           TEST_USERNAME: ${{ matrix.role.username }}
 
@@ -173,6 +174,7 @@ jobs:
           cp -r cypress/reports/* artifacts || :
           cp ${{ env.E2E_RANCHER_LOG }} artifacts/rancher.logs 2>/dev/null || :
           cp browser-logs/out.html artifacts/browser-logs.html 2>/dev/null || :
+          cp -r browser-logs/*/ artifacts/browser-logs 2>/dev/null || :
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

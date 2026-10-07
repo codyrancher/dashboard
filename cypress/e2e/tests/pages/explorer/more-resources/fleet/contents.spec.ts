@@ -4,7 +4,7 @@ import { qase } from '@/cypress/support/qase';
 
 const contentsPagePo = new ContentsPagePo();
 
-describe('Contents', { testIsolation: false, tags: ['@explorer', '@adminUser'] }, () => {
+describe('Contents', { testIsolation: false, tags: ['@explorer', '@adminUser', '@parallel'] }, () => {
   before(() => {
     cy.login();
   });

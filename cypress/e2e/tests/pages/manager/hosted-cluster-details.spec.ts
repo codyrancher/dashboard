@@ -72,7 +72,7 @@ const assertNoTab = (detailsPage: ClusterManagerDetailHostedPagePo, tabName: str
   });
 };
 
-describe('Hosted Cluster Details', { tags: ['@manager', '@adminUser'] }, () => {
+describe('Hosted Cluster Details', { tags: ['@manager', '@adminUser', '@parallel'] }, () => {
   // ids from hosted-cluster-mocks
   const AKS_CLUSTER = 'c-9zj2b';
   const GKE_CLUSTER = 'c-5hrg8';
