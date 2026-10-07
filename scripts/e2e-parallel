@@ -1,0 +1,153 @@
+#!/usr/bin/env node
+
+/**
+ * Runs the e2e specs matching GREP_TAGS with several Cypress processes against one Rancher.
+ *
+ * Tests tagged `@parallel` run first, split between E2E_PARALLEL_WORKERS processes that run
+ * side by side. Every other test then runs in a single process. With fewer than two spec
+ * files to run side by side, everything runs as `scripts/e2e` does. Tag a test `@parallel` only
+ * when it neither changes nor depends on state another test could see at the same time, such
+ * as a user preference, a global setting or a resource with a fixed name.
+ *
+ * Each process writes to its own folders (see E2E_WORKER in `cypress/base-config.ts`), and the
+ * reports are merged into `cypress/reports` afterwards.
+ *
+ * Usage: GREP_TAGS="@adminUser+@manager --@jenkins" E2E_PARALLEL_WORKERS=2 ./scripts/e2e-parallel
+ *        ./scripts/e2e-parallel --merge-reports <reports folder>
+ */
+
+const fs = require('fs');
+const path = require('path');
+const readline = require('readline');
+const { spawn, spawnSync } = require('child_process');
+const { ROOT, matchingSpecs, withTag } = require('./e2e-specs');
+
+const PARALLEL_TAG = '@parallel';
+
+/**
+ * Deals spec files out into the given number of groups
+ */
+function split(specs, count) {
+  const groups = Array.from({ length: count }, () => []);
+
+  [...specs].sort().forEach((spec, index) => groups[index % count].push(spec));
+
+  return groups.filter((group) => group.length);
+}
+
+/**
+ * Starts one Cypress process and resolves with its exit code
+ *
+ * @param {string} worker label for the process's output, and the name of its folders
+ */
+function run(worker, grepTags, specs) {
+  const hasXvfbRun = spawnSync('which', ['xvfb-run']).status === 0;
+  const cypress = [path.join(ROOT, 'node_modules', '.bin', 'cypress'), 'run', '--browser', 'chrome', '--spec', specs.join(',')];
+  const [command, ...args] = hasXvfbRun ? ['xvfb-run', '--auto-servernum', ...cypress] : cypress;
+
+  console.log(`[${ worker }] ${ specs.length } spec file(s) with tags "${ grepTags }"`);
+
+  return new Promise((resolve) => {
+    const child = spawn(command, args, {
+      cwd:   ROOT,
+      env:   {
+        ...process.env, GREP_TAGS: grepTags, E2E_WORKER: worker
+      },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+
+    [child.stdout, child.stderr].forEach((stream) => {
+      readline.createInterface({ input: stream }).on('line', (line) => console.log(`[${ worker }] ${ line }`));
+    });
+
+    child.on('error', (err) => {
+      console.error(`[${ worker }] ${ err.message }`);
+      resolve(1);
+    });
+    child.on('close', (code) => resolve(code === null ? 1 : code));
+  });
+}
+
+/**
+ * Merges the report of each process into a single report in the reports folder
+ */
+async function mergeReports(reportsDir) {
+  const { merge } = require('mochawesome-merge');
+  const reportGenerator = require('mochawesome-report-generator');
+
+  const workers = fs.readdirSync(reportsDir).filter((name) => fs.existsSync(path.join(reportsDir, name, 'index.json')));
+
+  if (!workers.length) {
+    console.log(`No reports to merge in ${ reportsDir }`);
+
+    return;
+  }
+
+  const report = await merge({ files: workers.map((worker) => path.join(reportsDir, worker, 'index.json')) });
+
+  workers.forEach((worker) => {
+    ['screenshots', 'videos'].forEach((media) => {
+      const from = path.join(reportsDir, worker, media);
+
+      if (fs.existsSync(from)) {
+        fs.cpSync(from, path.join(reportsDir, media), { recursive: true });
+      }
+    });
+  });
+
+  await reportGenerator.create(report, {
+    reportDir: reportsDir, reportFilename: 'index.html', saveJson: true, overwrite: true
+  });
+
+  workers.forEach((worker) => fs.rmSync(path.join(reportsDir, worker), { recursive: true, force: true }));
+  console.log(`Merged the reports of ${ workers.join(', ') } into ${ reportsDir }: ${ report.stats.tests } tests, ${ report.stats.failures } failures`);
+}
+
+async function main() {
+  if (process.argv[2] === '--merge-reports') {
+    return mergeReports(path.resolve(process.argv[3]));
+  }
+
+  const grepTags = process.env.GREP_TAGS;
+  const workers = Number(process.env.E2E_PARALLEL_WORKERS || 2);
+
+  if (!grepTags) {
+    console.error('GREP_TAGS is required');
+    process.exit(1);
+  }
+
+  const parallelTags = withTag(grepTags, PARALLEL_TAG);
+  const serialTags = `${ grepTags } --${ PARALLEL_TAG }`;
+  const parallelSpecs = matchingSpecs(parallelTags);
+  const serialSpecs = matchingSpecs(serialTags);
+  const codes = [];
+
+  if (workers < 2 || parallelSpecs.length < 2) {
+    const single = spawnSync(path.join(__dirname, 'e2e'), [], {
+      cwd: ROOT, env: { ...process.env, E2E_PARALLEL_WORKERS: '1' }, stdio: 'inherit'
+    });
+
+    process.exit(single.status === null ? 1 : single.status);
+  }
+
+  const groups = split(parallelSpecs, workers);
+
+  codes.push(...await Promise.all(groups.map((specs, index) => run(`parallel-${ index + 1 }`, parallelTags, specs))));
+
+  if (serialSpecs.length) {
+    codes.push(await run('serial', serialTags, serialSpecs));
+  }
+
+  try {
+    await mergeReports(path.join(ROOT, 'cypress', 'reports'));
+  } catch (err) {
+    console.error(`::warning::Could not merge the e2e reports: ${ err.message }`);
+  }
+
+  process.exit(Math.max(...codes));
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

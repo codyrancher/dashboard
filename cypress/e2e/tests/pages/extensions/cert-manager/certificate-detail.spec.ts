@@ -8,7 +8,7 @@ import { generateCertManagerCertificateDetail, generateCertManagerCertificateDet
  * The chain is wired with the annotations and owner references cert-manager uses, so the model
  * getters reassemble it exactly as they would against a live install.
  */
-describe('Cert Manager certificate detail', { tags: ['@extensions', '@adminUser'] }, () => {
+describe('Cert Manager certificate detail', { tags: ['@extensions', '@adminUser', '@parallel'] }, () => {
   beforeEach(() => {
     cy.login();
   });

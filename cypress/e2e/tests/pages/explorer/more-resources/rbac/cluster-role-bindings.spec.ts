@@ -3,7 +3,7 @@ import { ClusterRoleBindingsPagePo } from '@/cypress/e2e/po/pages/explorer/clust
 
 const clusterRoleBindingsPage = new ClusterRoleBindingsPagePo();
 
-describe('ClusterRoleBindings', { testIsolation: false, tags: ['@explorer', '@adminUser'] }, () => {
+describe('ClusterRoleBindings', { testIsolation: false, tags: ['@explorer', '@adminUser', '@parallel'] }, () => {
   before(() => {
     cy.login();
   });

@@ -10,8 +10,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
-const { plugin } = require('@cypress/grep/plugin');
+const { matchingSpecs } = require('./e2e-specs');
 
 const grepTags = process.env.GREP_TAGS;
 
@@ -20,19 +19,11 @@ if (!grepTags) {
   process.exit(1);
 }
 
-process.chdir(path.resolve(__dirname, '..'));
-
-const specPattern = ['cypress/e2e/tests/**/*.spec.ts'];
-const config = plugin({
-  specPattern,
-  excludeSpecPattern: ['cypress/e2e/tests/setup/**'],
-  expose:             { grepTags, grepFilterSpecs: true },
-});
-
-const found = config.specPattern !== specPattern;
+const specs = matchingSpecs(grepTags);
+const found = specs.length > 0;
 
 if (found) {
-  console.log(`${ config.specPattern.length } spec file(s) have tests matching "${ grepTags }"`);
+  console.log(`${ specs.length } spec file(s) have tests matching "${ grepTags }"`);
 } else {
   console.log(`::notice::No e2e test matches "${ grepTags }", there is nothing for this job to run`);
 }

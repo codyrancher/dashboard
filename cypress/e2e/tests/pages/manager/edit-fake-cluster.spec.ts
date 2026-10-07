@@ -13,7 +13,7 @@ const clusterList = new ClusterManagerListPagePo('_');
 const loadingPo = new LoadingPo();
 const editCluster = new ClusterManagerEditGenericPagePo('_', fakeProvClusterId);
 
-describe('Cluster Edit', { tags: ['@manager', '@adminUser'] }, () => {
+describe('Cluster Edit', { tags: ['@manager', '@adminUser', '@parallel'] }, () => {
   describe('Cluster Edit (Fake DO cluster)', () => {
     beforeEach(() => {
       generateFakeClusterDataAndIntercepts({

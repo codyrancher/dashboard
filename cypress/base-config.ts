@@ -71,6 +71,12 @@ if (process.env.TEST_A11Y) {
 }
 
 /**
+ * Several Cypress processes can run side by side (see `scripts/e2e-parallel`). Each one sets
+ * E2E_WORKER so that it writes to folders of its own
+ */
+const workerDir = (dir: string): string => (process.env.E2E_WORKER ? `${ dir }/${ process.env.E2E_WORKER }` : dir);
+
+/**
  * LOGS:
  * Summary of the environment variables that we have detected (or are going ot use)
  * We won't show any passwords
@@ -176,7 +182,7 @@ const baseConfig = defineConfig({
     saveJson:        true,
     saveAllAttempts: true,
     videoOnFailOnly: true,
-    reportDir:       'cypress/reports'
+    reportDir:       workerDir('cypress/reports')
   },
   e2e: {
     fixturesFolder: 'cypress/e2e/blueprints',
@@ -238,7 +244,7 @@ const baseConfig = defineConfig({
       websocketTasks(on, config);
 
       require('cypress-terminal-report/src/installLogsPrinter')(on, {
-        outputRoot:           `${ config.projectRoot }/browser-logs/`,
+        outputRoot:           `${ config.projectRoot }/${ workerDir('browser-logs') }/`,
         outputTarget:         { 'out.html': 'html' },
         logToFilesOnAfterRun: true,
         printLogsToConsole:   'never',
@@ -283,6 +289,9 @@ const baseConfig = defineConfig({
     specPattern: getSpecPattern(testDirs, process.env),
     baseUrl
   },
+  videosFolder:           workerDir('cypress/videos'),
+  screenshotsFolder:      workerDir('cypress/screenshots'),
+  downloadsFolder:        workerDir('cypress/downloads'),
   videoCompression:       15,
   screenshotOnRunFailure: process.env.TEST_NO_SCREENSHOTS !== 'true',
   video:                  process.env.TEST_NO_VIDEOS !== 'true'
