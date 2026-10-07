@@ -2,7 +2,6 @@
 
 DIR=$(cd $(dirname $0)/..; pwd)
 DASHBOARD_DIST=${DIR}/dist
-EMBER_DIST=${DIR}/dist_ember
 COVERAGE_DIR=${DIR}/coverage
 OUTPUT_DIR=${DIR}/coverage/output
 
@@ -40,7 +39,6 @@ shift "$((OPTIND-1))"
 
 if [ $BUILD -eq 1 ]; then
   rm -rf ${DASHBOARD_DIST}
-  rm -rf ${EMBER_DIST}
 fi
 
 # Remove previous coverage data (also cleans out the output folder)
