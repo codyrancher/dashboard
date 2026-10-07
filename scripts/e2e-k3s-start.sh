@@ -118,7 +118,9 @@ if [ "$KUBE_TYPE" = "K3S" ]; then
     exit 1
   fi
 
-  INSTALL_K3S_VERSION="$KUBE_VERSION" sh k3s-script
+  # Embedded etcd in place of the default sqlite datastore. Wedged starts showed the API server
+  # timing out watches with "Too large resource version", and service account tokens never populated.
+  INSTALL_K3S_VERSION="$KUBE_VERSION" INSTALL_K3S_EXEC="server --cluster-init" sh k3s-script
   export KUBECONFIG=~/.kube/config
   mkdir ~/.kube 2> /dev/null
   sudo k3s kubectl config view --raw > "$KUBECONFIG"
@@ -212,10 +214,11 @@ dump_diagnostics() {
   echo "::group::Cluster state before the rebuild"
   kubectl get pods --all-namespaces -o wide 2>&1 || true
   kubectl get events --all-namespaces --sort-by=.lastTimestamp 2>&1 | tail -n 40 || true
-  kubectl -n cattle-impersonation-system get serviceaccounts 2>&1 || true
+  kubectl -n cattle-impersonation-system get serviceaccounts -o custom-columns=NAME:.metadata.name,UID:.metadata.uid,CREATED:.metadata.creationTimestamp 2>&1 || true
   kubectl -n cattle-impersonation-system get secrets -o json 2>/dev/null \
-    | jq -r '.items[] | [.metadata.name, .type, (.metadata.annotations["kubernetes.io/service-account.name"] // "-"), "token bytes: \((.data.token // "") | length)"] | @tsv' || true
+    | jq -r '.items[] | [.metadata.name, .type, (.metadata.annotations["kubernetes.io/service-account.name"] // "-"), "account uid: \(.metadata.annotations["kubernetes.io/service-account.uid"] // "-")", "created: \(.metadata.creationTimestamp)", "token bytes: \((.data.token // "") | length)"] | @tsv' || true
   if [ "$KUBE_TYPE" = "K3S" ]; then
+    sudo journalctl -u k3s --no-pager 2>&1 | grep -iE 'serviceaccount-token|tokens_controller|too large resource version|kine|etcd.*(slow|timeout|error)' | tail -n 60 || true
     sudo journalctl -u k3s --no-pager -n 300 2>&1 || true
   fi
   echo "::endgroup::"
