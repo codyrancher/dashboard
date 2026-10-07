@@ -93,6 +93,12 @@ jobs:
           ['@userMenu', '@usersAndAuths'],
           ['@components'],
         ]
+        # Combinations with no tests. `scripts/check-e2e-excluded-jobs` fails if one gains a test
+        exclude:
+          - role: { username: 'standard_user', tag: '@standardUser' }
+            features: ['@explorer4']
+          - role: { username: 'standard_user', tag: '@standardUser' }
+            features: ['@navigation2']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
@@ -447,6 +453,10 @@ jobs:
       - name: Check e2e tags
         run: |
           ./scripts/check-e2e-tests-for-tags
+      - name: Setup env
+        uses: ./.github/actions/setup
+      - name: Check excluded e2e jobs have no tests
+        run: ./scripts/check-e2e-excluded-jobs
 
   check-cypress-build:
     runs-on: ubuntu-latest
