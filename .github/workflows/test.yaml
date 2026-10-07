@@ -122,6 +122,7 @@ jobs:
 
       - name: Run Rancher
         if: ${{ steps.has-tests.outputs.found != 'false' }}
+        timeout-minutes: 30
         run: |
           tail -n +1 -F "$E2E_RANCHER_START_LOG" 2> /dev/null &
           until [ -f "$E2E_RANCHER_START_LOG.exit" ]; do sleep 2; done
@@ -131,6 +132,7 @@ jobs:
       
       - name: Setup Rancher and user
         if: ${{ steps.has-tests.outputs.found != 'false' }}
+        timeout-minutes: 6
         run: |
           yarn e2e:prod
         env: 
@@ -148,6 +150,7 @@ jobs:
 
       - name: Run user tests
         if: ${{ steps.has-tests.outputs.found != 'false' }}
+        timeout-minutes: 45
         run: |
           yarn e2e:prod
           [ "$BUILD_DASHBOARD" != "false" ] || exit 0
