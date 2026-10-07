@@ -208,8 +208,24 @@ helm install rancher $RANCHER_HELM_REPO_NAME/rancher \
 # for a genuinely clean instance, up to PROVISION_MAX times; only then fail. $1 is the reason to log.
 # Defined here (before the first readiness check that uses it) so the rancher-rollout and
 # dashboard-availability waits below can rebuild rather than hang or hard-exit.
+# Prints the cluster state that explains a start which never converged. Token values are never printed.
+dump_diagnostics() {
+  echo "::group::Cluster state before the rebuild"
+  kubectl get pods --all-namespaces -o wide 2>&1 || true
+  kubectl get events --all-namespaces --sort-by=.lastTimestamp 2>&1 | tail -n 40 || true
+  kubectl -n cattle-impersonation-system get serviceaccounts 2>&1 || true
+  kubectl -n cattle-impersonation-system get secrets -o json 2>/dev/null \
+    | jq -r '.items[] | [.metadata.name, .type, (.metadata.annotations["kubernetes.io/service-account.name"] // "-"), "token bytes: \((.data.token // "") | length)"] | @tsv' || true
+  if [ "$KUBE_TYPE" = "K3S" ]; then
+    sudo journalctl -u k3s --no-pager -n 300 2>&1 || true
+  fi
+  echo "::endgroup::"
+}
+
 reprovision() {
   local reason="$1"
+
+  dump_diagnostics
 
   if [ "$PROVISION_ROLL" -ge "$PROVISION_MAX" ]; then
     echo "$reason - and Rancher never converged after $PROVISION_MAX full rebuilds. Failing the step."
