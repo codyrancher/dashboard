@@ -395,6 +395,25 @@ To summarize, space between tags is considered as `AND` operator, while `+` is c
 
 To allow re-run of flaky tests only which may fail, the job is flagged as `fail-fast: false` and will prevent to interrupt the others.
 
+### Running tests side by side within a job
+
+Within one CI job, tests tagged `@parallel` run first, split between two Cypress processes against the same Rancher. Every other test then runs in a single process, as before.
+
+Each process logs in as its own user. The first is the job's usual user; the other is a copy with the same roles and preferences, created before the tests start and deleted when they finish. `cy.login()` picks the right one, so a test does not need to know which user it has, only what that user is allowed to do.
+
+Tag a test `@parallel` when:
+
+- it does not change or depend on state every user shares, such as a global setting, a feature flag, an installed chart or extension, or a resource with a fixed name
+- it does not depend on which user it runs as, for example by asserting on the username
+
+State that belongs to the user, such as a preference or the namespace filter, is safe, because each process has its own user.
+
+```ts
+describe('ClusterRoles', { tags: ['@explorer', '@adminUser', '@parallel'] }, () => {
+```
+
+A job needs at least two spec files with `@parallel` tests before it starts a second process. See `scripts/e2e-parallel`.
+
 **DISCLAIMER:** It is not possible to execute multiple tests with the same ID and therefore for the temporary test initialization where we use the setup, the configuration will have extra tags such like `@adminUserSetup` and `@standardUserSetup`. This will be replaced with a script as planned.
 
 ## Cypress Utilities
