@@ -9,8 +9,8 @@
  * when it neither changes nor depends on state another test could see at the same time, such
  * as a user preference, a global setting or a resource with a fixed name.
  *
- * Each process writes to its own folders (see E2E_WORKER in `cypress/base-config.ts`), and the
- * reports are merged into `cypress/reports` afterwards.
+ * Each process writes to its own folders (see E2E_WORKER in `cypress/base-config.ts`) and keeps
+ * its own Cypress app data, and the reports are merged into `cypress/reports` afterwards.
  *
  * Usage: GREP_TAGS="@adminUser+@manager --@jenkins" E2E_PARALLEL_WORKERS=2 ./scripts/e2e-parallel
  *        ./scripts/e2e-parallel --merge-reports <reports folder>
@@ -51,7 +51,7 @@ function run(worker, grepTags, specs) {
     const child = spawn(command, args, {
       cwd:   ROOT,
       env:   {
-        ...process.env, GREP_TAGS: grepTags, E2E_WORKER: worker
+        ...process.env, GREP_TAGS: grepTags, E2E_WORKER: worker, CYPRESS_CONFIG_ENV: worker
       },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
