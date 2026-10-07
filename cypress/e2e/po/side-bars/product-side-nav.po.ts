@@ -54,10 +54,10 @@ export default class ProductNavPo extends ComponentPo {
   }
 
   /**
-   * Get the visible child links that sit outside of every top-level group
+   * Get the visible child links that sit outside of every top-level group. There may be none
    */
   ungroupedNavTypes(): Cypress.Chainable {
-    return this.self().find('.accordion.depth-0:not(.has-children) li.nav-type>a');
+    return this.self().then(($nav) => $nav.find('.accordion.depth-0:not(.has-children) li.nav-type>a'));
   }
 
   /**
