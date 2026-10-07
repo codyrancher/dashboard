@@ -6,7 +6,7 @@ import { generateDaemonSetsDataSmall } from '@/cypress/e2e/blueprints/explorer/w
 import { SMALL_CONTAINER } from '@/cypress/e2e/tests/pages/explorer3/workloads/workload.utils';
 import { LONG_TIMEOUT_OPT } from '@/cypress/support/utils/timeouts';
 
-describe('DaemonSets', { testIsolation: false, tags: ['@explorer3', '@adminUser'] }, () => {
+describe('DaemonSets', { testIsolation: false, tags: ['@explorer4', '@adminUser'] }, () => {
   const localCluster = 'local';
 
   before(() => {
