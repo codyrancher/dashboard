@@ -250,19 +250,70 @@ jobs:
         env:
           A11Y_RATCHET_ENFORCE: ${{ vars.A11Y_RATCHET_ENFORCE }}
 
-  unit-test:
+  unit-test-shard:
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           fetch-depth: 1
-      
+
+      - name: Setup env
+        uses: ./.github/actions/setup
+
       - name: Run tests
-        uses: ./.github/actions/unit-tests
+        run: yarn test:ci --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+        env:
+          JEST_JUNIT_OUTPUT_NAME: unit-tests-${{ matrix.shard }}.xml
+
+      - name: Collect shard results
+        if: ${{ always() }}
+        run: |
+          mkdir -p unit-test-shard/coverage unit-test-shard/reports
+          cp coverage/unit/coverage-final.json unit-test-shard/coverage/${{ matrix.shard }}.json 2>/dev/null || :
+          cp unit-test-reports/*.xml unit-test-shard/reports 2>/dev/null || :
+
+      - name: Upload shard results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{github.run_number}}-unit-test-shard-${{ matrix.shard }}
+          path: unit-test-shard/
+          retention-days: 1
+          overwrite: true
+
+  unit-test:
+    if: ${{ always() }}
+    needs: unit-test-shard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          fetch-depth: 1
+
+      - name: Setup env
+        uses: ./.github/actions/setup
+
+      - name: Download shard results
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: ${{github.run_number}}-unit-test-shard-*
+          path: unit-test-shard
+          merge-multiple: true
+
+      - name: Merge test reports
+        run: |
+          mkdir -p unit-test-reports
+          ./scripts/merge-junit-reports unit-test-reports/unit-tests.xml unit-test-shard/reports/*.xml
 
       - name: Collect Coverage
         run: |
-          mkdir -p coverage-artifacts/coverage
+          mkdir -p coverage-artifacts/coverage merged-coverage
+          yarn nyc merge unit-test-shard/coverage merged-coverage/coverage-final.json
+          yarn nyc report --temp-dir merged-coverage --report-dir coverage/unit --reporter=json --reporter=html --reporter=text-summary
           cp coverage/unit/coverage-final.json coverage-artifacts/coverage/coverage-unit.json
           cp -r coverage/unit/ coverage-artifacts/coverage/unit/
 
@@ -277,6 +328,12 @@ jobs:
         with:
           name: ${{github.run_number}}-${{github.run_attempt}}-unit-tests
           path: unit-test-reports/*
+
+      - name: Check shards
+        if: ${{ needs.unit-test-shard.result != 'success' }}
+        run: |
+          echo "A unit test shard did not succeed: ${{ needs.unit-test-shard.result }}"
+          exit 1
 
   i18n:
     runs-on: ubuntu-latest
