@@ -87,6 +87,11 @@ jobs:
           ['@explorer3'],
           ['@explorer4'],
           ['@navigation2'],
+          ['@manager2'],
+          ['@globalSettings2'],
+          ['@fleet2'],
+          ['@explorer5'],
+          ['@usersAndAuths2'],
           ['@virtualizationMgmt', '@fleet'],
           ['@generic', '@globalSettings'],
           ['@manager'],
@@ -99,6 +104,14 @@ jobs:
             features: ['@explorer4']
           - role: { username: 'standard_user', tag: '@standardUser' }
             features: ['@navigation2']
+          - role: { username: 'standard_user', tag: '@standardUser' }
+            features: ['@manager2']
+          - role: { username: 'standard_user', tag: '@standardUser' }
+            features: ['@fleet2']
+          - role: { username: 'standard_user', tag: '@standardUser' }
+            features: ['@explorer5']
+          - role: { username: 'standard_user', tag: '@standardUser' }
+            features: ['@usersAndAuths2']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6

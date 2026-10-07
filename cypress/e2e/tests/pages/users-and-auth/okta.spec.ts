@@ -24,7 +24,7 @@ const groupIdAttribute = 'cn';
 
 const mockStatusCode = 200;
 
-describe('Okta', { tags: ['@adminUser', '@usersAndAuths'] }, () => {
+describe('Okta', { tags: ['@adminUser', '@usersAndAuths2'] }, () => {
   beforeEach(() => {
     cy.login();
     HomePagePo.goToAndWaitForGet();

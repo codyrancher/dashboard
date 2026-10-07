@@ -9,7 +9,7 @@ import HomePagePo from '@/cypress/e2e/po/pages/home.po';
 const chartsPage = new ChartsPage();
 const chartPage = new ChartPage();
 
-describe('Apps/Charts', { tags: ['@explorer', '@adminUser'] }, () => {
+describe('Apps/Charts', { tags: ['@explorer5', '@adminUser'] }, () => {
   beforeEach(() => {
     cy.intercept('GET', `${ CLUSTER_REPOS_BASE_URL }/**`).as('fetchChartData');
 
@@ -156,7 +156,7 @@ describe('Apps/Charts', { tags: ['@explorer', '@adminUser'] }, () => {
   });
 });
 
-describe('Chart Details Page', { tags: ['@explorer', '@adminUser'] }, () => {
+describe('Chart Details Page', { tags: ['@explorer5', '@adminUser'] }, () => {
   const chartName = 'Logging';
 
   beforeEach(() => {

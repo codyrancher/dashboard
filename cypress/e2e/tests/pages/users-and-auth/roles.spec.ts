@@ -80,7 +80,7 @@ let runPrefix: string;
 let globalRoleName: string;
 const roleTemplatesToDelete: string[] = [];
 
-describe('Roles Templates', { tags: ['@usersAndAuths', '@adminUser'] }, () => {
+describe('Roles Templates', { tags: ['@usersAndAuths2', '@adminUser'] }, () => {
   describe('Roles', () => {
     beforeEach(() => {
       cy.login();

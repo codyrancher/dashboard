@@ -23,7 +23,7 @@ const userBaseUsername = `${ runPrefix }-userBase-user`;
 
 let userId: string;
 
-describe('Users', { tags: ['@usersAndAuths', '@adminUser'] }, () => {
+describe('Users', { tags: ['@usersAndAuths2', '@adminUser'] }, () => {
   beforeEach(() => {
     cy.login();
   });

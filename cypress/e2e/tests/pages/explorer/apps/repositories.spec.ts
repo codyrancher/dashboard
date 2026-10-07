@@ -7,7 +7,7 @@ import { MEDIUM_TIMEOUT_OPT } from '@/cypress/support/utils/timeouts';
 import { runTestWhenChartAvailable } from '@/cypress/support/commands/rancher-api-commands';
 
 describe('Apps', () => {
-  describe('Repositories', { tags: ['@explorer', '@adminUser'] }, () => {
+  describe('Repositories', { tags: ['@explorer5', '@adminUser'] }, () => {
     describe('Add', () => {
       const appRepoList = new ReposListPagePo('local', 'apps');
 
