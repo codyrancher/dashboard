@@ -85,6 +85,8 @@ jobs:
           ['@explorer'],
           ['@explorer2'],
           ['@explorer3'],
+          ['@explorer4'],
+          ['@navigation2'],
           ['@virtualizationMgmt', '@fleet'],
           ['@generic', '@globalSettings'],
           ['@manager'],

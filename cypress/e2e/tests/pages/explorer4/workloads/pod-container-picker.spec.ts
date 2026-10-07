@@ -3,7 +3,7 @@ import { SMALL_CONTAINER } from '@/cypress/e2e/tests/pages/explorer3/workloads/w
 import Shell from '@/cypress/e2e/po/components/shell.po';
 import { LONG_TIMEOUT_OPT } from '@/cypress/support/utils/timeouts';
 
-describe('Pod container picker', { tags: ['@explorer3', '@adminUser'] }, () => {
+describe('Pod container picker', { tags: ['@explorer4', '@adminUser'] }, () => {
   const podsListPage = new WorkloadsPodsListPagePo('local');
   const shell = new Shell();
 
