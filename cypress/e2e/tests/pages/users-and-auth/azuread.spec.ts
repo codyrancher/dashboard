@@ -22,7 +22,7 @@ const graphEndpoint = 'https://graph.test.com';
 const mockStatusCode = 200;
 const mockBody = {};
 
-describe('Microsoft Entra ID', { tags: ['@adminUser', '@usersAndAuths'] }, () => {
+describe('Microsoft Entra ID', { tags: ['@adminUser', '@usersAndAuths2'] }, () => {
   beforeEach(() => {
     cy.login();
     HomePagePo.goToAndWaitForGet();
