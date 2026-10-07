@@ -1,0 +1,33 @@
+#!/usr/bin/env node
+
+/**
+ * Fails when a role and feature combination that the Tests workflow excludes from its e2e
+ * matrix has tests, since nothing would run them.
+ *
+ * Usage: ./scripts/check-e2e-excluded-jobs
+ */
+
+const fs = require('fs');
+const path = require('path');
+const yaml = require('js-yaml');
+const { ROOT, specsWithInheritedTags } = require('./e2e-specs');
+
+const workflow = yaml.load(fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'test.yaml'), 'utf8'));
+const excluded = workflow.jobs['e2e-test'].strategy.matrix.exclude || [];
+let failed = false;
+
+excluded.forEach(({ role, features }) => {
+  features.forEach((feature) => {
+    const specs = specsWithInheritedTags([role.tag, feature]).filter(({ spec }) => !fs.readFileSync(path.join(ROOT, spec), 'utf8').includes('@jenkins'));
+
+    if (specs.length) {
+      failed = true;
+      console.log(`::error::The e2e matrix excludes ${ role.tag } with ${ feature }, but these specs have such tests:`);
+      specs.forEach(({ spec, tests }) => console.log(`  ${ tests } in ${ spec }`));
+    } else {
+      console.log(`${ role.tag } with ${ feature }: no tests, as expected`);
+    }
+  });
+});
+
+process.exit(failed ? 1 : 0);
