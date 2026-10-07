@@ -7,12 +7,12 @@ import HomePagePo from '@/cypress/e2e/po/pages/home.po';
 import { generatePodsDataSmall } from '@/cypress/e2e/blueprints/explorer/workloads/pods/pods-get';
 import SortableTablePo from '@/cypress/e2e/po/components/sortable-table.po';
 import ClusterDashboardPagePo from '@/cypress/e2e/po/pages/explorer/cluster-dashboard.po';
-import { SMALL_CONTAINER } from '@/cypress/e2e/tests/pages/explorer2/workloads/workload.utils';
+import { SMALL_CONTAINER } from '@/cypress/e2e/tests/pages/explorer3/workloads/workload.utils';
 import { qase } from '@/cypress/support/qase';
 
 const localCluster = 'local';
 
-describe('Pods', { testIsolation: false, tags: ['@explorer2', '@adminUser'] }, () => {
+describe('Pods', { testIsolation: false, tags: ['@explorer3', '@adminUser'] }, () => {
   const workloadsPodPage = new WorkloadsPodsListPagePo(localCluster);
 
   before(() => {

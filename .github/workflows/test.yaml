@@ -92,6 +92,7 @@ jobs:
           ['@charts'],
           ['@explorer'],
           ['@explorer2'],
+          ['@explorer3'],
           ['@virtualizationMgmt', '@fleet'],
           ['@generic', '@globalSettings'],
           ['@manager'],

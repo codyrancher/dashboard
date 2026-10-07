@@ -3,9 +3,9 @@ import HomePagePo from '@/cypress/e2e/po/pages/home.po';
 import SortableTablePo from '@/cypress/e2e/po/components/sortable-table.po';
 import ClusterDashboardPagePo from '@/cypress/e2e/po/pages/explorer/cluster-dashboard.po';
 import { generateStatefulSetsDataSmall } from '@/cypress/e2e/blueprints/explorer/workloads/statefulsets/statefulsets-get';
-import { SMALL_CONTAINER } from '@/cypress/e2e/tests/pages/explorer2/workloads/workload.utils';
+import { SMALL_CONTAINER } from '@/cypress/e2e/tests/pages/explorer3/workloads/workload.utils';
 
-describe('StatefulSets', { testIsolation: false, tags: ['@explorer2', '@adminUser'] }, () => {
+describe('StatefulSets', { testIsolation: false, tags: ['@explorer3', '@adminUser'] }, () => {
   const localCluster = 'local';
   const statefulSetListPage = new WorkloadsStatefulSetsListPagePo(localCluster);
 
