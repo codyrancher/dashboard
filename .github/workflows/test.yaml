@@ -26,6 +26,7 @@ env:
 
   E2E_RANCHER_LOG: rancher.log
   E2E_RANCHER_START_LOG: rancher-start.log
+  CYPRESS_VERIFY_TIMEOUT: 120000
   E2E_BUILD_DIST_NAME: dist
   E2E_BUILD_DIST_DIR: dist
 
