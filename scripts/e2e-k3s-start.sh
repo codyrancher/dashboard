@@ -95,9 +95,8 @@ RANCHER_NAMESPACE=cattle-system
 
 DIR=$(cd $(dirname $0)/..; pwd)
 
-# See `script/build-e2e`. This is the ui builds we wish to test
+# See `script/build-e2e`. This is the ui build we wish to test
 DASHBOARD_DIST=${DIR}/dist
-EMBER_DIST=${DIR}/dist_ember
 
 # - See https://ranchermanager.docs.rancher.com/how-to-guides/advanced-user-guides/enable-api-audit-log (0 off, 3 everything)
 # - logs sent to side-car container in rancher pod
@@ -303,18 +302,15 @@ if [ "$OVERRIDE_UIS" == "true" ]; then
     reprovision "Failed to find rancher pod for the dev-build UI override"
   fi
 
-  # Remove root folders that container UIs
+  # Remove the root folder that contains the UI
   kubectl exec $POD_NAME -n $RANCHER_NAMESPACE -- sh -c 'rm -rf /usr/share/rancher/ui-dashboard/dashboard'
-  kubectl exec $POD_NAME -n $RANCHER_NAMESPACE -- sh -c 'rm -rf /usr/share/rancher/ui'
 
-  # Copy local builds to root folders that should contain UIs.
-  # Guard the mv so a REBUILD re-run is idempotent: on the first provision we move $DASHBOARD_DIST/$EMBER_DIST
-  # into ./dashboard and ./ui; on a rebuild those source dirs are already gone, so we keep the moved copies and
-  # just re-cp them into the freshly-provisioned pod.
+  # Copy the local build to the root folder that should contain the UI.
+  # Guard the mv so a REBUILD re-run is idempotent: on the first provision we move $DASHBOARD_DIST
+  # into ./dashboard; on a rebuild that source dir is already gone, so we keep the moved copy and
+  # just re-cp it into the freshly-provisioned pod.
   [ -d dashboard ] || mv $DASHBOARD_DIST dashboard
-  [ -d ui ] || mv $EMBER_DIST ui
   kubectl cp dashboard $POD_NAME:/usr/share/rancher/ui-dashboard -n $RANCHER_NAMESPACE
-  kubectl cp ui $POD_NAME:/usr/share/rancher -n $RANCHER_NAMESPACE
 
   # Final validation - give the pod a few seconds to serve the freshly-copied build before failing.
   # A genuinely bad dev build won't be fixed by a rebuild, so this stays a hard exit (no reprovision).

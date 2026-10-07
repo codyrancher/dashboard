@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # Waits for the UI build job of the current GitHub Actions run to succeed, then downloads the
-# dashboard and ember builds it uploaded. Fails as soon as that job fails, or after the timeout.
+# dashboard build it uploaded. Fails as soon as that job fails, or after the timeout.
 #
 # Requires `gh` and GH_TOKEN, plus GITHUB_REPOSITORY and GITHUB_RUN_ID (set by GitHub Actions).
 #
-# E2E_BUILD_JOB       name of the job that uploads the builds (default e2e-ui-build)
+# E2E_BUILD_JOB       name of the job that uploads the build (default e2e-ui-build)
 # E2E_BUILD_TIMEOUT   seconds to wait for that job (default 900)
 # E2E_BUILD_POLL      seconds between checks (default 15)
 
@@ -15,8 +15,6 @@ POLL=${E2E_BUILD_POLL:-15}
 
 DIST_NAME=${E2E_BUILD_DIST_NAME:-dist}
 DIST_DIR=${E2E_BUILD_DIST_DIR:-dist}
-EMBER_NAME=${E2E_BUILD_DIST_EMBER_NAME:-dist_ember}
-EMBER_DIR=${E2E_BUILD_DIST_EMBER_DIR:-dist_ember}
 
 for REQUIRED in GH_TOKEN GITHUB_REPOSITORY GITHUB_RUN_ID; do
   if [ -z "${!REQUIRED}" ]; then
@@ -73,4 +71,3 @@ download() {
 }
 
 download "$DIST_NAME" "$DIST_DIR"
-download "$EMBER_NAME" "$EMBER_DIR"
