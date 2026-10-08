@@ -8,6 +8,7 @@
 USE_LOCAL_BRANCH_METADATA=false # branch_metadata usually just comes from `master`. if there are dependent changes in a PR and the local version is needed toggle this to `true`
 KUBE_TYPE=${KUBE_TYPE:-K3S} # K3S or K3D
 OVERRIDE_UIS=${OVERRIDE_UIS:-true} # use UI bits supplied externally (e.g. by CI) rather than the built in UI bits
+IMAGE_LIST=${IMAGE_LIST:-} # file listing container images to pull while Rancher is being installed. It is rewritten with the images in use once Rancher is ready, for the next run
 DOWNLOAD_UIS=${DOWNLOAD_UIS:-false} # fetch the UI bits from this GitHub Actions run's build job when they're needed, instead of expecting them on disk (see `scripts/e2e-download-build`)
 TEST_BASE_URL=${TEST_BASE_URL:-https://127.0.0.1.sslip.io}
 
@@ -125,6 +126,12 @@ if [ "$KUBE_TYPE" = "K3S" ]; then
   mkdir ~/.kube 2> /dev/null
   sudo k3s kubectl config view --raw > "$KUBECONFIG"
   chmod 600 "$KUBECONFIG"
+
+  # Pull the Rancher image, and the images the last run ended up with, while everything else is set up
+  {
+    echo "${RANCHER_IMG_REGISTRY:+$RANCHER_IMG_REGISTRY/}${RANCHER_IMG_REPO}:${RANCHER_IMG_TAG}"
+    [ -f "$IMAGE_LIST" ] && cat "$IMAGE_LIST"
+  } | awk 'NF && !seen[$0]++' | xargs -P 4 -I{} sudo k3s crictl pull {} > image-pulls.log 2>&1 &
   
   echo "Installing helm.........."
   # Pin the get-helm-3 installer to a fixed release tag rather than `main`. `main` is a moving ref, so
@@ -452,6 +459,17 @@ if probe_healthy ; then
 else
   rm -f "$COOKIEJAR"
   reprovision "Steve/RBAC wedged - login or authenticated GET never converged"
+fi
+
+if [ "$KUBE_TYPE" = "K3S" ]; then
+  echo "::group::Image pulls"
+  kubectl get events --all-namespaces --field-selector reason=Pulled -o jsonpath='{range .items[*]}{.message}{"\n"}{end}' 2>/dev/null | sort | uniq -c || true
+  echo "::endgroup::"
+
+  if [ -n "$IMAGE_LIST" ]; then
+    sudo k3s crictl images -o json | jq -r '.images[].repoTags[]?' | grep -v '<none>' | sort -u > "$IMAGE_LIST" || true
+    echo "Listed $(wc -l < "$IMAGE_LIST") images in $IMAGE_LIST"
+  fi
 fi
 
 echo "Rancher is ready"
