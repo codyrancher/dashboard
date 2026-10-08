@@ -5,7 +5,7 @@ import { PAGINATION_UTILS } from '@/cypress/support/utils/shell';
 
 const successStatusCode = 200;
 
-describe('Local authentication', { tags: ['@generic', '@adminUser', '@standardUser'] }, () => {
+describe('Local authentication', { tags: ['@generic2', '@adminUser', '@standardUser'] }, () => {
   it('Confirm correct number of settings requests made', () => {
     cy.intercept(
       'GET',
