@@ -208,8 +208,25 @@ helm install rancher $RANCHER_HELM_REPO_NAME/rancher \
 # for a genuinely clean instance, up to PROVISION_MAX times; only then fail. $1 is the reason to log.
 # Defined here (before the first readiness check that uses it) so the rancher-rollout and
 # dashboard-availability waits below can rebuild rather than hang or hard-exit.
+# Prints the cluster state that explains a start which never converged. Token values are never printed.
+dump_diagnostics() {
+  echo "::group::Cluster state before the rebuild"
+  kubectl get pods --all-namespaces -o wide 2>&1 || true
+  kubectl get events --all-namespaces --sort-by=.lastTimestamp 2>&1 | tail -n 40 || true
+  kubectl -n cattle-impersonation-system get serviceaccounts -o custom-columns=NAME:.metadata.name,UID:.metadata.uid,CREATED:.metadata.creationTimestamp 2>&1 || true
+  kubectl -n cattle-impersonation-system get secrets -o json 2>/dev/null \
+    | jq -r '.items[] | [.metadata.name, .type, (.metadata.annotations["kubernetes.io/service-account.name"] // "-"), "account uid: \(.metadata.annotations["kubernetes.io/service-account.uid"] // "-")", "created: \(.metadata.creationTimestamp)", "token bytes: \((.data.token // "") | length)"] | @tsv' || true
+  if [ "$KUBE_TYPE" = "K3S" ]; then
+    sudo journalctl -u k3s --no-pager 2>&1 | grep -iE 'serviceaccount-token|tokens_controller|too large resource version|kine|etcd.*(slow|timeout|error)' | tail -n 60 || true
+    sudo journalctl -u k3s --no-pager -n 300 2>&1 || true
+  fi
+  echo "::endgroup::"
+}
+
 reprovision() {
   local reason="$1"
+
+  dump_diagnostics
 
   if [ "$PROVISION_ROLL" -ge "$PROVISION_MAX" ]; then
     echo "$reason - and Rancher never converged after $PROVISION_MAX full rebuilds. Failing the step."
@@ -326,11 +343,18 @@ wait=60
 # the webhook gets 4 minutes (sleep 10 seconds * 24 iterations), it either runs well inside that or never does
 webhook_wait=24
 
+# A Rancher that cannot get its impersonation service account tokens never deploys the webhook.
+# It logs this error for two service accounts every 30 seconds, and a healthy start never logs it.
+impersonation_error='impersonation: error ensuring secret for service account'
+impersonation_error_max=3
+
 echo "Waiting for rancher-webhook to be running..."
 okay=0
 while [ $okay -lt $webhook_wait ] ; do
   if kubectl -n cattle-system get po -l app=rancher-webhook | grep -q '1/1.*Running' ; then
     break
+  elif [ "$(kubectl -n cattle-system logs deploy/rancher --tail=-1 2>/dev/null | grep -c "$impersonation_error")" -ge $impersonation_error_max ]; then
+    reprovision "Rancher cannot create its impersonation tokens, so the webhook will not start"
   else
     echo "Webhook not ready, checking again in 10s (total time waited: $((okay * 10))s)..."
     okay=$((okay+1))
