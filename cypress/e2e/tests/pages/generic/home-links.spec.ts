@@ -4,7 +4,7 @@ import HomePagePo from '@/cypress/e2e/po/pages/home.po';
 
 const RANCHER_PRIME_LINK = 'https://www.suse.com/products/rancher';
 
-describe('Home Page Support Links', { tags: ['@generic', '@adminUser', '@standardUser'] }, () => {
+describe('Home Page Support Links', { tags: ['@generic2', '@adminUser', '@standardUser'] }, () => {
   const homePage = new HomePagePo();
 
   before(() => {

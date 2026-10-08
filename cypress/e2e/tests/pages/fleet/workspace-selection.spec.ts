@@ -9,7 +9,7 @@ import { FLEET_DEFAULT_WORKSPACE } from '@/cypress/e2e/blueprints/fleet/gitrepos
 
 const defaultWorkspace = FLEET_DEFAULT_WORKSPACE;
 
-describe('Fleet workspace selection', { tags: ['@fleet', '@adminUser'] }, () => {
+describe('Fleet workspace selection', { tags: ['@fleet2', '@adminUser'] }, () => {
   const appBundlesPage = new FleetApplicationListPagePo();
   const fleetDashboardPage = new FleetDashboardListPagePo('_');
   const homePage = new HomePagePo();

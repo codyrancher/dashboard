@@ -13,11 +13,11 @@ let removeMappings = false;
 const mappingsNameList = [];
 const downloadsFolder = Cypress.config('downloadsFolder');
 
-describe('Bundle Namespace Mappings', { testIsolation: false, tags: ['@fleet', '@adminUser'] }, () => {
+describe('Bundle Namespace Mappings', { testIsolation: false, tags: ['@fleet2', '@adminUser'] }, () => {
   const fleetBundleNsMappingsListPage = new FleetBundleNamespaceMappingListPagePo();
   const headerPo = new HeaderPo();
 
-  describe('CRUD', { tags: ['@fleet', '@adminUser'] }, () => {
+  describe('CRUD', { tags: ['@fleet2', '@adminUser'] }, () => {
     before(() => {
       cy.login();
       cy.createE2EResourceName('fleet-mapping').then((name) => {

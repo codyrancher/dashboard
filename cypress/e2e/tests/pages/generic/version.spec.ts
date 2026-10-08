@@ -13,7 +13,7 @@ function interceptAndChangeVersion(version: string) {
   });
 }
 
-describe('App Bar Version Number', { testIsolation: false, tags: ['@generic', '@adminUser', '@standardUser'] }, () => {
+describe('App Bar Version Number', { testIsolation: false, tags: ['@generic2', '@adminUser', '@standardUser'] }, () => {
   const nav = new ProductNavPo();
 
   before(() => {

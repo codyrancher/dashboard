@@ -1,9 +1,9 @@
 import { WorkloadsPodsListPagePo } from '@/cypress/e2e/po/pages/explorer/workloads-pods.po';
-import { SMALL_CONTAINER } from '@/cypress/e2e/tests/pages/explorer2/workloads/workload.utils';
+import { SMALL_CONTAINER } from '@/cypress/e2e/tests/pages/explorer3/workloads/workload.utils';
 import Shell from '@/cypress/e2e/po/components/shell.po';
 import { LONG_TIMEOUT_OPT } from '@/cypress/support/utils/timeouts';
 
-describe('Pod container picker', { tags: ['@explorer2', '@adminUser'] }, () => {
+describe('Pod container picker', { tags: ['@explorer4', '@adminUser'] }, () => {
   const podsListPage = new WorkloadsPodsListPagePo('local');
   const shell = new Shell();
 

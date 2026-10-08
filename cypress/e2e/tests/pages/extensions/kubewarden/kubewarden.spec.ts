@@ -52,7 +52,7 @@ function verifyKubewardenInstalledDetails(extensionsPo: ExtensionsPagePo) {
   extensionsPo.extensionDetailsCloseClick();
 }
 
-describe('Kubewarden Extension', { tags: ['@extensions', '@adminUser'] }, () => {
+describe('Kubewarden Extension', { tags: ['@extensions2', '@adminUser'] }, () => {
   before(() => {
     catchTargetPageException(['Navigation cancelled', 'Network Error']);
     cy.login();

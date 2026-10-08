@@ -2,7 +2,7 @@ import HomePagePo from '@/cypress/e2e/po/pages/home.po';
 import BurgerMenuPo from '@/cypress/e2e/po/side-bars/burger-side-menu.po';
 import ProductNavPo from '@/cypress/e2e/po/side-bars/product-side-nav.po';
 
-describe('Side navigation: Cluster links', { tags: ['@navigation', '@adminUser'] }, () => {
+describe('Side navigation: Cluster links', { tags: ['@navigation2', '@adminUser'] }, () => {
   beforeEach(() => {
     cy.login();
 

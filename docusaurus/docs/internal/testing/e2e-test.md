@@ -356,7 +356,9 @@ More info about cypress-grep plugin can be found [here](https://www.npmjs.com/pa
 ### E2E with feature tags
 
 As part of parallelization process and identification of features, tags have been added following the file tree structure of `cypress/e2e/tests/pages`.
-These are the added specs tags for each category: `@components`, `@navigation`, `@charts`, `@explorer`, `@extensions`, `@fleet`, `@generic`, `@globalSettings`, `@manager`, `@userMenu`, `@usersAndAuths`.
+These are the added specs tags for each category: `@components`, `@navigation`, `@navigation2`, `@navigation3`, `@charts`, `@explorer`, `@explorer2`, `@explorer3`, `@explorer4`, `@explorer5`, `@explorer6`, `@extensions`, `@extensions2`, `@virtualizationMgmt`, `@virtualizationMgmt2`, `@fleet`, `@fleet2`, `@generic`, `@generic2`, `@globalSettings`, `@globalSettings2`, `@manager`, `@manager2`, `@manager3`, `@userMenu`, `@usersAndAuths`, `@usersAndAuths2`.
+
+A numbered tag such as `@explorer2` exists only to keep a CI job short. It holds specs moved out of the tag before it.
 
 ### E2E tests parallelization in CI
 
@@ -375,7 +377,20 @@ matrix:
     ['@navigation', '@extensions'],
     ['@charts'],
     ['@explorer'],
-    ['@fleet'],
+    ['@explorer2'],
+    ['@explorer3'],
+    ['@explorer4'],
+    ['@navigation2'],
+    ['@navigation3', '@extensions2'],
+    ['@manager2'],
+    ['@manager3'],
+    ['@globalSettings2'],
+    ['@explorer5'],
+    ['@explorer6'],
+    ['@usersAndAuths2'],
+    ['@virtualizationMgmt', '@fleet'],
+    ['@virtualizationMgmt2', '@generic2'],
+    ['@fleet2'],
     ['@generic', '@globalSettings'],
     ['@manager'],
     ['@userMenu', '@usersAndAuths'],

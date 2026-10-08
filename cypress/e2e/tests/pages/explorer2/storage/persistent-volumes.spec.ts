@@ -3,7 +3,7 @@ import { generatePersistentVolumesDataSmall, persistentVolumesNoData } from '@/c
 
 const persistentVolumesPagePo = new PersistentVolumesPagePo();
 
-describe('PersistentVolumes', { testIsolation: false, tags: ['@explorer2', '@adminUser'] }, () => {
+describe('PersistentVolumes', { testIsolation: false, tags: ['@explorer6', '@adminUser'] }, () => {
   before(() => {
     cy.login();
   });

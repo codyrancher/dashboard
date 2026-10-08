@@ -3,11 +3,11 @@ import HomePagePo from '@/cypress/e2e/po/pages/home.po';
 import SortableTablePo from '@/cypress/e2e/po/components/sortable-table.po';
 import ClusterDashboardPagePo from '@/cypress/e2e/po/pages/explorer/cluster-dashboard.po';
 import { generateJobsDataSmall } from '@/cypress/e2e/blueprints/explorer/workloads/jobs/jobs-get';
-import { SMALL_CONTAINER } from '@/cypress/e2e/tests/pages/explorer2/workloads/workload.utils';
+import { SMALL_CONTAINER } from '@/cypress/e2e/tests/pages/explorer3/workloads/workload.utils';
 import { MEDIUM_TIMEOUT_OPT } from '@/cypress/support/utils/timeouts';
 import { catchTargetPageException } from '@/cypress/support/utils/exception-utils';
 
-describe('Jobs', { testIsolation: false, tags: ['@explorer2', '@adminUser'] }, () => {
+describe('Jobs', { testIsolation: false, tags: ['@explorer3', '@adminUser'] }, () => {
   const localCluster = 'local';
 
   before(() => {

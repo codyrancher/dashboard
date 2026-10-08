@@ -7,7 +7,7 @@ import { generateCertManagerForIssuerCreate } from '@/cypress/e2e/blueprints/oth
  * blueprints/other-products/cert-manager) and the create request is stubbed. This exercises the
  * config-type switching and the per-type validation without a live cert-manager install.
  */
-describe('Cert Manager issuer create', { tags: ['@extensions', '@adminUser'] }, () => {
+describe('Cert Manager issuer create', { tags: ['@extensions2', '@adminUser'] }, () => {
   const ISSUER_URL = '/k8s/clusters/local/v1/cert-manager.io.issuer';
   const CLUSTER_ISSUER_URL = '/k8s/clusters/local/v1/cert-manager.io.clusterissuer';
 

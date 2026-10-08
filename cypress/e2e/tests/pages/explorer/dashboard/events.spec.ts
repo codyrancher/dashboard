@@ -3,7 +3,7 @@ import { EventsPageListPo } from '@/cypress/e2e/po/pages/explorer/events.po';
 import { generateEventsDataSmall } from '@/cypress/e2e/blueprints/explorer/cluster/events';
 import LoadingPo from '@/cypress/e2e/po/components/loading.po';
 import SortableTablePo from '@/cypress/e2e/po/components/sortable-table.po';
-import { SMALL_CONTAINER } from '@/cypress/e2e/tests/pages/explorer2/workloads/workload.utils';
+import { SMALL_CONTAINER } from '@/cypress/e2e/tests/pages/explorer3/workloads/workload.utils';
 
 const cluster = 'local';
 const clusterDashboard = new ClusterDashboardPagePo(cluster);
@@ -24,7 +24,7 @@ const countHelper = {
   getCount: () => cy.get('@count').then((count) => count as any as number),
 };
 
-describe('Events', { testIsolation: false, tags: ['@explorer', '@adminUser'] }, () => {
+describe('Events', { testIsolation: false, tags: ['@explorer5', '@adminUser'] }, () => {
   before(() => {
     cy.login();
   });
