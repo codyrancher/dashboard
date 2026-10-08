@@ -89,7 +89,6 @@ jobs:
           ['@navigation2'],
           ['@manager2'],
           ['@globalSettings2'],
-          ['@fleet2'],
           ['@explorer5'],
           ['@usersAndAuths2'],
           ['@virtualizationMgmt', '@fleet'],
@@ -106,8 +105,6 @@ jobs:
             features: ['@navigation2']
           - role: { username: 'standard_user', tag: '@standardUser' }
             features: ['@manager2']
-          - role: { username: 'standard_user', tag: '@standardUser' }
-            features: ['@fleet2']
           - role: { username: 'standard_user', tag: '@standardUser' }
             features: ['@explorer5']
           - role: { username: 'standard_user', tag: '@standardUser' }
