@@ -164,12 +164,18 @@ jobs:
           path: ${{ env.E2E_IMAGE_LIST }}
           key: e2e-images-${{ hashFiles(env.E2E_IMAGE_LIST) }}
 
+      # One job takes Rancher through its first login in the browser, with the setup spec. The others do it by API
       - name: Setup Rancher and user
         if: ${{ steps.has-tests.outputs.found != 'false' }}
         timeout-minutes: 6
         run: |
-          yarn e2e:prod
+          if [ "$UI_SETUP" == "true" ]; then
+            yarn e2e:prod
+          else
+            ./scripts/e2e-bootstrap
+          fi
         env: 
+          UI_SETUP: ${{ matrix.role.tag == '@adminUser' && matrix.features[0] == '@components' }}
           RANCHER_VERSION: ${{ needs.extract-e2e-runtime-rancher-version.outputs.runtime-rancher-version }}
           GREP_TAGS: ${{ matrix.role.tag }}Setup+${{ matrix.features[0] }} --@jenkins ${{ matrix.role.tag }}Setup+${{ matrix.features[1] || matrix.features[0] }} --@jenkins
           TEST_USERNAME: admin
