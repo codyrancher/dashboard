@@ -14,7 +14,7 @@ describe('Home Links', { testIsolation: false }, () => {
     HomePagePo.goTo();
   });
 
-  it('can hide or show default links on the Home Page', { tags: ['@globalSettings2', '@adminUser'] }, () => {
+  it('can hide or show default links on the Home Page', { tags: ['@globalSettings', '@adminUser'] }, () => {
     HomeLinksPagePo.navTo();
 
     // Hide all links
@@ -48,7 +48,7 @@ describe('Home Links', { testIsolation: false }, () => {
     homePage.supportLinks().should('have.length', 6);
   });
 
-  it('can add and remove custom links', { tags: ['@globalSettings2', '@adminUser'] }, () => {
+  it('can add and remove custom links', { tags: ['@globalSettings', '@adminUser'] }, () => {
     // Note: Dynamically stubbing responses here to apply/remove the custom link.
     // Test will fail unexpectedly without stubbing the response due to a race condition
     // where appling/remove custom links does not happen as expected.
@@ -81,14 +81,14 @@ describe('Home Links', { testIsolation: false }, () => {
     homePage.supportLinks().contains(customLinkName).should('not.exist');
   });
 
-  it('standard user has only read access to Home Links page', { tags: ['@globalSettings2', '@standardUser'] }, () => {
+  it('standard user has only read access to Home Links page', { tags: ['@globalSettings', '@standardUser'] }, () => {
     // verify action buttons/checkboxes are hidden for standard user
     HomeLinksPagePo.navTo();
     homeLinksPage.selectCheckbox(0).checkNotExists();
     homeLinksPage.applyButton().checkNotExists();
   });
 
-  it('cleans custom links', { tags: ['@globalSettings2', '@adminUser'] }, () => {
+  it('cleans custom links', { tags: ['@globalSettings', '@adminUser'] }, () => {
     const customLinkName = `${ runPrefix }-custom-link2`;
     const customLinkUrl = `javascript:window.alert(window)`;
 

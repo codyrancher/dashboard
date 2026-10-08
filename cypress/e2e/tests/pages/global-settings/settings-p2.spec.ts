@@ -34,7 +34,7 @@ describe('Settings', { testIsolation: false }, () => {
     });
   });
 
-  it('can update but not reset server-url', { tags: ['@globalSettings2', '@adminUser'] }, () => {
+  it('can update but not reset server-url', { tags: ['@globalSettings', '@adminUser'] }, () => {
     // The server-url can not be reset as there is no default -
     // so we're not updating the value of the server-url -
     // only checking that the api request is sent and that the reset button is disabled
@@ -83,7 +83,7 @@ describe('Settings', { testIsolation: false }, () => {
     });
   });
 
-  it('can validate server-url', { tags: ['@globalSettings2', '@adminUser'] }, () => {
+  it('can validate server-url', { tags: ['@globalSettings', '@adminUser'] }, () => {
     SettingsPagePo.navTo();
     settingsPage.waitForUrlPathWithoutContext();
 
@@ -122,7 +122,7 @@ describe('Settings', { testIsolation: false }, () => {
     });
   });
 
-  it('can update ui-dashboard-index', { tags: ['@globalSettings2', '@adminUser'] }, () => {
+  it('can update ui-dashboard-index', { tags: ['@globalSettings', '@adminUser'] }, () => {
     // Update setting
     SettingsPagePo.navTo();
     settingsPage.editSettingsByLabel('ui-dashboard-index');
@@ -160,7 +160,7 @@ describe('Settings', { testIsolation: false }, () => {
     resetSettings.push('ui-dashboard-index');
   });
 
-  it('can update ui-offline-preferred', { tags: ['@globalSettings2', '@adminUser'] }, () => {
+  it('can update ui-offline-preferred', { tags: ['@globalSettings', '@adminUser'] }, () => {
     SettingsPagePo.navTo();
     settingsPage.waitForUrlPathWithoutContext();
 
@@ -249,7 +249,7 @@ describe('Settings', { testIsolation: false }, () => {
     resetSettings.push('ui-offline-preferred');
   });
 
-  it('can update ui-brand', { tags: ['@noPrime', '@globalSettings2', '@adminUser'] }, () => {
+  it('can update ui-brand', { tags: ['@noPrime', '@globalSettings', '@adminUser'] }, () => {
     // We probably want a better way to distinguish between rancher and suse logos. I'm doing this as part of the vue3 migration and trying to keep things as similar as possible.
     const rancherLogoWidth = 167;
     const suseRancherLogoWidth = 200;
@@ -307,7 +307,7 @@ describe('Settings', { testIsolation: false }, () => {
     resetSettings.push('ui-brand');
   });
 
-  it('can update hide-local-cluster', { tags: ['@globalSettings2', '@adminUser'] }, () => {
+  it('can update hide-local-cluster', { tags: ['@globalSettings', '@adminUser'] }, () => {
     // Update setting
     SettingsPagePo.navTo();
     settingsPage.editSettingsByLabel('hide-local-cluster');
@@ -342,7 +342,7 @@ describe('Settings', { testIsolation: false }, () => {
     resetSettings.push('hide-local-cluster');
   });
 
-  it('can update k3s-based-upgrader-uninstall-concurrency', { tags: ['@globalSettings2', '@adminUser'] }, () => {
+  it('can update k3s-based-upgrader-uninstall-concurrency', { tags: ['@globalSettings', '@adminUser'] }, () => {
     // Update setting
     SettingsPagePo.navTo();
     settingsPage.editSettingsByLabel('k3s-based-upgrader-uninstall-concurrency');
@@ -380,7 +380,7 @@ describe('Settings', { testIsolation: false }, () => {
     resetSettings.push('k3s-based-upgrader-uninstall-concurrency');
   });
 
-  it('can update system-agent-upgrader-install-concurrency', { tags: ['@globalSettings2', '@adminUser'] }, () => {
+  it('can update system-agent-upgrader-install-concurrency', { tags: ['@globalSettings', '@adminUser'] }, () => {
     // Update setting
     SettingsPagePo.navTo();
     settingsPage.editSettingsByLabel('system-agent-upgrader-install-concurrency');
@@ -402,7 +402,7 @@ describe('Settings', { testIsolation: false }, () => {
     resetSettings.push('system-agent-upgrader-install-concurrency');
   });
 
-  it('can update system-default-registry', { tags: ['@globalSettings2', '@adminUser'] }, () => {
+  it('can update system-default-registry', { tags: ['@globalSettings', '@adminUser'] }, () => {
     // Reset to a known page first. testIsolation is off and this test ends deep on the
     // cluster-create page, so on a retry the burger-menu nav below would otherwise run
     // against a page whose side-menu never renders.
@@ -453,7 +453,7 @@ describe('Settings', { testIsolation: false }, () => {
     resetSettings.push('system-default-registry');
   });
 
-  it('standard user has only read access to Settings page', { tags: ['@globalSettings2', '@standardUser'] }, () => {
+  it('standard user has only read access to Settings page', { tags: ['@globalSettings', '@standardUser'] }, () => {
     // verify action buttons are hidden for standard user
     SettingsPagePo.navTo();
     settingsPage.actionButtonByLabel('password-min-length').should('not.exist');
