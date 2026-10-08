@@ -1,4 +1,4 @@
-import { SMALL_CONTAINER } from '@/cypress/e2e/tests/pages/explorer2/workloads/workload.utils';
+import { SMALL_CONTAINER } from '@/cypress/e2e/tests/pages/explorer3/workloads/workload.utils';
 import { CYPRESS_SAFE_RESOURCE_REVISION } from '../../../blueprint.utils';
 
 export const createDeploymentBlueprint = {

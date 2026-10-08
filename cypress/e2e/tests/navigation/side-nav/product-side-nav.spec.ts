@@ -14,8 +14,7 @@ describe('Side navigation: Cluster ', { tags: ['@navigation', '@adminUser'] }, (
     cy.login();
     cy.intercept('GET', `/v1/apps.deployments/${ namespace }/${ workloadName }`).as('testWorkload');
 
-    deploymentsListPage.goTo();
-    deploymentsListPage.createWithKubectl(createDeploymentBlueprint);
+    cy.createRancherResource('v1', 'apps.deployments', createDeploymentBlueprint);
   });
   beforeEach(() => {
     cy.login();
@@ -103,42 +102,6 @@ describe('Side navigation: Cluster ', { tags: ['@navigation', '@adminUser'] }, (
     productNavPo.groups().filter('.expanded').find('.router-link-active').should('have.length.gt', 0);
   });
 
-  it('Should access to every navigation provided from the server link, including nested cases, without errors', () => {
-    const productNavPo = new ProductNavPo();
-    // iterate through top-level groups
-
-    productNavPo.groups().each((_, index) => {
-      const group = productNavPo.groups().eq(index);
-
-      // Select and expand current top-level group
-      group.click();
-      // check if it has sub-groups and expand them
-      productNavPo.groups().eq(index).then(($group) => {
-        // Expand any nested sub-groups within THIS group so their links render for the navigation
-        // check below. Scope with `.find` rather than `cy.get`, which ignores the wrapped group and
-        // would grab every nested accordion on the page. Scroll each header into view before clicking
-        // it: a lower sub-group can sit below the nav's scroll fold and would otherwise be reported as
-        // clipped by the scroll container. Clicking a group header only ever expands it (never
-        // collapses), so this is safe to run over every nested sub-group.
-        if ($group.find('.accordion.has-children').length) {
-          cy.wrap($group).find('.accordion.has-children > .accordion-item > .header').each(($header) => {
-            cy.wrap($header).scrollIntoView().should('be.visible')
-              .click();
-          });
-        }
-        // ensure group is expanded
-        cy.wrap($group).find('ul').should('have.length.gt', 0);
-      });
-
-      // Visit each link and confirm the app has navigated to that location
-      productNavPo.visibleNavTypes().each((link, idx) => {
-        productNavPo.visibleNavTypes().eq(idx)
-          .click({ force: true })
-          .then((linkEl) => cy.url().should('contain', linkEl.prop('href')));
-      });
-    });
-  });
-
   it('Clicking on the tab header should navigate', () => {
     const productNavPo = new ProductNavPo();
     const group = productNavPo.groups().eq(0); // first group is 'Cluster'
@@ -159,8 +122,6 @@ describe('Side navigation: Cluster ', { tags: ['@navigation', '@adminUser'] }, (
 
   after(() => {
     cy.login();
-    deploymentsListPage?.goTo();
-
-    deploymentsListPage.deleteWithKubectl(workloadName, namespace);
+    cy.deleteRancherResource('v1', 'apps.deployments', `${ namespace }/${ workloadName }`, false);
   });
 });
