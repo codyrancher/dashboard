@@ -43,7 +43,7 @@ function harvesterExtensionCatalog(version: Cypress.RancherVersion) {
 // page, so skip the scroll.
 const waitForExtensionTabs = () => extensionsPo.extensionTabs.checkVisible(LONG_TIMEOUT_OPT, { scrollIntoView: false });
 
-describe('Harvester', { tags: ['@virtualizationMgmt', '@adminUser'] }, () => {
+describe('Harvester', { tags: ['@virtualizationMgmt2', '@adminUser'] }, () => {
   before(() => {
     cy.login();
 
