@@ -14,8 +14,7 @@ describe('Side navigation: Cluster ', { tags: ['@navigation2', '@adminUser'] }, 
     cy.login();
     cy.intercept('GET', `/v1/apps.deployments/${ namespace }/${ workloadName }`).as('testWorkload');
 
-    deploymentsListPage.goTo();
-    deploymentsListPage.createWithKubectl(createDeploymentBlueprint);
+    cy.createRancherResource('v1', 'apps.deployments', createDeploymentBlueprint);
   });
   beforeEach(() => {
     cy.login();
@@ -164,8 +163,6 @@ describe('Side navigation: Cluster ', { tags: ['@navigation2', '@adminUser'] }, 
 
   after(() => {
     cy.login();
-    deploymentsListPage?.goTo();
-
-    deploymentsListPage.deleteWithKubectl(workloadName, namespace);
+    cy.deleteRancherResource('v1', 'apps.deployments', `${ namespace }/${ workloadName }`, false);
   });
 });
