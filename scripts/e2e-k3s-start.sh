@@ -127,6 +127,14 @@ if [ "$KUBE_TYPE" = "K3S" ]; then
   sudo k3s kubectl config view --raw > "$KUBECONFIG"
   chmod 600 "$KUBECONFIG"
 
+  # The install returns once the k3s service has started, which can be before its API answers
+  echo "Waiting for the k3s API to be ready.........."
+  okay=0
+  until [ "$(kubectl get --raw /readyz 2> /dev/null)" == "ok" ] || [ $okay -ge 60 ]; do
+    okay=$((okay+1))
+    sleep 2
+  done
+
   # Pull the Rancher image, and the images the last run ended up with, while everything else is set up
   {
     echo "${RANCHER_IMG_REGISTRY:+$RANCHER_IMG_REGISTRY/}${RANCHER_IMG_REPO}:${RANCHER_IMG_TAG}"
