@@ -1,0 +1,115 @@
+#!/usr/bin/env node
+
+/**
+ * Takes a freshly started Rancher through its first-login setup by API, leaving it as the
+ * `rancher-setup` e2e spec does: the terms accepted, the server URL set, first login done,
+ * and a `standard_user` with the `user` global role who is a member of the Default project.
+ *
+ * Usage: API=https://127.0.0.1.sslip.io CATTLE_BOOTSTRAP_PASSWORD=password ./scripts/e2e-bootstrap
+ */
+
+const {
+  request, send, expectStatus, sleep, login, createUser
+} = require('./e2e-users');
+
+const ADMIN_USERNAME = 'admin';
+const STANDARD_USERNAME = 'standard_user';
+const SETTINGS = '/v1/management.cattle.io.settings';
+
+const api = (process.env.API || (process.env.TEST_BASE_URL || '').replace(/\/dashboard\/?$/, '')).replace(/\/$/, '');
+const password = process.env.CATTLE_BOOTSTRAP_PASSWORD || process.env.TEST_PASSWORD;
+
+async function getSetting(token, id) {
+  const res = await request(api, 'GET', `${ SETTINGS }/${ id }`, { token });
+
+  return res.status === 200 ? res.body : undefined;
+}
+
+async function setSetting(token, id, value) {
+  const setting = await getSetting(token, id);
+
+  if (setting) {
+    await expectStatus(send(api, 'PUT', `${ SETTINGS }/${ id }`, { token, body: { ...setting, value } }), 200, `Setting ${ id }`);
+  } else {
+    await expectStatus(send(api, 'POST', SETTINGS, {
+      token,
+      body: {
+        type: 'management.cattle.io.setting', metadata: { name: id }, value
+      }
+    }), 201, `Creating setting ${ id }`);
+  }
+}
+
+async function main() {
+  if (!api || !password) {
+    throw new Error('API (or TEST_BASE_URL) and CATTLE_BOOTSTRAP_PASSWORD (or TEST_PASSWORD) are required');
+  }
+
+  const token = await login(api, ADMIN_USERNAME, password);
+
+  if ((await getSetting(token, 'first-login'))?.value === 'false') {
+    console.log('First login is already done');
+  } else {
+    await setSetting(token, 'eula-agreed', new Date().toISOString());
+    await setSetting(token, 'server-url', api);
+    await setSetting(token, 'first-login', 'false');
+
+    const version = (await getSetting(token, 'server-version'))?.value;
+    const preferences = (await request(api, 'GET', '/v1/userpreferences', { token })).body?.data?.[0];
+
+    if (version && preferences) {
+      // What the home page records the first time it is opened
+      await expectStatus(send(api, 'PUT', `/v1/userpreferences/${ preferences.id }`, {
+        token, body: { ...preferences, data: { ...preferences.data, 'seen-whatsnew': JSON.stringify(version) } }
+      }), 200, 'Saving the admin preferences');
+    }
+
+    console.log(`First login done, server URL is ${ api }`);
+  }
+
+  const users = await expectStatus(send(api, 'GET', '/v1/management.cattle.io.users', { token }), 200, 'Listing users');
+
+  if (users.body.data.some((user) => user.username === STANDARD_USERNAME)) {
+    console.log(`${ STANDARD_USERNAME } already exists`);
+  } else {
+    const { id, principalId } = await createUser(api, token, STANDARD_USERNAME, password);
+    const projects = await expectStatus(send(api, 'GET', '/v3/projects?name=Default&clusterId=local', { token }), 200, 'Finding the Default project');
+    const project = projects.body.data[0];
+
+    if (!project) {
+      throw new Error('The local cluster has no Default project yet');
+    }
+
+    await expectStatus(send(api, 'POST', '/v3/globalrolebindings', {
+      token, body: {
+        type: 'globalRoleBinding', globalRoleId: 'user', userId: id
+      }
+    }), 201, 'Giving the standard user its global role');
+    await expectStatus(send(api, 'POST', '/v3/projectroletemplatebindings', {
+      token,
+      body: {
+        type: 'projectroletemplatebinding', roleTemplateId: 'project-member', userPrincipalId: principalId, projectId: project.id
+      }
+    }), 201, 'Adding the standard user to the Default project');
+
+    console.log(`Created ${ STANDARD_USERNAME }`);
+  }
+
+  for (let i = 0; i < 30; i++) {
+    try {
+      await login(api, STANDARD_USERNAME, password);
+      console.log('Rancher is set up');
+
+      return;
+    } catch (err) {
+      await sleep(2000);
+    }
+  }
+
+  throw new Error(`${ STANDARD_USERNAME } could not log in after it was created`);
+}
+
+main().catch((err) => {
+  console.error(`::error::${ err.message }`);
+  process.exit(1);
+});
