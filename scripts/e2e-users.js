@@ -122,14 +122,23 @@ async function createUser(api, adminToken, username, password) {
   let id = created.body?.id;
 
   if (created.status === 201) {
-    await expectStatus(request(api, 'POST', '/v1/secrets', {
+    const setPassword = () => request(api, 'POST', '/v1/secrets', {
       token: adminToken,
       body:  {
         type:     'secret',
         metadata: { namespace: 'cattle-local-user-passwords', name: id },
         data:     { password: Buffer.from(password).toString('base64') }
       }
-    }), 201, `Setting the password of ${ username }`);
+    });
+    let secret = await setPassword();
+
+    // Rancher's webhook rejects the secret until it has seen the new user
+    for (let i = 0; i < 20 && secret.status === 400; i++) {
+      await sleep(500);
+      secret = await setPassword();
+    }
+
+    await expectStatus(Promise.resolve(secret), 201, `Setting the password of ${ username }`);
   } else {
     // Rancher before v2.13 creates users, with their password, through the v3 API
     created = await expectStatus(request(api, 'POST', '/v3/users', {
