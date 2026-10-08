@@ -235,13 +235,14 @@ async function main() {
 
   const parallelTags = withTag(grepTags, PARALLEL_TAG);
   const serialTags = `${ grepTags } --${ PARALLEL_TAG }`;
-  const parallelSpecs = matchingSpecs(parallelTags);
-  const serialSpecs = matchingSpecs(serialTags);
+  const parallelSpecs = workers < 2 ? [] : matchingSpecs(parallelTags);
   const codes = [];
 
-  if (workers < 2 || parallelSpecs.length < 2) {
+  if (parallelSpecs.length < 2) {
     return runInOneProcess();
   }
+
+  const serialSpecs = matchingSpecs(serialTags);
 
   const groups = split(parallelSpecs, workers);
   const api = (process.env.API || (process.env.TEST_BASE_URL || '').replace(/\/dashboard\/?$/, '')).replace(/\/$/, '');
