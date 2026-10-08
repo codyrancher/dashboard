@@ -420,6 +420,30 @@ if [ $okay -eq $wait ]; then
   reprovision "CAPI webhook service did not become available in a reasonable time"
 fi
 
+# Rancher deploys its webhook a second time, usually within a minute of the first, and requests the
+# webhook has to admit fail while its pod is replaced. Wait for that second release to roll out
+echo "Waiting for rancher-webhook to be deployed a second time..."
+okay=0
+while [ $okay -lt 45 ] ; do
+  revision=$(kubectl -n cattle-system get secrets -l owner=helm,name=rancher-webhook,status=deployed -o jsonpath='{.items[0].metadata.labels.version}' 2> /dev/null)
+
+  if [ "${revision:-0}" -ge 2 ]; then
+    break
+  else
+    if [ $((okay % 5)) -eq 0 ]; then
+      echo "rancher-webhook is at its first release (total time waited: $((okay * poll))s)..."
+    fi
+    okay=$((okay+1))
+    sleep $poll
+  fi
+done
+
+if [ $okay -eq 45 ]; then
+  echo "rancher-webhook was not deployed a second time, carrying on with the first"
+fi
+
+kubectl -n cattle-system rollout status deploy/rancher-webhook --timeout=120s || true
+
 echo "Waiting for rancher imperative api to be running..."
 okay=0
 while [ $okay -lt $wait ] ; do
