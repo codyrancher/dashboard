@@ -26,6 +26,7 @@ env:
 
   E2E_RANCHER_LOG: rancher.log
   E2E_RANCHER_START_LOG: rancher-start.log
+  E2E_IMAGE_LIST: e2e-images.txt
   CYPRESS_VERIFY_TIMEOUT: 120000
   E2E_BUILD_DIST_NAME: dist
   E2E_BUILD_DIST_DIR: dist
@@ -114,10 +115,18 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           fetch-depth: 1
+      - name: Restore the list of images to pull early
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.E2E_IMAGE_LIST }}
+          key: e2e-images-${{ github.run_id }}
+          restore-keys: e2e-images-
+
       - name: Start Rancher in the background
         run: |
           nohup bash -c './scripts/e2e-k3s-start.sh > "$E2E_RANCHER_START_LOG" 2>&1; echo $? > "$E2E_RANCHER_START_LOG.exit"' > /dev/null 2>&1 &
         env:
+          IMAGE_LIST: ${{ env.E2E_IMAGE_LIST }}
           DOWNLOAD_UIS: true
           GH_TOKEN: ${{ github.token }}
 
@@ -148,6 +157,13 @@ jobs:
           kill $!
           exit "$(cat "$E2E_RANCHER_START_LOG.exit")"
       
+      - name: Save the list of images to pull early
+        if: ${{ steps.has-tests.outputs.found != 'false' && matrix.role.tag == '@adminUser' && matrix.features[0] == '@components' }}
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.E2E_IMAGE_LIST }}
+          key: e2e-images-${{ hashFiles(env.E2E_IMAGE_LIST) }}
+
       - name: Setup Rancher and user
         if: ${{ steps.has-tests.outputs.found != 'false' }}
         timeout-minutes: 6
