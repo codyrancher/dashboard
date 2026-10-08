@@ -28,6 +28,8 @@ env:
   E2E_RANCHER_START_LOG: rancher-start.log
   E2E_IMAGE_LIST: e2e-images.txt
   CYPRESS_SKIP_VERIFY: true
+  # Cypress waits this long for the browser to connect before it launches it again (60 seconds unless set)
+  CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT: 30000
   E2E_BUILD_DIST_NAME: dist
   E2E_BUILD_DIST_DIR: dist
 
