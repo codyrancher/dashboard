@@ -4,6 +4,7 @@ import websocketTasks from './support/utils/webSocket-utils';
 import { CypressFailedAttempt, formatFailedCypressAttempt } from './support/utils/retry-logging';
 import path from 'path';
 import * as os from 'os';
+import * as fs from 'fs';
 const { removeDirectory } = require('cypress-delete-downloads-folder');
 const { beforeRunHook, afterRunHook } = require('cypress-mochawesome-reporter/lib');
 
@@ -174,6 +175,7 @@ const baseConfig = defineConfig({
   reporterOptions: {
     saveJson:        true,
     saveAllAttempts: true,
+    videoOnFailOnly: true,
     reportDir:       'cypress/reports'
   },
   e2e: {
@@ -260,6 +262,18 @@ const baseConfig = defineConfig({
             await afterRunHook();
           } catch (error) {
             console.error(error); // eslint-disable-line no-console
+          }
+        });
+
+        on('after:spec', (spec, results) => {
+          if (!results?.video) {
+            return;
+          }
+
+          const hasFailedAttempt = (results.tests || []).some((test) => test.attempts.some((attempt) => attempt.state === 'failed'));
+
+          if (!results.error && !results.stats?.failures && !hasFailedAttempt) {
+            fs.rmSync(results.video, { force: true });
           }
         });
       }
