@@ -7,8 +7,9 @@ if [ $# -eq 1 ]; then
   SPEC_ARG="--spec ${1}"
 fi
 
-# Run the specs tagged @parallel with several Cypress processes, see scripts/e2e-parallel
-if [ $# -eq 0 ] && [ -n "$GREP_TAGS" ] && [ "${E2E_PARALLEL_WORKERS:-1}" -gt 1 ]; then
+# With E2E_PARALLEL_WORKERS set, hand over to scripts/e2e-parallel. It stops a Cypress that has
+# gone silent and, with more than one worker, runs the tests tagged @parallel side by side
+if [ $# -eq 0 ] && [ -n "$GREP_TAGS" ] && [ -n "$E2E_PARALLEL_WORKERS" ]; then
   exec node "$(dirname "$0")/e2e-parallel"
 fi
 

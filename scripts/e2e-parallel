@@ -173,12 +173,16 @@ async function run(worker, grepTags, specs, username) {
  * Runs every spec in one Cypress process, as `scripts/e2e` does, and exits with its exit code
  */
 async function runInOneProcess() {
-  const single = () => watch('', path.join(__dirname, 'e2e'), [], { ...process.env, E2E_PARALLEL_WORKERS: '1' });
+  const env = { ...process.env };
+
+  delete env.E2E_PARALLEL_WORKERS;
+
+  const single = () => watch('', path.join(__dirname, 'e2e'), [], env);
   let result = await single();
 
   if (result.stalled && !result.started) {
     console.log('::warning::Cypress never started its first spec, running it again');
-    spawnSync('pkill', ['-9', '-f', 'Cypress|chrome|Xvfb']);
+    ['Cypress', 'chrome', 'Xvfb'].forEach((name) => spawnSync('pkill', ['-9', '-x', name]));
     result = await single();
   }
 
@@ -226,7 +230,7 @@ async function main() {
   }
 
   const grepTags = process.env.GREP_TAGS;
-  const workers = Number(process.env.E2E_PARALLEL_WORKERS || 2);
+  const workers = Number(process.env.E2E_PARALLEL_WORKERS || 1);
 
   if (!grepTags) {
     console.error('GREP_TAGS is required');
