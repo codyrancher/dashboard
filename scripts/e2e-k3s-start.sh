@@ -167,17 +167,15 @@ else
   exit 1
 fi
 
-echo "Installing cert-manager.........."
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.crds.yaml
-helm repo add jetstack https://charts.jetstack.io
-helm repo update
-helm install cert-manager jetstack/cert-manager \
-  --namespace cert-manager \
-  --create-namespace \
-  --version v1.7.1
-
-echo "Cert manager pods should be up"
-kubectl get pods --namespace cert-manager
+# Rancher is given its certificate and CA here, in place of installing cert-manager to issue them
+echo "Creating Rancher's certificates.........."
+CERTS=$(mktemp -d)
+openssl req -x509 -newkey rsa:2048 -nodes -days 365 -subj "/CN=e2e-ca" \
+  -keyout "$CERTS/ca.key" -out "$CERTS/cacerts.pem" || exit 1
+openssl req -newkey rsa:2048 -nodes -subj "/CN=$DASHBOARD_URL" \
+  -keyout "$CERTS/tls.key" -out "$CERTS/tls.csr" || exit 1
+openssl x509 -req -in "$CERTS/tls.csr" -CA "$CERTS/cacerts.pem" -CAkey "$CERTS/ca.key" -CAcreateserial -days 365 \
+  -extfile <(echo "subjectAltName=DNS:$DASHBOARD_URL") -out "$CERTS/tls.crt" || exit 1
 
 echo "Setting up Rancher Repo.........."
 RANCHER_HELM_REPO_NAME=rancher-helm
@@ -191,10 +189,14 @@ helm search repo $RANCHER_HELM_REPO_NAME --devel
 
 echo "Installing Rancher.........."
 kubectl create ns $RANCHER_NAMESPACE
+kubectl -n $RANCHER_NAMESPACE create secret tls tls-rancher-ingress --cert="$CERTS/tls.crt" --key="$CERTS/tls.key"
+kubectl -n $RANCHER_NAMESPACE create secret generic tls-ca --from-file=cacerts.pem="$CERTS/cacerts.pem"
 helm install rancher $RANCHER_HELM_REPO_NAME/rancher \
   --namespace cattle-system \
   --devel \
   --set hostname=$DASHBOARD_URL \
+  --set ingress.tls.source=secret \
+  --set privateCA=true \
   --set replicas="1" \
   --set systemDefaultRegistry=$RANCHER_IMG_REGISTRY \
   --set image.repository="$RANCHER_IMG_REPO" \
