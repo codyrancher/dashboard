@@ -512,7 +512,7 @@ if [ "$KUBE_TYPE" = "K3S" ]; then
   echo "::endgroup::"
 
   if [ -n "$IMAGE_LIST" ]; then
-    sudo k3s crictl images -o json | jq -r '.images[].repoTags[]?' | grep -v '<none>' | sort -u > "$IMAGE_LIST" || true
+    kubectl get pods --all-namespaces -o json | jq -r '.items[].spec | (.containers + (.initContainers // []))[].image' | sort -u > "$IMAGE_LIST" || true
     echo "Listed $(wc -l < "$IMAGE_LIST") images in $IMAGE_LIST"
   fi
 fi
