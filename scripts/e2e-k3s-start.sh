@@ -341,12 +341,15 @@ fi
 
 echo "Dashboard UI is ready"
 
-# wait 10 minutes (sleep 10 seconds * 60 iteration = 600 seconds = 10 minutes)
-# if it regularly takes 10 minutes we have problems...
-wait=60
+# Check every 2 seconds, and say so every 10
+poll=2
 
-# the webhook gets 4 minutes (sleep 10 seconds * 24 iterations), it either runs well inside that or never does
-webhook_wait=24
+# wait 10 minutes (sleep 2 seconds * 300 iteration = 600 seconds = 10 minutes)
+# if it regularly takes 10 minutes we have problems...
+wait=300
+
+# the webhook gets 4 minutes (sleep 2 seconds * 120 iterations), it either runs well inside that or never does
+webhook_wait=120
 
 # A Rancher that cannot get its impersonation service account tokens never deploys the webhook.
 # It logs this error for two service accounts every 30 seconds, and a healthy start never logs it.
@@ -361,9 +364,11 @@ while [ $okay -lt $webhook_wait ] ; do
   elif [ "$(kubectl -n cattle-system logs deploy/rancher --tail=-1 2>/dev/null | grep -c "$impersonation_error")" -ge $impersonation_error_max ]; then
     reprovision "Rancher cannot create its impersonation tokens, so the webhook will not start"
   else
-    echo "Webhook not ready, checking again in 10s (total time waited: $((okay * 10))s)..."
+    if [ $((okay % 5)) -eq 0 ]; then
+      echo "Webhook not ready (total time waited: $((okay * poll))s)..."
+    fi
     okay=$((okay+1))
-    sleep 10
+    sleep $poll
   fi
 done
 
@@ -374,18 +379,20 @@ fi
 echo "Waiting for capi-webhook-service to exist..."
 okay=0
 while [ $okay -lt $wait ] ; do
-  if kubectl -n cattle-capi-system get service capi-webhook-service | grep '443/TCP' ; then
+  if kubectl -n cattle-capi-system get service capi-webhook-service 2> /dev/null | grep '443/TCP' ; then
     break
   else
-    echo "capi-webhook-service does not exist, checking again in 10s (total time waited: $((okay * 10))s)..."
-    kubectl get service --all-namespaces
-    kubectl -n cattle-capi-system describe service capi-webhook-service
+    if [ $((okay % 5)) -eq 0 ]; then
+      echo "capi-webhook-service does not exist (total time waited: $((okay * poll))s)..."
+    fi
     okay=$((okay+1))
-    sleep 10
+    sleep $poll
   fi
 done
 
 if [ $okay -eq $wait ]; then
+  kubectl get service --all-namespaces
+  kubectl -n cattle-capi-system describe service capi-webhook-service
   reprovision "CAPI webhook service did not become available in a reasonable time"
 fi
 
@@ -397,9 +404,11 @@ while [ $okay -lt $wait ] ; do
   if [ "$STATUS" = "True" ]; then
     break
   else
-    echo "Rancher imperative api not ready, checking again in 10s (total time waited: $((okay * 10))s)..."
+    if [ $((okay % 5)) -eq 0 ]; then
+      echo "Rancher imperative api not ready (total time waited: $((okay * poll))s)..."
+    fi
     okay=$((okay+1))
-    sleep 10
+    sleep $poll
   fi
 done
 
