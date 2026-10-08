@@ -45,6 +45,26 @@ function request(api, method, path, { token, body } = {}) {
   });
 }
 
+/**
+ * Sends a request, again every 2 seconds for up to a minute while Rancher answers with a server
+ * error. Its webhook and aggregated API are briefly unavailable at times soon after it starts.
+ */
+async function send(api, method, path, options) {
+  let res;
+
+  for (let i = 0; i < 30; i++) {
+    res = await request(api, method, path, options);
+
+    if (res.status < 500) {
+      break;
+    }
+
+    await sleep(2000);
+  }
+
+  return res;
+}
+
 async function expectStatus(promise, expected, what) {
   const res = await promise;
 
@@ -77,7 +97,7 @@ async function login(api, username, password) {
 
   if (res.status === 404) {
     // Rancher before v2.13 only has the v3 login
-    const legacy = await expectStatus(request(api, 'POST', '/v3-public/localProviders/local?action=login', {
+    const legacy = await expectStatus(send(api, 'POST', '/v3-public/localProviders/local?action=login', {
       body: {
         username, password, responseType: 'json', description: 'e2e'
       }
@@ -98,7 +118,7 @@ async function login(api, username, password) {
 }
 
 async function schemaIds(api, token) {
-  const res = await expectStatus(request(api, 'GET', '/v1/schemas', { token }), 200, 'Listing schemas');
+  const res = await expectStatus(send(api, 'GET', '/v1/schemas', { token }), 200, 'Listing schemas');
 
   return new Set(res.body.data.map((schema) => schema.id));
 }
@@ -141,7 +161,7 @@ async function createUser(api, adminToken, username, password) {
     await expectStatus(Promise.resolve(secret), 201, `Setting the password of ${ username }`);
   } else {
     // Rancher before v2.13 creates users, with their password, through the v3 API
-    created = await expectStatus(request(api, 'POST', '/v3/users', {
+    created = await expectStatus(send(api, 'POST', '/v3/users', {
       token: adminToken,
       body:  {
         type: 'user', enabled: true, mustChangePassword: false, username, password
@@ -181,7 +201,7 @@ async function createUser(api, adminToken, username, password) {
  * @returns {Promise<string>} id of the new user
  */
 async function cloneUser(api, adminToken, username, password, newUsername) {
-  const users = await expectStatus(request(api, 'GET', '/v1/management.cattle.io.users', { token: adminToken }), 200, 'Listing users');
+  const users = await expectStatus(send(api, 'GET', '/v1/management.cattle.io.users', { token: adminToken }), 200, 'Listing users');
   const source = users.body.data.find((user) => user.username === username);
 
   if (!source) {
@@ -197,10 +217,10 @@ async function cloneUser(api, adminToken, username, password, newUsername) {
   const sourcePrincipals = source.principalIds || [];
   const isSources = (binding) => binding.userId === source.id || sourcePrincipals.includes(binding.userPrincipalId);
   const copyBindings = async(type, toBody) => {
-    const bindings = await expectStatus(request(api, 'GET', `/v3/${ type }s`, { token: adminToken }), 200, `Listing ${ type }s`);
+    const bindings = await expectStatus(send(api, 'GET', `/v3/${ type }s`, { token: adminToken }), 200, `Listing ${ type }s`);
 
     for (const binding of bindings.body.data.filter(isSources)) {
-      await expectStatus(request(api, 'POST', `/v3/${ type }s`, { token: adminToken, body: { type, ...toBody(binding) } }), 201, `Copying a ${ type }`);
+      await expectStatus(send(api, 'POST', `/v3/${ type }s`, { token: adminToken, body: { type, ...toBody(binding) } }), 201, `Copying a ${ type }`);
     }
   };
 
@@ -236,7 +256,7 @@ async function cloneUser(api, adminToken, username, password, newUsername) {
   const data = preferences.body?.data?.[0]?.data;
 
   if (data && Object.keys(data).length) {
-    await expectStatus(request(api, 'PUT', `/v1/userpreferences/${ id }`, {
+    await expectStatus(send(api, 'PUT', `/v1/userpreferences/${ id }`, {
       token,
       body: {
         id, type: 'userpreference', data
@@ -256,5 +276,5 @@ async function deleteUser(api, adminToken, id) {
 }
 
 module.exports = {
-  request, expectStatus, sleep, login, createUser, cloneUser, deleteUser
+  request, send, expectStatus, sleep, login, createUser, cloneUser, deleteUser
 };
