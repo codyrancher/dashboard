@@ -90,6 +90,7 @@ jobs:
           ['@explorer3'],
           ['@explorer4'],
           ['@navigation2'],
+          ['@navigation3', '@extensions2'],
           ['@manager2'],
           ['@globalSettings2'],
           ['@explorer5'],
@@ -107,6 +108,8 @@ jobs:
             features: ['@explorer4']
           - role: { username: 'standard_user', tag: '@standardUser' }
             features: ['@navigation2']
+          - role: { username: 'standard_user', tag: '@standardUser' }
+            features: ['@navigation3', '@extensions2']
           - role: { username: 'standard_user', tag: '@standardUser' }
             features: ['@fleet2']
           - role: { username: 'standard_user', tag: '@standardUser' }

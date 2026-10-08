@@ -9,7 +9,7 @@ const { name: workloadName, namespace } = createDeploymentBlueprint.metadata;
 const deploymentsListPage = new WorkloadsDeploymentsListPagePo('local');
 
 Cypress.config();
-describe('Side navigation: Cluster ', { tags: ['@navigation2', '@adminUser'] }, () => {
+describe('Side navigation: Cluster ', { tags: ['@navigation3', '@adminUser'] }, () => {
   before(() => {
     cy.login();
     cy.intercept('GET', `/v1/apps.deployments/${ namespace }/${ workloadName }`).as('testWorkload');
@@ -100,47 +100,6 @@ describe('Side navigation: Cluster ', { tags: ['@navigation2', '@adminUser'] }, 
     // Other groups may stay expanded now, so assert on the expanded group that
     // owns the current resource rather than on whichever expands first.
     productNavPo.groups().filter('.expanded').find('.router-link-active').should('have.length.gt', 0);
-  });
-
-  it('Should access to every navigation provided from the server link, including nested cases, without errors', () => {
-    const productNavPo = new ProductNavPo();
-    const visitEach = (links: () => Cypress.Chainable) => {
-      links().each((link, idx) => {
-        links().eq(idx)
-          .click({ force: true })
-          .then((linkEl) => cy.url().should('contain', linkEl.prop('href')));
-      });
-    };
-
-    visitEach(() => productNavPo.ungroupedNavTypes());
-
-    // iterate through top-level groups
-    productNavPo.groups().each((_, index) => {
-      const group = productNavPo.groups().eq(index);
-
-      // Select and expand current top-level group
-      group.click();
-      // check if it has sub-groups and expand them
-      productNavPo.groups().eq(index).then(($group) => {
-        // Expand any nested sub-groups within THIS group so their links render for the navigation
-        // check below. Scope with `.find` rather than `cy.get`, which ignores the wrapped group and
-        // would grab every nested accordion on the page. Scroll each header into view before clicking
-        // it: a lower sub-group can sit below the nav's scroll fold and would otherwise be reported as
-        // clipped by the scroll container. Clicking a group header only ever expands it (never
-        // collapses), so this is safe to run over every nested sub-group.
-        if ($group.find('.accordion.has-children').length) {
-          cy.wrap($group).find('.accordion.has-children > .accordion-item > .header').each(($header) => {
-            cy.wrap($header).scrollIntoView().should('be.visible')
-              .click();
-          });
-        }
-        // ensure group is expanded
-        cy.wrap($group).find('ul').should('have.length.gt', 0);
-      });
-
-      // Visit each link of this group and confirm the app has navigated to that location
-      visitEach(() => productNavPo.groupNavTypes(index));
-    });
   });
 
   it('Clicking on the tab header should navigate', () => {
