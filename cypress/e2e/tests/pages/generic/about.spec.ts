@@ -5,7 +5,7 @@ import { qase } from '@/cypress/support/qase';
 
 const aboutPage = new AboutPagePo();
 
-describe('About Page', { testIsolation: true, tags: ['@generic', '@adminUser', '@standardUser'] }, () => {
+describe('About Page', { testIsolation: true, tags: ['@generic2', '@adminUser', '@standardUser'] }, () => {
   beforeEach(() => {
     cy.login();
   });

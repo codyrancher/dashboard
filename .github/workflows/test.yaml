@@ -98,7 +98,7 @@ jobs:
           ['@explorer6'],
           ['@usersAndAuths2'],
           ['@virtualizationMgmt', '@fleet'],
-          ['@virtualizationMgmt2'],
+          ['@virtualizationMgmt2', '@generic2'],
           ['@fleet2'],
           ['@generic', '@globalSettings'],
           ['@manager'],
@@ -114,13 +114,11 @@ jobs:
           - role: { username: 'standard_user', tag: '@standardUser' }
             features: ['@navigation3', '@extensions2']
           - role: { username: 'standard_user', tag: '@standardUser' }
-            features: ['@virtualizationMgmt2']
+            features: ['@manager3']
           - role: { username: 'standard_user', tag: '@standardUser' }
             features: ['@fleet2']
           - role: { username: 'standard_user', tag: '@standardUser' }
             features: ['@manager2']
-          - role: { username: 'standard_user', tag: '@standardUser' }
-            features: ['@manager3']
           - role: { username: 'standard_user', tag: '@standardUser' }
             features: ['@explorer5']
           - role: { username: 'standard_user', tag: '@standardUser' }

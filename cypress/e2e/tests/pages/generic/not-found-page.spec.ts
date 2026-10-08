@@ -7,7 +7,7 @@ import { ChartsPage } from '@/cypress/e2e/po/pages/explorer/charts/charts.po';
 import FailWhalePo from '@/cypress/e2e/po/components/fail-whale.po';
 import ProductNavPo from '@/cypress/e2e/po/side-bars/product-side-nav.po';
 
-describe('Not found page display', { tags: ['@generic', '@adminUser', '@standardUser'] }, () => {
+describe('Not found page display', { tags: ['@generic2', '@adminUser', '@standardUser'] }, () => {
   beforeEach(() => {
     cy.login();
   });
