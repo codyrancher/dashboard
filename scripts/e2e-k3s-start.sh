@@ -141,21 +141,25 @@ if [ "$KUBE_TYPE" = "K3S" ]; then
     [ -f "$IMAGE_LIST" ] && cat "$IMAGE_LIST"
   } | awk 'NF && !seen[$0]++' | xargs -P 4 -I{} sudo k3s crictl pull {} > image-pulls.log 2>&1 &
   
-  echo "Installing helm.........."
-  # Pin the get-helm-3 installer to a fixed release tag rather than `main`. `main` is a moving ref, so
-  # whenever upstream updates this script the download drifts away from HELM_CHECKSUM and the guard below
-  # fails on every run (not just a flake). The v4.2.3 tag is immutable and already matches HELM_CHECKSUM.
-  export HELM_CHECKSUM=38b65f882d9cae3891755bdb03becc6a01ae6f9cb24826c191f219ddfee70a5d
-  curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/v4.2.3/scripts/get-helm-3
+  if command -v helm > /dev/null; then
+    echo "Using the helm that is installed: $(helm version --short)"
+  else
+    echo "Installing helm.........."
+    # Pin the get-helm-3 installer to a fixed release tag rather than `main`. `main` is a moving ref, so
+    # whenever upstream updates this script the download drifts away from HELM_CHECKSUM and the guard below
+    # fails on every run (not just a flake). The v4.2.3 tag is immutable and already matches HELM_CHECKSUM.
+    export HELM_CHECKSUM=38b65f882d9cae3891755bdb03becc6a01ae6f9cb24826c191f219ddfee70a5d
+    curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/v4.2.3/scripts/get-helm-3
 
-  DOWNLOADED_CHECKSUM=$(sha256sum get_helm.sh | awk '{print $1}')
-  if [ "$DOWNLOADED_CHECKSUM" != "${HELM_CHECKSUM}" ]; then
-    echo "Error: Helm checksum mismatch! Expected ${HELM_CHECKSUM} but got $DOWNLOADED_CHECKSUM"
-    exit 1
+    DOWNLOADED_CHECKSUM=$(sha256sum get_helm.sh | awk '{print $1}')
+    if [ "$DOWNLOADED_CHECKSUM" != "${HELM_CHECKSUM}" ]; then
+      echo "Error: Helm checksum mismatch! Expected ${HELM_CHECKSUM} but got $DOWNLOADED_CHECKSUM"
+      exit 1
+    fi
+
+    chmod 700 get_helm.sh
+    ./get_helm.sh
   fi
-
-  chmod 700 get_helm.sh
-  ./get_helm.sh
 elif [ "$KUBE_TYPE" = "K3D" ]; then
   # This is more for internal dev purposes, requires further testing
   # To use in CI install of k3d + kubectl + helm is required (could be optional if using dev machine)
