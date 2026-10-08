@@ -202,7 +202,9 @@ jobs:
         env:
           RANCHER_VERSION: ${{ needs.extract-e2e-runtime-rancher-version.outputs.runtime-rancher-version }}
           TEST_SKIP: setup
-          E2E_PARALLEL_WORKERS: 2
+          # 2 runs the tests tagged @parallel in two Cypress processes first (see scripts/e2e-parallel).
+          # Off for now: a Cypress process's first browser launch stalls far more often when two start together
+          E2E_PARALLEL_WORKERS: 1
           GREP_TAGS: ${{ matrix.role.tag }}+${{ matrix.features[0] }} --@jenkins${{ steps.detect-prime.outputs.is-prime == 'true' && ' --@noPrime' || '' }} ${{ matrix.role.tag }}+${{ matrix.features[1] || matrix.features[0] }} --@jenkins${{ steps.detect-prime.outputs.is-prime == 'true' && ' --@noPrime' || '' }}
           TEST_USERNAME: ${{ matrix.role.username }}
 
