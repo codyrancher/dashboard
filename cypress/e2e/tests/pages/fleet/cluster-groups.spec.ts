@@ -3,7 +3,7 @@ import { HeaderPo } from '@/cypress/e2e/po/components/header.po';
 import PromptRemove from '@/cypress/e2e/po/prompts/promptRemove.po';
 import { qase } from '@/cypress/support/qase';
 
-describe('Cluster Groups', { testIsolation: false, tags: ['@fleet2', '@adminUser'] }, () => {
+describe('Cluster Groups', { testIsolation: false, tags: ['@fleet', '@adminUser'] }, () => {
   const fleetClusterGroupsListPage = new FleetClusterGroupsListPagePo();
 
   const headerPo = new HeaderPo();

@@ -14,12 +14,12 @@ let removeToken = false;
 const tokenNameList = [];
 const downloadsFolder = Cypress.config('downloadsFolder');
 
-describe('Cluster Registration Tokens', { testIsolation: false, tags: ['@fleet2', '@adminUser'] }, () => {
+describe('Cluster Registration Tokens', { testIsolation: false, tags: ['@fleet', '@adminUser'] }, () => {
   const fleetTokensListPage = new FleetClusterRegistrationTokenListPagePo();
 
   const headerPo = new HeaderPo();
 
-  describe('CRUD', { tags: ['@fleet2', '@adminUser'] }, () => {
+  describe('CRUD', { tags: ['@fleet', '@adminUser'] }, () => {
     before(() => {
       cy.login();
       cy.createE2EResourceName('fleet-token').then((name) => {

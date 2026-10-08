@@ -12,7 +12,7 @@ let removeRestriction = false;
 const restrictionNameList = [];
 const downloadsFolder = Cypress.config('downloadsFolder');
 
-describe('GitRepo Restrictions', { testIsolation: false, tags: ['@fleet2', '@adminUser'] }, () => {
+describe('GitRepo Restrictions', { testIsolation: false, tags: ['@fleet', '@adminUser'] }, () => {
   const fleetRestrictionsListPage = new FleetGitRepoRestrictionListPagePo();
   const headerPo = new HeaderPo();
 
@@ -43,7 +43,7 @@ describe('GitRepo Restrictions', { testIsolation: false, tags: ['@fleet2', '@adm
     });
   });
 
-  describe('CRUD', { tags: ['@fleet2', '@adminUser'] }, () => {
+  describe('CRUD', { tags: ['@fleet', '@adminUser'] }, () => {
     before(() => {
       cy.login();
       cy.createE2EResourceName('fleet-restriction').then((name) => {
