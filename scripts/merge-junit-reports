@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+
+/**
+ * Merges the JUnit reports of several Jest shards into a single report.
+ *
+ * Usage: ./scripts/merge-junit-reports <output file> <input file>...
+ */
+
+const fs = require('fs');
+
+const [output, ...inputs] = process.argv.slice(2);
+
+if (!output || !inputs.length) {
+  console.error('Usage: merge-junit-reports <output file> <input file>...');
+  process.exit(1);
+}
+
+const totals = {
+  tests: 0, failures: 0, errors: 0, time: 0
+};
+let name = 'jest tests';
+const suites = [];
+
+inputs.forEach((input) => {
+  const xml = fs.readFileSync(input, 'utf8');
+  const root = xml.match(/<testsuites([^>]*)>([\s\S]*)<\/testsuites>/);
+
+  if (!root) {
+    console.error(`${ input } has no <testsuites> element`);
+    process.exit(1);
+  }
+
+  const attribute = (key) => (root[1].match(new RegExp(`\\b${ key }="([^"]*)"`)) || [])[1];
+
+  name = attribute('name') || name;
+  Object.keys(totals).forEach((key) => {
+    totals[key] += Number(attribute(key) || 0);
+  });
+  suites.push(root[2].trim());
+});
+
+const header = `<testsuites name="${ name }" tests="${ totals.tests }" failures="${ totals.failures }" errors="${ totals.errors }" time="${ totals.time.toFixed(3) }">`;
+
+fs.writeFileSync(output, `<?xml version="1.0" encoding="UTF-8"?>\n${ header }\n  ${ suites.join('\n  ') }\n</testsuites>\n`);
+console.log(`Merged ${ inputs.length } report(s) into ${ output }: ${ totals.tests } tests, ${ totals.failures } failures, ${ totals.errors } errors`);
