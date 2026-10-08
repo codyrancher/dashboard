@@ -162,6 +162,11 @@ jobs:
         env:
           GREP_TAGS: ${{ matrix.role.tag }}+${{ matrix.features[0] }} --@jenkins ${{ matrix.role.tag }}+${{ matrix.features[1] || matrix.features[0] }} --@jenkins
 
+      # The first start of Cypress and of Chrome on a runner is slow, so it happens here, while Rancher starts
+      - name: Warm up Cypress and Chrome in the background
+        if: ${{ steps.has-tests.outputs.found != 'false' }}
+        run: nohup ./scripts/e2e-warm-up > e2e-warm-up.log 2>&1 &
+
       - name: Run Rancher
         if: ${{ steps.has-tests.outputs.found != 'false' }}
         timeout-minutes: 30

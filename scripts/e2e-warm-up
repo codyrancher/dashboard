@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Starts the Cypress app and Chrome once, and discards the result.
+#
+# On a new machine the first start of each is slow, since the Cypress app, every browser Cypress
+# finds and Chrome itself are all read from disk for the first time. Run this in the background
+# while the e2e Rancher starts and the tests no longer wait for it.
+#
+# Usage: ./scripts/e2e-warm-up
+
+cd "$(dirname "$0")/.." || exit 1
+
+# Starts the Cypress app, which asks each installed browser for its version
+timeout 180 ./node_modules/.bin/cypress info
+
+if command -v google-chrome > /dev/null; then
+  PROFILE=$(mktemp -d)
+  timeout 120 google-chrome --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
+    --user-data-dir="$PROFILE" --dump-dom about:blank > /dev/null
+  rm -rf "$PROFILE"
+fi
