@@ -3,7 +3,7 @@ import { HeaderPo } from '@/cypress/e2e/po/components/header.po';
 import { FleetDashboardListPagePo } from '@/cypress/e2e/po/pages/fleet/fleet-dashboard.po';
 import ProductNavPo from '@/cypress/e2e/po/side-bars/product-side-nav.po';
 
-describe('Fleet Policy', { testIsolation: false, tags: ['@fleet', '@adminUser'] }, () => {
+describe('Fleet Policy', { testIsolation: false, tags: ['@fleet2', '@adminUser'] }, () => {
   const fleetPolicyListPage = new FleetPolicyListPagePo();
   const fleetDashboardPage = new FleetDashboardListPagePo('_');
 
@@ -32,7 +32,7 @@ describe('Fleet Policy', { testIsolation: false, tags: ['@fleet', '@adminUser'] 
     fleetPolicyListPage.list().resourceTable().checkExists();
   });
 
-  describe('create form', { tags: ['@fleet', '@adminUser'] }, () => {
+  describe('create form', { tags: ['@fleet2', '@adminUser'] }, () => {
     const headerPo = new HeaderPo();
     const workspace = 'fleet-default';
     const serviceAccounts = ['tenant-1-deployer', 'tenant-2-deployer'];
