@@ -478,6 +478,28 @@ else
   reprovision "Steve/RBAC wedged - login or authenticated GET never converged"
 fi
 
+# A webhook pod that is Running can still refuse requests for a moment, for example while it is
+# being replaced. Ask the API server for something the webhook has to admit until it answers twice
+# in a row. A dry run leaves nothing behind, and a denial from the webhook counts as an answer.
+webhook_answers() {
+  ! kubectl -n cattle-local-user-passwords create secret generic e2e-webhook-probe --from-literal=password=probe --dry-run=server -o name 2>&1 \
+    | grep -qiE 'failed calling webhook|connection refused|EOF|deadline exceeded|unable to handle the request'
+}
+
+echo "Checking that rancher-webhook answers requests..."
+answered=0
+tries=0
+while [ $answered -lt 2 ] && [ $tries -lt 30 ]; do
+  if webhook_answers; then
+    answered=$((answered+1))
+  else
+    answered=0
+    echo "  rancher-webhook is not answering yet"
+    sleep 2
+  fi
+  tries=$((tries+1))
+done
+
 if [ "$KUBE_TYPE" = "K3S" ]; then
   echo "::group::Image pulls"
   kubectl get events --all-namespaces --field-selector reason=Pulled -o jsonpath='{range .items[*]}{.message}{"\n"}{end}' 2>/dev/null | sort | uniq -c || true
