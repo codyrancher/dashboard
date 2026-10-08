@@ -142,7 +142,7 @@ async function createUser(api, adminToken, username, password) {
   let id = created.body?.id;
 
   if (created.status === 201) {
-    const setPassword = () => request(api, 'POST', '/v1/secrets', {
+    const setPassword = () => send(api, 'POST', '/v1/secrets', {
       token: adminToken,
       body:  {
         type:     'secret',
