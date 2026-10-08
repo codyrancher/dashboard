@@ -194,6 +194,7 @@ jobs:
           else
             ./scripts/e2e-bootstrap
           fi
+          ./scripts/e2e-rancher-certs
         env: 
           UI_SETUP: ${{ matrix.role.tag == '@adminUser' && matrix.features[0] == '@components' }}
           RANCHER_VERSION: ${{ needs.extract-e2e-runtime-rancher-version.outputs.runtime-rancher-version }}

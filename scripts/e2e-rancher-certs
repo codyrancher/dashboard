@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+# Makes the e2e Rancher finish its serving certificates before the tests start.
+#
+# Rancher adds a name to a certificate the first time a client reaches it by that name, and closes
+# the connections it has open when it does, which fails whatever the UI is loading at that moment.
+# Two names are added late: the host of the server URL, once the server URL is set, and the IP of
+# the Rancher pod. This reaches Rancher by both and waits for its certificates to include them.
+#
+# Run it once the server URL is set. Requires `kubectl` access to the cluster Rancher runs in.
+#
+# Usage: TEST_BASE_URL=https://127.0.0.1.sslip.io ./scripts/e2e-rancher-certs
+
+NAMESPACE=cattle-system
+HOST=${TEST_BASE_URL#https://}
+HOST=${HOST%%/*}
+POD_IP=$(kubectl -n $NAMESPACE get pods --selector=app=rancher -o jsonpath='{.items[0].status.podIP}' 2> /dev/null)
+
+if [ -z "$HOST" ] || [ -z "$POD_IP" ]; then
+  echo "::warning::Could not find the Rancher host or pod, leaving its certificates as they are"
+  exit 0
+fi
+
+has_name() {
+  kubectl -n $NAMESPACE get secret "$1" -o jsonpath='{.metadata.annotations}' 2> /dev/null | grep -qF "\"listener.cattle.io/cn-$2\""
+}
+
+for TRY in $(seq 1 15); do
+  curl -sk -o /dev/null --max-time 5 --resolve "$HOST:443:$POD_IP" "https://$HOST/ping"
+  curl -sk -o /dev/null --max-time 5 "https://$POD_IP:444/ping"
+
+  if has_name serving-cert "$HOST" && has_name tls-rancher-internal "$POD_IP"; then
+    echo "Rancher's certificates include $HOST and $POD_IP"
+    exit 0
+  fi
+
+  sleep 2
+done
+
+echo "::warning::Rancher's certificates still do not include $HOST and $POD_IP"
