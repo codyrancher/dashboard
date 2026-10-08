@@ -59,17 +59,27 @@ async function expectStatus(promise, expected, what) {
  * @returns {Promise<string>} a session token for the user
  */
 async function login(api, username, password) {
-  const res = await request(api, 'POST', '/v1-public/login', {
-    body: {
-      username, password, type: 'localProvider', responseType: 'cookie', description: 'e2e parallel'
+  let res;
+
+  for (let i = 0; i < 30; i++) {
+    res = await request(api, 'POST', '/v1-public/login', {
+      body: {
+        username, password, type: 'localProvider', responseType: 'cookie', description: 'e2e'
+      }
+    });
+
+    if (res.status !== 503) {
+      break;
     }
-  });
+
+    await sleep(2000);
+  }
 
   if (res.status === 404) {
     // Rancher before v2.13 only has the v3 login
     const legacy = await expectStatus(request(api, 'POST', '/v3-public/localProviders/local?action=login', {
       body: {
-        username, password, responseType: 'json', description: 'e2e parallel'
+        username, password, responseType: 'json', description: 'e2e'
       }
     }), [200, 201], `Logging in as ${ username }`);
 
@@ -98,6 +108,59 @@ async function sleep(ms) {
 }
 
 /**
+ * Creates a local user that can log in with the given password
+ *
+ * @returns {Promise<{ id: string, principalId: string }>}
+ */
+async function createUser(api, adminToken, username, password) {
+  let created = await request(api, 'POST', '/v1/management.cattle.io.users', {
+    token: adminToken,
+    body:  {
+      type: 'user', enabled: true, mustChangePassword: false, username
+    }
+  });
+  let id = created.body?.id;
+
+  if (created.status === 201) {
+    await expectStatus(request(api, 'POST', '/v1/secrets', {
+      token: adminToken,
+      body:  {
+        type:     'secret',
+        metadata: { namespace: 'cattle-local-user-passwords', name: id },
+        data:     { password: Buffer.from(password).toString('base64') }
+      }
+    }), 201, `Setting the password of ${ username }`);
+  } else {
+    // Rancher before v2.13 creates users, with their password, through the v3 API
+    created = await expectStatus(request(api, 'POST', '/v3/users', {
+      token: adminToken,
+      body:  {
+        type: 'user', enabled: true, mustChangePassword: false, username, password
+      }
+    }), 201, `Creating user ${ username }`);
+    id = created.body.id;
+  }
+
+  let principalId;
+
+  for (let i = 0; i < 20 && !principalId; i++) {
+    const user = await request(api, 'GET', `/v1/management.cattle.io.users/${ id }`, { token: adminToken });
+
+    principalId = user.body?.principalIds?.[0];
+
+    if (!principalId) {
+      await sleep(500);
+    }
+  }
+
+  if (!principalId) {
+    throw new Error(`User ${ username } was never given a principal`);
+  }
+
+  return { id, principalId };
+}
+
+/**
  * Creates a user with the same global, cluster and project roles and the same preferences as
  * an existing user, and waits until it can see everything that user can
  *
@@ -120,49 +183,7 @@ async function cloneUser(api, adminToken, username, password, newUsername) {
     await deleteUser(api, adminToken, leftover.id);
   }
 
-  let created = await request(api, 'POST', '/v1/management.cattle.io.users', {
-    token: adminToken,
-    body:  {
-      type: 'user', enabled: true, mustChangePassword: false, username: newUsername
-    }
-  });
-  let id = created.body?.id;
-
-  if (created.status === 201) {
-    await expectStatus(request(api, 'POST', '/v1/secrets', {
-      token: adminToken,
-      body:  {
-        type:     'secret',
-        metadata: { namespace: 'cattle-local-user-passwords', name: id },
-        data:     { password: Buffer.from(password).toString('base64') }
-      }
-    }), 201, `Setting the password of ${ newUsername }`);
-  } else {
-    // Rancher before v2.13 creates users, with their password, through the v3 API
-    created = await expectStatus(request(api, 'POST', '/v3/users', {
-      token: adminToken,
-      body:  {
-        type: 'user', enabled: true, mustChangePassword: false, username: newUsername, password
-      }
-    }), 201, `Creating user ${ newUsername }`);
-    id = created.body.id;
-  }
-
-  let principalId;
-
-  for (let i = 0; i < 20 && !principalId; i++) {
-    const user = await request(api, 'GET', `/v1/management.cattle.io.users/${ id }`, { token: adminToken });
-
-    principalId = user.body?.principalIds?.[0];
-
-    if (!principalId) {
-      await sleep(500);
-    }
-  }
-
-  if (!principalId) {
-    throw new Error(`User ${ newUsername } was never given a principal`);
-  }
+  const { id, principalId } = await createUser(api, adminToken, newUsername, password);
 
   const sourcePrincipals = source.principalIds || [];
   const isSources = (binding) => binding.userId === source.id || sourcePrincipals.includes(binding.userPrincipalId);
@@ -226,5 +247,5 @@ async function deleteUser(api, adminToken, id) {
 }
 
 module.exports = {
-  login, cloneUser, deleteUser
+  request, expectStatus, sleep, login, createUser, cloneUser, deleteUser
 };
