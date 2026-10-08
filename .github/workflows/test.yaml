@@ -94,6 +94,7 @@ jobs:
           ['@manager2'],
           ['@globalSettings2'],
           ['@explorer5'],
+          ['@explorer6'],
           ['@usersAndAuths2'],
           ['@virtualizationMgmt', '@fleet'],
           ['@fleet2'],
@@ -116,6 +117,8 @@ jobs:
             features: ['@manager2']
           - role: { username: 'standard_user', tag: '@standardUser' }
             features: ['@explorer5']
+          - role: { username: 'standard_user', tag: '@standardUser' }
+            features: ['@explorer6']
           - role: { username: 'standard_user', tag: '@standardUser' }
             features: ['@usersAndAuths2']
     runs-on: ubuntu-latest

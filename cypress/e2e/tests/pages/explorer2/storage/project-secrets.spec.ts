@@ -11,7 +11,7 @@ let removeProjectScopedSecret = false;
 const username = 'test';
 const password = 'test-password';
 
-describe('Project Secrets', { tags: ['@explorer2', '@adminUser'] }, () => {
+describe('Project Secrets', { tags: ['@explorer6', '@adminUser'] }, () => {
   beforeEach(() => {
     cy.login();
 

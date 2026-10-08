@@ -8,7 +8,7 @@ import { PAGINATION_UTILS } from '@/cypress/support/utils/shell';
 
 // Cypress or the GrepTags avoid to run multiples times the same test for each tag used.
 // This is a temporary solution till initialization is not handled as a test
-describe('Rancher setup', { tags: ['@adminUserSetup', '@standardUserSetup', '@setup', '@components', '@navigation', '@navigation2', '@navigation3', '@charts', '@explorer', '@explorer2', '@explorer3', '@explorer4', '@extensions', '@extensions2', '@fleet', '@fleet2', '@generic', '@globalSettings', '@manager', '@userMenu', '@usersAndAuths', '@elemental', '@virtualizationMgmt', '@accessibility', '@manager2', '@globalSettings2', '@explorer5', '@usersAndAuths2'] }, () => {
+describe('Rancher setup', { tags: ['@adminUserSetup', '@standardUserSetup', '@setup', '@components', '@navigation', '@navigation2', '@navigation3', '@charts', '@explorer', '@explorer2', '@explorer3', '@explorer4', '@extensions', '@extensions2', '@fleet', '@fleet2', '@generic', '@globalSettings', '@manager', '@userMenu', '@usersAndAuths', '@elemental', '@virtualizationMgmt', '@accessibility', '@manager2', '@globalSettings2', '@explorer5', '@explorer6', '@usersAndAuths2'] }, () => {
   const rancherSetupLoginPage = new RancherSetupLoginPagePo();
   const rancherSetupConfigurePage = new RancherSetupConfigurePage();
   const homePage = new HomePagePo();
