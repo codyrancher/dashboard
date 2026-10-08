@@ -190,7 +190,7 @@ jobs:
 
       - name: Run user tests
         if: ${{ steps.has-tests.outputs.found != 'false' }}
-        timeout-minutes: 45
+        timeout-minutes: 25
         run: |
           yarn e2e:prod
           [ "$BUILD_DASHBOARD" != "false" ] || exit 0

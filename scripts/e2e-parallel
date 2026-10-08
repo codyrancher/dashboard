@@ -16,6 +16,10 @@
  * Each process writes to its own folders (see E2E_WORKER in `cypress/base-config.ts`) and keeps
  * its own Cypress app data, and the reports are merged into `cypress/reports` afterwards.
  *
+ * A Cypress process that goes silent is stopped: after E2E_START_TIMEOUT seconds (default 180)
+ * with no output since it announced a spec, or E2E_IDLE_TIMEOUT seconds (default 600) with no
+ * output at all. If that happens before its first spec has started, it is run once more.
+ *
  * Usage: GREP_TAGS="@adminUser+@manager --@jenkins" E2E_PARALLEL_WORKERS=2 ./scripts/e2e-parallel
  *        ./scripts/e2e-parallel --merge-reports <reports folder>
  */
@@ -30,6 +34,8 @@ const { login, cloneUser, deleteUser } = require('./e2e-users');
 
 const PARALLEL_TAG = '@parallel';
 const ADMIN_USERNAME = 'admin';
+const START_TIMEOUT = Number(process.env.E2E_START_TIMEOUT || 180) * 1000;
+const IDLE_TIMEOUT = Number(process.env.E2E_IDLE_TIMEOUT || 600) * 1000;
 
 /**
  * Deals spec files out into the given number of groups
@@ -45,7 +51,75 @@ function split(specs, count) {
 const reportOf = (worker) => path.join(ROOT, 'cypress', 'reports', worker, 'index.json');
 
 /**
- * Starts one Cypress process and resolves with its exit code
+ * Runs a command that runs Cypress, passing its output on, and stops it if Cypress goes silent
+ *
+ * @param {string} label prefix for each line of output, or an empty string for none
+ * @returns {Promise<{ code: number, stalled: boolean, started: boolean }>} `started` is whether
+ * any spec got as far as printing something
+ */
+function watch(label, command, args, env) {
+  const prefix = label ? `[${ label }] ` : '';
+
+  return new Promise((resolve) => {
+    const child = spawn(command, args, {
+      cwd: ROOT, env, stdio: ['ignore', 'pipe', 'pipe'], detached: true
+    });
+    let lastOutput = Date.now();
+    let startingSpec = false;
+    let started = false;
+    let stalled = false;
+
+    [child.stdout, child.stderr].forEach((stream) => {
+      readline.createInterface({ input: stream }).on('line', (line) => {
+        console.log(`${ prefix }${ line }`);
+
+        if (!line.trim()) {
+          return;
+        }
+
+        lastOutput = Date.now();
+
+        if (/^\s*Running:\s+\S+/.test(line)) {
+          startingSpec = true;
+        } else if (startingSpec && !/Still waiting to connect/.test(line)) {
+          startingSpec = false;
+          started = true;
+        }
+      });
+    });
+
+    const timer = setInterval(() => {
+      const silent = Date.now() - lastOutput;
+
+      if (!stalled && silent > (startingSpec ? START_TIMEOUT : IDLE_TIMEOUT)) {
+        stalled = true;
+        console.log(`::warning::${ prefix }Cypress printed nothing for ${ Math.round(silent / 1000) }s${ startingSpec ? ' after starting a spec' : '' }, stopping it`);
+
+        try {
+          process.kill(-child.pid, 'SIGKILL');
+        } catch (err) {
+          child.kill('SIGKILL');
+        }
+      }
+    }, 1000);
+
+    const done = (code) => {
+      clearInterval(timer);
+      resolve({
+        code: stalled || code === null ? 1 : code, stalled, started
+      });
+    };
+
+    child.on('error', (err) => {
+      console.error(`${ prefix }${ err.message }`);
+      done(1);
+    });
+    child.on('close', done);
+  });
+}
+
+/**
+ * Starts one Cypress process
  *
  * @param {string} worker label for the process's output, and the name of its folders
  * @param {string} username the user the tests log in as
@@ -66,40 +140,49 @@ function start(worker, grepTags, specs, username, ownAppData) {
 
   console.log(`[${ worker }] ${ specs.length } spec file(s) as ${ username } with tags "${ grepTags }"`);
 
-  return new Promise((resolve) => {
-    const child = spawn(command, args, {
-      cwd: ROOT, env, stdio: ['ignore', 'pipe', 'pipe']
-    });
+  return watch(worker, command, args, env).then((result) => {
+    console.log(`[${ worker }] exited with code ${ result.code }`);
 
-    [child.stdout, child.stderr].forEach((stream) => {
-      readline.createInterface({ input: stream }).on('line', (line) => console.log(`[${ worker }] ${ line }`));
-    });
-
-    child.on('error', (err) => {
-      console.error(`[${ worker }] ${ err.message }`);
-      resolve(1);
-    });
-    child.on('close', (code) => {
-      console.log(`[${ worker }] exited with code ${ code }`);
-      resolve(code === null ? 1 : code);
-    });
+    return result;
   });
 }
 
 /**
- * Runs one Cypress process, and runs it once more with Cypress's default app data folder if it
- * failed before reporting on any spec
+ * Runs one Cypress process and resolves with its exit code. It is run once more if it went
+ * silent before its first spec started, and once more with Cypress's default app data folder if
+ * it failed before reporting on any spec
  */
 async function run(worker, grepTags, specs, username) {
-  const code = await start(worker, grepTags, specs, username, true);
+  let result = await start(worker, grepTags, specs, username, true);
 
-  if (code === 0 || fs.existsSync(reportOf(worker))) {
-    return code;
+  if (result.stalled && !result.started) {
+    console.log(`::warning::The ${ worker } Cypress process never started its first spec, running it again`);
+    result = await start(worker, grepTags, specs, username, true);
+  }
+
+  if (result.stalled || result.code === 0 || fs.existsSync(reportOf(worker))) {
+    return result.code;
   }
 
   console.log(`::warning::The ${ worker } Cypress process failed before running any spec, running its specs again`);
 
-  return start(worker, grepTags, specs, username, false);
+  return (await start(worker, grepTags, specs, username, false)).code;
+}
+
+/**
+ * Runs every spec in one Cypress process, as `scripts/e2e` does, and exits with its exit code
+ */
+async function runInOneProcess() {
+  const single = () => watch('', path.join(__dirname, 'e2e'), [], { ...process.env, E2E_PARALLEL_WORKERS: '1' });
+  let result = await single();
+
+  if (result.stalled && !result.started) {
+    console.log('::warning::Cypress never started its first spec, running it again');
+    spawnSync('pkill', ['-9', '-f', 'Cypress|chrome|Xvfb']);
+    result = await single();
+  }
+
+  process.exit(result.code);
 }
 
 /**
@@ -156,16 +239,8 @@ async function main() {
   const serialSpecs = matchingSpecs(serialTags);
   const codes = [];
 
-  const runAsBefore = () => {
-    const single = spawnSync(path.join(__dirname, 'e2e'), [], {
-      cwd: ROOT, env: { ...process.env, E2E_PARALLEL_WORKERS: '1' }, stdio: 'inherit'
-    });
-
-    process.exit(single.status === null ? 1 : single.status);
-  };
-
   if (workers < 2 || parallelSpecs.length < 2) {
-    runAsBefore();
+    return runInOneProcess();
   }
 
   const groups = split(parallelSpecs, workers);
@@ -186,7 +261,8 @@ async function main() {
   } catch (err) {
     console.log(`::warning::Running the e2e tests in one process, could not give each process a user: ${ err.message }`);
     await Promise.all(copies.map((id) => deleteUser(api, adminToken, id).catch(() => {})));
-    runAsBefore();
+
+    return runInOneProcess();
   }
 
   try {
