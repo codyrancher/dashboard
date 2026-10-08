@@ -122,6 +122,22 @@ if [ "$KUBE_TYPE" = "K3S" ]; then
   # Embedded etcd in place of the default sqlite datastore. Wedged starts showed the API server
   # timing out watches with "Too large resource version", and service account tokens never populated.
   INSTALL_K3S_VERSION="$KUBE_VERSION" INSTALL_K3S_EXEC="server --cluster-init" sh k3s-script
+
+  # Pull the Rancher image, and the images the last run ended up with, while everything else is set up.
+  # containerd can pull before the k3s API answers
+  {
+    tries=0
+    until sudo k3s crictl info > /dev/null 2>&1 || [ $tries -ge 60 ]; do
+      tries=$((tries+1))
+      sleep 1
+    done
+
+    {
+      echo "${RANCHER_IMG_REGISTRY:+$RANCHER_IMG_REGISTRY/}${RANCHER_IMG_REPO}:${RANCHER_IMG_TAG}"
+      [ -f "$IMAGE_LIST" ] && cat "$IMAGE_LIST"
+    } | awk 'NF && !seen[$0]++' | xargs -P 4 -I{} sudo k3s crictl pull {}
+  } > image-pulls.log 2>&1 &
+
   export KUBECONFIG=~/.kube/config
   mkdir ~/.kube 2> /dev/null
   sudo k3s kubectl config view --raw > "$KUBECONFIG"
@@ -135,12 +151,6 @@ if [ "$KUBE_TYPE" = "K3S" ]; then
     sleep 2
   done
 
-  # Pull the Rancher image, and the images the last run ended up with, while everything else is set up
-  {
-    echo "${RANCHER_IMG_REGISTRY:+$RANCHER_IMG_REGISTRY/}${RANCHER_IMG_REPO}:${RANCHER_IMG_TAG}"
-    [ -f "$IMAGE_LIST" ] && cat "$IMAGE_LIST"
-  } | awk 'NF && !seen[$0]++' | xargs -P 4 -I{} sudo k3s crictl pull {} > image-pulls.log 2>&1 &
-  
   if command -v helm > /dev/null; then
     echo "Using the helm that is installed: $(helm version --short)"
   else
@@ -512,7 +522,11 @@ if [ "$KUBE_TYPE" = "K3S" ]; then
   echo "::endgroup::"
 
   if [ -n "$IMAGE_LIST" ]; then
-    kubectl get pods --all-namespaces -o json | jq -r '.items[].spec | (.containers + (.initContainers // []))[].image' | sort -u > "$IMAGE_LIST" || true
+    # The images the pods use, biggest first
+    USED_IMAGES=$(kubectl get pods --all-namespaces -o json | jq '[.items[].spec | (.containers + (.initContainers // []))[].image | sub("^docker\\.io/"; "")] | unique')
+    sudo k3s crictl images -o json \
+      | jq -r --argjson used "$USED_IMAGES" '[.images[] | { size: (.size | tonumber), tags: [.repoTags[]? | sub("^docker\\.io/"; "")] }] | sort_by(-.size) | .[].tags[] | select(. as $tag | $used | index($tag))' \
+      > "$IMAGE_LIST" || true
     echo "Listed $(wc -l < "$IMAGE_LIST") images in $IMAGE_LIST"
   fi
 fi
