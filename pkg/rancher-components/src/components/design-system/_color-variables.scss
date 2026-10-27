@@ -1,4 +1,5 @@
-// The values of the color primitives. See colors.scss.
+// Color primitives: $color-<family>-<step>[-a<opacity>], step = (1 - OKLCH lightness) x 1000, or the nearest free step.
+// Add new ones here, then run `yarn generate:colors`. Browse them: https://rancher.github.io/storybook/?path=/docs/foundation-color-primitives--docs
 $color-white: #ffffff;
 $color-white-a0: rgba(255, 255, 255, 0);
 $color-white-a4: rgba(255, 255, 255, 0.04);

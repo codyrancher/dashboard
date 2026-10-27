@@ -1,6 +1,8 @@
 /**
- * The color primitives from colors.scss as concrete values, for code that cannot use `var(--color-*)`:
- * color math, canvas and chart libraries, and documents that do not load the tokens, such as iframes.
+ * Generated from colors.scss by `yarn generate:colors`, so don't edit it. It's for JavaScript that needs a real color,
+ * not `var(--color-*)`: color math (shell/utils/color.js), markup without the page's styles (Fleet graph icons in
+ * shell/pages/c/_cluster/fleet/graph/config.js), values saved on resources (cluster badges in
+ * shell/models/management.cattle.io.cluster.js) and iframes (shell/components/GrafanaDashboard.vue).
  */
 export const COLOR_TOKENS = {
   '--color-white':          '#ffffff',

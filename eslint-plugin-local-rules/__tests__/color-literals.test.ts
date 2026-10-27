@@ -1,5 +1,7 @@
+const fs = require('fs');
+const path = require('path');
 const {
-  findInCss, findInString, message, DESIGN_SYSTEM_FILE, STORYBOOK_URL
+  findInCss, findInString, message, REPO_ROOT, DESIGN_SYSTEM_FILE, STORYBOOK_URL
 } = require('../color-literals');
 
 const raws = (found: { raw: string }[]) => found.map((f) => f.raw);
@@ -20,6 +22,11 @@ describe('color-literals', () => {
       ['background', 'sizzle-gradient($success)', ['sizzle-gradient($success)']],
       ['background', 'color-mix(in srgb, var(--primary) 15%, transparent)', ['color-mix(in srgb, var(--primary) 15%, transparent)']],
       ['--app-color1-accent', 'rgba(var(--sizzle-1), 1)', ['rgba(var(--sizzle-1), 1)']],
+      ['background-image', 'linear-gradient(white, black)', ['white', 'black']],
+      ['border-image', 'linear-gradient(red, blue) 1', ['red', 'blue']],
+      ['filter', 'drop-shadow(0 0 2px black)', ['black']],
+      ['-webkit-box-shadow', '0 0 2px black', ['black']],
+      ['mask-image', 'linear-gradient(black, transparent)', ['black']],
     ])('reports %s: %s', (property, value, expected) => {
       expect(raws(findInCss(value, property))).toStrictEqual(expected);
     });
@@ -53,6 +60,8 @@ describe('color-literals', () => {
       ["'color-mix(in srgb, var(--rc-cm-bg) 75%, transparent)'", ['color-mix(in srgb, var(--rc-cm-bg) 75%, transparent)']],
       ['`rgba(var(${', ['rgba(var(']],
       ['`rgb(${', ['rgb(']],
+      ["'border: 1px solid red'", ['red']],
+      ["'color: SaddleBrown; background: white'", ['SaddleBrown', 'white']],
     ])('reports %s', (text, expected) => {
       expect(raws(findInString(text))).toStrictEqual(expected);
     });
@@ -65,6 +74,9 @@ describe('color-literals', () => {
       ["'Pick a color (optional)'"],
       ["'var(--primary-held-bg)'"],
       ["'rgb('"],
+      ["'red'"],
+      ["'Status: red'"],
+      ["'background: url(red.png)'"],
     ])('ignores %s', (text) => {
       expect(findInString(text)).toStrictEqual([]);
     });
@@ -73,6 +85,13 @@ describe('color-literals', () => {
   describe('message', () => {
     it('names the design system token when the color has one', () => {
       expect(message('#FFF')).toContain('use var(--color-white)');
+    });
+
+    it('points at the line that defines the token', () => {
+      const lines = fs.readFileSync(path.join(REPO_ROOT, DESIGN_SYSTEM_FILE), 'utf8').split('\n');
+      const line = lines.findIndex((l: string) => l.startsWith('$color-gray-96:')) + 1;
+
+      expect(message('#dcdfe7')).toContain(`use var(--color-gray-96), defined at ${ DESIGN_SYSTEM_FILE }:${ line }`);
     });
 
     it('points at the design system file when the color has no token', () => {
