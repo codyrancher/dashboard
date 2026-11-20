@@ -1125,7 +1125,7 @@ export const PencilIcon = () => (
 );
 
 export const DedupeGroup = ({
-  group, raw, index, open, onToggle, onEdit, choice, onChoose, onActivate, onDetails, base, size, rings, reload, command
+  group, raw, index, open, onToggle, onEdit, choice, onChoose, onActivate, onDetails, base, rings, reload, command
 }) => {
   const section = useRef(null);
   const [reveal] = useShared(revealStore);
@@ -1237,7 +1237,7 @@ export const DedupeGroup = ({
               {!joinUrl(base, '/') ? (
                 <p className="ds-usage-error">Set the Rancher at the top of the page: the URL of a dashboard built with the color tool, in front of a Rancher you are signed in to.</p>
               ) : (
-                <div className="ds-ucards" style={{ '--ds-card': `${ size }px` }}>
+                <div className="ds-ucards">
                   {group.colors.flatMap((c) => (c.usages.length ? c.usages.map((usage, i) => (
                     <UsageCard key={`${ c.name }-${ i }`} base={base} usage={usage} color={c} candidate={shown} onPick={pick} onDetails={onDetails} viewport={VIEWPORT} colors={colors} rings={rings} reload={reload} command={command} />
                   )) : [
@@ -1309,7 +1309,6 @@ export const Dedupe = () => {
   const { base } = useRancher();
   const [active, setActive] = useState(null);
   const [rings, setRings] = useState(true);
-  const [size, setSize] = useState(() => Number(storage.get('color-dedupe-size', '') || 560));
   const [reload, setReload] = useState(0);
   const [command, setCommand] = useState({ type: 'focus', n: 0 });
   const [details, setDetails] = useState(null);
@@ -1362,23 +1361,6 @@ export const Dedupe = () => {
         name opens its details. Groups and choices are saved in this browser, and the report at the bottom lists the
         choices.
       </p>
-      <div className="ds-dedupe-settings">
-        <label>
-          Card size
-          <input
-            type="range"
-            min="280"
-            max="1440"
-            step="20"
-            value={size}
-            onChange={(e) => {
-              setSize(Number(e.target.value));
-              storage.set('color-dedupe-size', e.target.value);
-            }}
-          />
-          <span className="ds-muted">{size}px</span>
-        </label>
-      </div>
       <SpecPanel groups={groups} builtIn={builtIn} />
       <div className="ds-dedupe-settings" role="toolbar" aria-label="Every open card">
         <label><input type="checkbox" checked={rings} onChange={(e) => setRings(e.target.checked)} /> Ring</label>
@@ -1405,7 +1387,6 @@ export const Dedupe = () => {
             onActivate={() => setActive(key)}
             onDetails={(name) => setDetails({ name, names: group.colors.map((c) => c.name) })}
             base={base}
-            size={size}
             rings={rings}
             reload={reload}
             command={command}
@@ -2085,9 +2066,21 @@ export const Dedupe = () => {
 
 .ds-ucards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(var(--ds-card), 100%), 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
   padding-bottom: 16px;
+}
+
+@media (max-width: 1279px) {
+  .ds-ucards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 799px) {
+  .ds-ucards {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .ds-ucard {
