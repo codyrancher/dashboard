@@ -488,35 +488,6 @@ export const describedColors = (() => {
   };
 })();
 
-export const oklab = (value) => {
-  const hex = value.match(/^#([0-9a-f]{6})$/i);
-  const [r, g, b, alpha = 1] = hex ? hex[1].match(/../g).map((h) => parseInt(h, 16)) : value.match(/\(([^)]+)\)/)[1].split(',').map(Number);
-  const [lr, lg, lb] = [r, g, b].map((c) => (c / 255 <= 0.04045 ? c / 255 / 12.92 : ((c / 255 + 0.055) / 1.055) ** 2.4));
-  const l = Math.cbrt(0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb);
-  const m = Math.cbrt(0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb);
-  const s = Math.cbrt(0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb);
-
-  return [0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s, 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s, 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s, alpha];
-};
-
-export const LAB = Object.fromEntries(PRIMITIVES.map((p) => [p.name, oklab(p.value)]));
-
-export const labDistance = (x, y) => Math.hypot(LAB[x][0] - LAB[y][0], LAB[x][1] - LAB[y][1], LAB[x][2] - LAB[y][2]) + Math.abs(LAB[x][3] - LAB[y][3]);
-
-export const similarTo = (names, count = 6) => {
-  const members = names.map(primitiveName);
-
-  if (!members.length) {
-    return [];
-  }
-
-  return PRIMITIVES
-    .filter((p) => !members.includes(p.name))
-    .map((p) => ({ name: p.name, value: p.value, distance: Math.min(...members.map((m) => labDistance(m, p.name))) }))
-    .sort((a, b) => a.distance - b.distance)
-    .slice(0, count);
-};
-
 export const useRancher = () => {
   const [input, setInput] = useShared(rancherStore);
   const config = useJson('color-tool.json', {});
@@ -750,14 +721,6 @@ export const Primitives = () => {
 
   return (
     <div>
-      <p className="ds-legend">
-        {[{ light: true, dark: true, uses: 1 }, { light: true, uses: 1 }, { dark: true, uses: 1 }, { uses: 1 }].map((mode) => (
-          <span key={themeMode(mode)}>
-            {colors.filter((c) => themeMode(c) === themeMode(mode)).length} <ThemeBadge color={mode} />
-          </span>
-        ))}
-        <span>{colors.filter((c) => c.computed.length).length} <span className="ds-computed">Computed</span></span>
-      </p>
       {groupByFamily(colors).map((group) => (
         <div key={group.title}>
           <h2 className="ds-family">{group.title} ({group.primitives.length})</h2>
@@ -1141,59 +1104,30 @@ export const Report = ({ groups, choices }) => {
   );
 };
 
-export const GroupEditor = ({ group, onChange, autoFocus }) => {
+export const PencilIcon = () => (
+  <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+    <path d="M11.5 2.5l2 2-8 8-3 1 1-3z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+  </svg>
+);
+
+export const AddColor = ({ group, onChange }) => {
   const [adding, setAdding] = useState('');
-  const similar = useMemo(() => similarTo(group.colors), [group.colors.join()]);
   const valid = !!COLOR_TOKENS[primitiveName(adding || '-')] && !group.colors.includes(shortName(primitiveName(adding)));
-  const add = (name) => {
-    onChange({ ...group, colors: [...group.colors, shortName(primitiveName(name))] });
-    setAdding('');
-  };
 
   return (
-    <div className="ds-group-editor">
-      <label>
-        Title
-        <input value={group.title} onChange={(e) => onChange({ ...group, title: e.target.value })} placeholder={groupTitle({ colors: group.colors })} autoFocus={autoFocus} />
-      </label>
-      <span className="ds-tags" aria-label="Colors in the group">
-        {group.colors.map((c) => (
-          <span key={c} className="ds-tag">
-            <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: COLOR_TOKENS[primitiveName(c)] }} /></span>
-            {c}
-            <button type="button" aria-label={`Remove ${ c }`} onClick={() => onChange({ ...group, colors: group.colors.filter((x) => x !== c) })}>×</button>
-          </span>
-        ))}
-      </span>
-      <form
-        className="ds-group-add"
-        onSubmit={(e) => {
-          e.preventDefault();
-          valid && add(adding);
-        }}
-      >
-        <input list="ds-primitive-names" value={adding} onChange={(e) => setAdding(e.target.value)} placeholder="Add a color: gray-96" aria-label="Add a color" />
-        <button type="submit" className="ds-copy" disabled={!valid}>Add</button>
-      </form>
-      {similar.length > 0 && (
-        <span className="ds-similar">
-          <span className="ds-muted">Nearest:</span>
-          {similar.map((s) => (
-            <button key={s.name} type="button" className="ds-copy ds-candidate" onClick={() => add(s.name)} title={`OKLab distance ${ s.distance.toFixed(3) } from the closest color in the group`} aria-label={`Add ${ shortName(s.name) }`}>
-              <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: s.value }} /></span>
-              {shortName(s.name)}
-            </button>
-          ))}
-        </span>
-      )}
-      <button
-        type="button"
-        className="ds-copy ds-group-delete"
-        onClick={() => (!group.colors.length || window.confirm(`Delete ${ groupTitle(group) }?`)) && onChange(null)}
-      >
-        Delete group
-      </button>
-    </div>
+    <form
+      className="ds-group-add"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (valid) {
+          onChange({ ...group, colors: [...group.colors, shortName(primitiveName(adding))] });
+          setAdding('');
+        }
+      }}
+    >
+      <input list="ds-primitive-names" value={adding} onChange={(e) => setAdding(e.target.value)} placeholder="Add a color: gray-96" aria-label="Add a color" />
+      <button type="submit" className="ds-copy" disabled={!valid}>Add</button>
+    </form>
   );
 };
 
@@ -1207,9 +1141,16 @@ export const DedupeGroup = ({
   const pick = (name) => onChoose({ candidate: name, custom });
   const id = `ds-group-${ index }`;
   const key = groupKey(group);
+  const pencil = useRef(null);
+  const titleBefore = useRef('');
+  const [editing, setEditing] = useState(false);
 
   useEffect(() => {
     if (reveal?.key === key && open) {
+      if (reveal.focus) {
+        titleBefore.current = raw.title;
+        setEditing(true);
+      }
       revealStore.set(null);
       section.current.scrollIntoView({ block: 'start' });
     }
@@ -1217,47 +1158,91 @@ export const DedupeGroup = ({
 
   return (
     <section ref={section} className="ds-group" onFocusCapture={onActivate} onPointerDownCapture={onActivate}>
-      <div className="ds-group-heading" role="heading" aria-level={3}>
-        <button type="button" className="ds-group-toggle" aria-expanded={open} aria-controls={id} onClick={onToggle}>
+      <div className="ds-group-heading" role="heading" aria-level={3} onClick={(e) => e.target === e.currentTarget && onToggle()}>
+        <button type="button" className="ds-group-toggle" aria-expanded={open} aria-controls={id} aria-label={editing ? `Toggle ${ group.title }` : undefined} onClick={onToggle}>
           <span className="ds-group-caret" aria-hidden="true" />
-          <span className="ds-group-title">{group.title}</span>
-          <span className="ds-group-options">
-            {group.colors.map((c) => (
-              <span key={c.name} className={`ds-group-option${ candidate === c.name ? ' ds-group-option--picked' : '' }`}>
+          {!editing && <span className="ds-group-title">{group.title}</span>}
+        </button>
+        {editing ? (
+          <input
+            className="ds-group-title-input"
+            value={raw.title}
+            onChange={(e) => onEdit({ ...raw, title: e.target.value })}
+            onBlur={() => setEditing(false)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === 'Escape') {
+                if (e.key === 'Escape') {
+                  onEdit({ ...raw, title: titleBefore.current });
+                }
+                setEditing(false);
+                requestAnimationFrame(() => pencil.current?.focus());
+              }
+            }}
+            placeholder={groupTitle({ colors: raw.colors })}
+            aria-label="Group title"
+            autoFocus
+          />
+        ) : (
+          <button
+            ref={pencil}
+            type="button"
+            className="ds-group-pencil"
+            aria-label={`Edit the title of ${ group.title }`}
+            title="Edit the title"
+            onClick={() => {
+              titleBefore.current = raw.title;
+              setEditing(true);
+            }}
+          >
+            <PencilIcon />
+          </button>
+        )}
+        <span className="ds-group-options" role="group" aria-label={`Show ${ group.title } as`}>
+          {group.colors.length > 1 && (
+            <span className="ds-candidate-badge">
+              <button type="button" className="ds-copy ds-candidate" aria-pressed={!candidate} onClick={() => pick(null)}>
+                <kbd>0</kbd> Original
+              </button>
+            </span>
+          )}
+          {group.colors.map((c, i) => (
+            <span key={c.name} className="ds-candidate-badge">
+              <button type="button" className="ds-copy ds-candidate" aria-pressed={candidate === c.name} onClick={() => pick(c.name)}>
+                {i < 9 && <kbd>{i + 1}</kbd>}
                 <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: c.value }} /></span>
                 {shortName(c.name)}
-              </span>
-            ))}
-          </span>
-          <span className={`ds-group-choice${ value ? '' : ' ds-muted' }`}>
-            {value && <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: value }} /></span>}
-            Selected: {candidate === 'custom' ? value || 'Original' : candidate ? shortName(candidate) : 'Original'}
-          </span>
-        </button>
+              </button>
+              <button type="button" className="ds-candidate-remove" aria-label={`Remove ${ shortName(c.name) }`} onClick={() => onEdit({ ...raw, colors: raw.colors.filter((x) => x !== shortName(c.name)) })}>×</button>
+            </span>
+          ))}
+        </span>
+        <span className={`ds-group-choice${ value ? '' : ' ds-muted' }`}>
+          {value && <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: value }} /></span>}
+          Selected: {candidate === 'custom' ? value || 'Original' : candidate ? shortName(candidate) : 'Original'}
+        </span>
       </div>
       {open && (
         <div id={id} className="ds-group-body">
-          <GroupEditor group={raw} onChange={onEdit} autoFocus={reveal?.key === key && reveal.focus} />
+          <div className="ds-group-tools">
+            {group.colors.length > 1 && (
+              <span className="ds-candidate-custom">
+                <input value={custom} onChange={(e) => onChoose({ candidate, custom: e.target.value })} placeholder="Any color: #e0e2e9" aria-label="Try any color" />
+                <button type="button" className="ds-copy" aria-pressed={candidate === 'custom'} disabled={!custom.trim() || !CSS.supports('color', custom.trim())} onClick={() => pick('custom')}>Try</button>
+              </span>
+            )}
+            <AddColor group={raw} onChange={onEdit} />
+            <button
+              type="button"
+              className="ds-copy ds-group-delete"
+              onClick={() => (!raw.colors.length || window.confirm(`Delete ${ group.title }?`)) && onEdit(null)}
+            >
+              Delete group
+            </button>
+          </div>
           {group.colors.length < 2 ? (
             <p className="ds-muted">Add at least two colors to compare them.</p>
           ) : (
             <>
-              <div className="ds-dedupe-toolbar" role="toolbar" aria-label={`Show ${ group.title } as`}>
-                <button type="button" className="ds-copy ds-candidate" aria-pressed={!candidate} onClick={() => pick(null)}>
-                  <kbd>0</kbd> Original
-                </button>
-                {group.colors.map((c, i) => (
-                  <button key={c.name} type="button" className="ds-copy ds-candidate" aria-pressed={candidate === c.name} onClick={() => pick(c.name)}>
-                    {i < 9 && <kbd>{i + 1}</kbd>}
-                    <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: c.value }} /></span>
-                    {shortName(c.name)}
-                  </button>
-                ))}
-                <span className="ds-candidate-custom">
-                  <input value={custom} onChange={(e) => onChoose({ candidate, custom: e.target.value })} placeholder="Any color: #e0e2e9" aria-label="Try any color" />
-                  <button type="button" className="ds-copy" aria-pressed={candidate === 'custom'} disabled={!custom.trim() || !CSS.supports('color', custom.trim())} onClick={() => pick('custom')}>Try</button>
-                </span>
-              </div>
               {!joinUrl(base, '/') ? (
                 <p className="ds-usage-error">Set the Rancher at the top of the page: the URL of a dashboard built with the color tool, in front of a Rancher you are signed in to.</p>
               ) : (
@@ -1376,7 +1361,6 @@ export const Dedupe = () => {
 
   return (
     <div className="ds-dedupe">
-      <style>{'.sbdocs-content { max-width: none !important; min-width: 0; } .sbdocs-toc--custom { display: none !important; }'}</style>
       <p>
         Compare primitives that could be one. Each group opens into cards, one for each place a color's spec says
         Rancher shows it: a {VIEWPORT[0]} x {VIEWPORT[1]} Rancher page with the color made visible and ringed, zoomed in
@@ -1450,6 +1434,15 @@ export const Dedupe = () => {
 {`
 .ds-family {
   text-transform: capitalize;
+}
+
+.sbdocs-content {
+  max-width: none !important;
+  min-width: 0;
+}
+
+.sbdocs-toc--custom {
+  display: none !important;
 }
 
 .ds-swatches {
@@ -1547,6 +1540,11 @@ export const Dedupe = () => {
   pointer-events: auto;
 }
 
+.ds-overlay-actions .ds-copy {
+  background: var(--color-white);
+  color: var(--color-gray-806);
+}
+
 .ds-card:hover .ds-overlay-actions > *, .ds-card:focus-within .ds-overlay-actions > *, .ds-card--selected .ds-select {
   opacity: 1;
 }
@@ -1572,17 +1570,29 @@ export const Dedupe = () => {
   color: var(--color-gray-806);
 }
 
-.ds-overlay-badges .ds-theme:not(.ds-theme--none):not(:where(.ds-card:hover *)) {
+.ds-overlay-badges .ds-theme:not(.ds-theme--none) {
   padding-right: 2px;
 }
 
-.ds-overlay-badges .ds-theme:not(.ds-theme--none):not(:where(.ds-card:hover *)) .ds-theme-label {
+.ds-overlay-badges .ds-theme:not(.ds-theme--none) .ds-theme-label {
   position: absolute;
   width: 1px;
   height: 1px;
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+.ds-card:hover .ds-overlay-badges .ds-theme:not(.ds-theme--none), .ds-card:focus-within .ds-overlay-badges .ds-theme:not(.ds-theme--none) {
+  padding-right: 6px;
+}
+
+.ds-card:hover .ds-overlay-badges .ds-theme .ds-theme-label, .ds-card:focus-within .ds-overlay-badges .ds-theme .ds-theme-label {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
 }
 
 .ds-in-groups, .ds-in-groups span, .ds-in-groups button {
@@ -1632,17 +1642,6 @@ export const Dedupe = () => {
 
 .ds-theme {
   padding-left: 2px;
-}
-
-.ds-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-  font-size: 13px;
-}
-
-.ds-legend .ds-theme, .ds-legend .ds-computed {
-  font-size: 12px;
 }
 
 .ds-theme--both {
@@ -1806,11 +1805,20 @@ export const Dedupe = () => {
 }
 
 .ds-dedupe kbd {
-  padding: 0 4px;
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0 3px;
   border: 1px solid var(--color-gray-96);
   border-radius: 3px;
+  background: none;
+  box-shadow: none;
   font-family: inherit;
   font-size: 11px;
+  line-height: 14px;
+  text-align: center;
 }
 
 .ds-dedupe input, .ds-dedupe select, .ds-dedupe textarea {
@@ -1826,7 +1834,7 @@ export const Dedupe = () => {
   width: 160px;
 }
 
-.ds-dedupe-settings, .ds-dedupe-toolbar, .ds-spec-actions, .ds-candidate-custom {
+.ds-dedupe-settings, .ds-group-tools, .ds-spec-actions, .ds-candidate-custom {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1866,17 +1874,13 @@ export const Dedupe = () => {
   font-size: 12px;
 }
 
-.ds-dedupe-toolbar {
-  position: sticky;
-  top: 0;
-  z-index: 2;
+.ds-group-tools {
   margin-bottom: 12px;
   padding: 8px 0;
   border-bottom: 1px solid var(--color-gray-96);
-  background: var(--color-white);
 }
 
-.ds-dedupe-toolbar .ds-copy, .ds-dedupe-settings .ds-copy {
+.ds-group-tools .ds-copy, .ds-group-heading .ds-copy, .ds-dedupe-settings .ds-copy {
   margin-left: 0;
 }
 
@@ -1910,20 +1914,35 @@ export const Dedupe = () => {
 }
 
 .ds-group-heading {
-  margin: 0;
-  border: 0;
-  font-size: inherit;
-}
-
-.ds-group-toggle {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 16px;
-  width: 100%;
-  padding: 10px 12px;
+  gap: 6px 12px;
+  margin: 0;
+  padding: 8px 12px;
   border: 0;
   border-radius: 6px;
+  background: var(--color-white);
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.ds-group-heading:hover {
+  background: var(--color-gray-25);
+}
+
+.ds-group-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  min-height: 0;
+  height: auto;
+  padding: 2px 0;
+  border: 0;
   background: none;
   color: inherit;
   font: inherit;
@@ -1931,8 +1950,49 @@ export const Dedupe = () => {
   cursor: pointer;
 }
 
-.ds-group-toggle:hover {
-  background: var(--color-gray-25);
+.ds-group-pencil {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  min-height: 0;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ds-group-pencil:hover {
+  background: var(--color-gray-96);
+}
+
+.ds-dedupe .ds-group-title-input {
+  display: inline-block;
+  width: 240px;
+  min-height: 0;
+  height: auto;
+}
+
+.ds-candidate-badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-gray-96);
+  border-radius: 4px;
+  background: var(--color-white);
+}
+
+.ds-candidate-badge:has([aria-pressed="true"]) {
+  border-color: var(--color-blue-451);
+  box-shadow: inset 0 0 0 1px var(--color-blue-451);
+}
+
+.ds-dedupe .ds-candidate-badge .ds-candidate, .ds-dedupe .ds-candidate-badge .ds-candidate[aria-pressed="true"] {
+  border: 0;
+  background: none;
+  box-shadow: none;
 }
 
 .ds-group-caret {
@@ -1949,29 +2009,15 @@ export const Dedupe = () => {
 }
 
 .ds-group-title {
-  min-width: 140px;
   font-size: 14px;
   font-weight: 600;
 }
 
-.ds-group-options, .ds-group-option, .ds-group-choice {
+.ds-group-options, .ds-group-choice {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 10px;
-}
-
-.ds-group-option, .ds-group-choice {
-  gap: 4px;
-}
-
-.ds-group-option--picked {
-  font-weight: 600;
-}
-
-.ds-group-option--picked .ds-candidate-chip {
-  border-color: var(--color-blue-451);
-  box-shadow: 0 0 0 1px var(--color-blue-451);
+  gap: 4px 6px;
 }
 
 .ds-group-choice {
@@ -1981,10 +2027,6 @@ export const Dedupe = () => {
 
 .ds-group-body {
   padding: 0 12px;
-}
-
-.ds-group-body .ds-dedupe-toolbar {
-  padding-top: 0;
 }
 
 .ds-report {
@@ -2211,14 +2253,14 @@ export const Dedupe = () => {
   margin-left: 0;
 }
 
-.ds-add-to-group, .ds-add-to-group label, .ds-dialog-nav, .ds-group-editor, .ds-group-editor label, .ds-tags, .ds-group-add, .ds-similar {
+.ds-add-to-group, .ds-add-to-group label, .ds-dialog-nav, .ds-group-add {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
 }
 
-.ds-add-to-group .ds-copy, .ds-dialog-nav .ds-copy, .ds-group-editor .ds-copy, .ds-spec .ds-copy {
+.ds-add-to-group .ds-copy, .ds-dialog-nav .ds-copy, .ds-spec .ds-copy {
   margin-left: 0;
 }
 
@@ -2259,23 +2301,7 @@ export const Dedupe = () => {
   margin: 8px 0 0;
 }
 
-.ds-group-editor {
-  gap: 8px 16px;
-  margin-bottom: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--color-gray-96);
-}
-
-.ds-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 1px 2px 1px 6px;
-  border: 1px solid var(--color-gray-96);
-  border-radius: 12px;
-}
-
-.ds-tag button {
+.ds-candidate-remove {
   justify-content: center;
   width: 18px;
   min-height: 0;
@@ -2290,11 +2316,11 @@ export const Dedupe = () => {
   cursor: pointer;
 }
 
-.ds-tag button:hover {
+.ds-candidate-remove:hover {
   background: var(--color-gray-96);
 }
 
-.ds-group-editor input, .ds-add-to-group select {
+.ds-add-to-group select {
   display: inline-block;
   width: 260px;
 }
