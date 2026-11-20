@@ -168,19 +168,18 @@ export const useJson = (url, fallback) => {
   return data;
 };
 
-export const CopyButton = ({ name, children }) => {
+export const CopyCode = ({ text, title }) => {
   const [copied, setCopied] = useState(false);
-
   const copy = async () => {
-    await copyText(name);
+    await copyText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
 
   return (
-    <button type="button" className="ds-copy" onClick={copy} aria-label={`${ children || 'Copy' } ${ name }`}>
-      {copied ? 'Copied' : children || 'Copy'}
-      <span className="ds-sr-only" aria-live="polite">{copied ? `Copied ${ name }` : ''}</span>
+    <button type="button" className="ds-code-copy" onClick={copy} title={title || `Click to copy ${ text }`} aria-label={`Copy ${ text }`}>
+      <code>{copied ? 'Copied' : text}</code>
+      <span className="ds-sr-only" aria-live="polite">{copied ? `Copied ${ text }` : ''}</span>
     </button>
   );
 };
@@ -215,7 +214,7 @@ export const MoonIcon = () => (
 export const themeMode = ({ light, dark }) => (light && dark ? 'both' : light ? 'light' : dark ? 'dark' : 'none');
 
 export const ThemeBadge = ({ color }) => (
-  <span className={`ds-theme ds-theme--${ themeMode(color) }`}>
+  <span className={`ds-theme ds-theme--${ themeMode(color) }`} title={themeLabel(color)}>
     {color.light && <span className="ds-theme-icon ds-theme-icon--light" aria-hidden="true"><SunIcon /></span>}
     {color.dark && <span className="ds-theme-icon ds-theme-icon--dark" aria-hidden="true"><MoonIcon /></span>}
     <span className="ds-theme-label">{themeLabel(color)}</span>
@@ -432,6 +431,8 @@ export const openStore = shared('color-dedupe-open', []);
 
 export const rancherStore = shared('color-dedupe-rancher', '', false);
 
+export const labelStore = shared('color-primitives-label', 'name', false);
+
 export const revealStore = shared(null, null);
 
 export const useGroups = () => {
@@ -511,6 +512,19 @@ export const RancherSetting = () => {
   );
 };
 
+export const ColorLabelSwitch = () => {
+  const [label, setLabel] = useShared(labelStore);
+
+  return (
+    <div className="ds-dedupe ds-dedupe-settings ds-label-switch" role="group" aria-label="Show each color by">
+      <span>Show</span>
+      {[['name', 'Name'], ['value', 'Value']].map(([id, text]) => (
+        <button key={id} type="button" className="ds-copy" aria-pressed={label === id} onClick={() => setLabel(id)}>{text}</button>
+      ))}
+    </div>
+  );
+};
+
 export const GroupLinks = ({ groups, onShow }) => groups.map((g, i) => (
   <span key={i}>
     {i ? ', ' : ''}
@@ -528,23 +542,21 @@ export const GroupLinks = ({ groups, onShow }) => groups.map((g, i) => (
 ));
 
 export const Swatch = ({
-  color, background, onOpen, groups, selected, onSelect
+  color, background, onOpen, groups, selected, onSelect, label
 }) => (
   <div className={`ds-card${ selected ? ' ds-card--selected' : '' }`}>
     <button type="button" className="ds-swatch" onClick={() => onOpen(color.name)} aria-haspopup="dialog" aria-label={`${ color.name }, ${ color.value }: show where it is used`}>
       <Chip color={color} background={background} />
-      <code>{color.name}</code>
-      <code>{color.value}</code>
     </button>
+    <CopyCode text={label === 'value' ? color.value : color.name} title={`${ color.name }: ${ color.value }. Click to copy.`} />
     <div className="ds-overlay">
       <div className="ds-overlay-actions">
         <label className="ds-select">
           <input type="checkbox" checked={selected} onChange={() => onSelect(color.name)} aria-label={`Select ${ color.name } for a dedupe group`} />
           Group
         </label>
-        <CopyButton name={color.name} />
       </div>
-      <div className="ds-overlay-badges">
+      <div className="ds-overlay-badges" onClick={() => onOpen(color.name)}>
         <span className="ds-uses">{color.uses === 1 ? '1 use' : `${ color.uses } uses`}</span>
         <ThemeBadge color={color} />
         {color.computed.length > 0 && <span className="ds-computed">Computed</span>}
@@ -653,7 +665,7 @@ export const Details = ({
     >
       <div className="ds-dialog-body ds-dedupe">
         <div className="ds-dialog-header">
-          <h2 id="ds-dialog-title"><code>{name}</code></h2>
+          <h2 id="ds-dialog-title"><CopyCode text={name} /></h2>
           <span className="ds-dialog-nav">
             <button type="button" className="ds-copy" disabled={at <= 0} onClick={() => onOpen(names[at - 1])}>Previous</button>
             <span className="ds-muted">{at + 1} of {names.length}</span>
@@ -664,11 +676,10 @@ export const Details = ({
         <Chip color={color} background={themes.background} large />
         {color.alpha && <p className="ds-muted">Over a checkerboard, the light theme background and the dark theme background.</p>}
         <dl className="ds-facts">
-          <dt>Value</dt><dd><code>{color.value}</code></dd>
+          <dt>Value</dt><dd><CopyCode text={color.value} /></dd>
           <dt>Uses</dt><dd>{color.uses} in {color.files.length} {color.files.length === 1 ? 'file' : 'files'}</dd>
           <dt>Themes</dt><dd><ThemeBadge color={color} /></dd>
         </dl>
-        <CopyButton name={color.name}>Copy name</CopyButton>
         <h3>In Rancher</h3>
         {!spec.usages.length ? (
           <NoLiveView name={name} note={spec.note} />
@@ -713,6 +724,7 @@ export const SelectionBar = ({ names, onClear }) => (
 export const Primitives = () => {
   const { themes, colors } = describedColors();
   const [groups] = useGroups();
+  const [label] = useShared(labelStore);
   const [open, setOpen] = useState(null);
   const [selected, setSelected] = useState([]);
   const names = useMemo(() => colors.map((c) => c.name), [colors]);
@@ -732,6 +744,7 @@ export const Primitives = () => {
                 background={themes.background}
                 onOpen={setOpen}
                 groups={groupsOf(c.name)}
+                label={label}
                 selected={selected.includes(c.name)}
                 onSelect={select}
               />
@@ -802,6 +815,7 @@ export const ColorHeader = ({
 }) => {
   const usage = USAGE[color.name] || { uses: 0, files: {} };
   const files = Object.keys(usage.files).length;
+  const [label] = useShared(labelStore);
   const shownAs = candidate && candidate !== color.name ? (COLOR_TOKENS[candidate] || candidate) : null;
 
   return (
@@ -811,8 +825,8 @@ export const ColorHeader = ({
         <span className="ds-column-chip ds-checker" title={shownAs ? `Now shown as ${ shownAs }` : undefined} style={shownAs ? undefined : { visibility: 'hidden' }}><span className="ds-fill" style={{ background: shownAs || 'none' }} /></span>
       </span>
       <span className="ds-column-name">
-        <button type="button" className="ds-link" onClick={() => onDetails(color.name)} title="Details"><code>{color.name}</code></button>
-        <span className="ds-muted" title={Object.keys(usage.files).join('\n')}><code>{color.value}</code>, {usage.uses} {usage.uses === 1 ? 'use' : 'uses'} in {files} {files === 1 ? 'file' : 'files'}</span>
+        <button type="button" className="ds-link" onClick={() => onDetails(color.name)} title="Details"><code>{label === 'value' ? color.value : color.name}</code></button>
+        <span className="ds-muted" title={Object.keys(usage.files).join('\n')}>{usage.uses} {usage.uses === 1 ? 'use' : 'uses'} in {files} {files === 1 ? 'file' : 'files'}</span>
         <span className="ds-muted" style={shownAs ? undefined : { visibility: 'hidden' }}>Shown as <code>{shownAs || color.value}</code></span>
       </span>
       <button type="button" className="ds-copy" aria-pressed={candidate === color.name} onClick={() => onPick(candidate === color.name ? null : color.name)}>
@@ -1110,27 +1124,6 @@ export const PencilIcon = () => (
   </svg>
 );
 
-export const AddColor = ({ group, onChange }) => {
-  const [adding, setAdding] = useState('');
-  const valid = !!COLOR_TOKENS[primitiveName(adding || '-')] && !group.colors.includes(shortName(primitiveName(adding)));
-
-  return (
-    <form
-      className="ds-group-add"
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (valid) {
-          onChange({ ...group, colors: [...group.colors, shortName(primitiveName(adding))] });
-          setAdding('');
-        }
-      }}
-    >
-      <input list="ds-primitive-names" value={adding} onChange={(e) => setAdding(e.target.value)} placeholder="Add a color: gray-96" aria-label="Add a color" />
-      <button type="submit" className="ds-copy" disabled={!valid}>Add</button>
-    </form>
-  );
-};
-
 export const DedupeGroup = ({
   group, raw, index, open, onToggle, onEdit, choice, onChoose, onActivate, onDetails, base, size, rings, reload, command
 }) => {
@@ -1201,20 +1194,25 @@ export const DedupeGroup = ({
           {group.colors.length > 1 && (
             <span className="ds-candidate-badge">
               <button type="button" className="ds-copy ds-candidate" aria-pressed={!candidate} onClick={() => pick(null)}>
-                <kbd>0</kbd> Original
+                Original
               </button>
             </span>
           )}
           {group.colors.map((c, i) => (
             <span key={c.name} className="ds-candidate-badge">
               <button type="button" className="ds-copy ds-candidate" aria-pressed={candidate === c.name} onClick={() => pick(c.name)}>
-                {i < 9 && <kbd>{i + 1}</kbd>}
                 <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: c.value }} /></span>
                 {shortName(c.name)}
               </button>
               <button type="button" className="ds-candidate-remove" aria-label={`Remove ${ shortName(c.name) }`} onClick={() => onEdit({ ...raw, colors: raw.colors.filter((x) => x !== shortName(c.name)) })}>×</button>
             </span>
           ))}
+          {group.colors.length > 1 && (
+            <span className="ds-candidate-custom">
+              <input value={custom} onChange={(e) => onChoose({ candidate, custom: e.target.value })} placeholder="Any color: #e0e2e9" aria-label="Try any color" />
+              <button type="button" className="ds-copy" aria-pressed={candidate === 'custom'} disabled={!custom.trim() || !CSS.supports('color', custom.trim())} onClick={() => pick('custom')}>Try</button>
+            </span>
+          )}
         </span>
         <span className={`ds-group-choice${ value ? '' : ' ds-muted' }`}>
           {value && <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: value }} /></span>}
@@ -1224,13 +1222,6 @@ export const DedupeGroup = ({
       {open && (
         <div id={id} className="ds-group-body">
           <div className="ds-group-tools">
-            {group.colors.length > 1 && (
-              <span className="ds-candidate-custom">
-                <input value={custom} onChange={(e) => onChoose({ candidate, custom: e.target.value })} placeholder="Any color: #e0e2e9" aria-label="Try any color" />
-                <button type="button" className="ds-copy" aria-pressed={candidate === 'custom'} disabled={!custom.trim() || !CSS.supports('color', custom.trim())} onClick={() => pick('custom')}>Try</button>
-              </span>
-            )}
-            <AddColor group={raw} onChange={onEdit} />
             <button
               type="button"
               className="ds-copy ds-group-delete"
@@ -1240,7 +1231,7 @@ export const DedupeGroup = ({
             </button>
           </div>
           {group.colors.length < 2 ? (
-            <p className="ds-muted">Add at least two colors to compare them.</p>
+            <p className="ds-muted">Tick <strong>Group</strong> on at least two swatches on the Primitives tab to compare them here.</p>
           ) : (
             <>
               {!joinUrl(base, '/') ? (
@@ -1366,10 +1357,10 @@ export const Dedupe = () => {
         Rancher shows it: a {VIEWPORT[0]} x {VIEWPORT[1]} Rancher page with the color made visible and ringed, zoomed in
         on the ring. Drag to pan, <kbd>Ctrl</kbd> + scroll or pinch to zoom, and double-click to switch between the ring
         and the whole page. Pick a color to show it in place of the group's others everywhere, and Original
-        (or <kbd>0</kbd>) to go back. <kbd>1</kbd>-<kbd>9</kbd> pick the colors of the group you last used. Rename a
-        group, add or remove its colors and add the nearest ones from inside it, or tick swatches on the Primitives tab
-        and add them from there. A color's name opens its details. Groups and choices are saved in this browser, and
-        the report at the bottom lists the choices.
+        (or <kbd>0</kbd>) to go back. <kbd>1</kbd>-<kbd>9</kbd> pick the colors of the group you last used, in order. Rename a
+        group or remove its colors from its heading, and tick swatches on the Primitives tab to add colors. A color's
+        name opens its details. Groups and choices are saved in this browser, and the report at the bottom lists the
+        choices.
       </p>
       <div className="ds-dedupe-settings">
         <label>
@@ -1389,9 +1380,6 @@ export const Dedupe = () => {
         </label>
       </div>
       <SpecPanel groups={groups} builtIn={builtIn} />
-      <datalist id="ds-primitive-names">
-        {PRIMITIVES.map((p) => <option key={p.name} value={shortName(p.name)} />)}
-      </datalist>
       <div className="ds-dedupe-settings" role="toolbar" aria-label="Every open card">
         <label><input type="checkbox" checked={rings} onChange={(e) => setRings(e.target.checked)} /> Ring</label>
         <button type="button" className="ds-copy" onClick={() => setCommand((c) => ({ type: 'focus', n: c.n + 1 }))}>Zoom all to rings</button>
@@ -1540,12 +1528,44 @@ export const Dedupe = () => {
   pointer-events: auto;
 }
 
-.ds-overlay-actions .ds-copy {
-  background: var(--color-white);
-  color: var(--color-gray-806);
+.ds-code-copy {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: copy;
 }
 
-.ds-card:hover .ds-overlay-actions > *, .ds-card:focus-within .ds-overlay-actions > *, .ds-card--selected .ds-select {
+.ds-code-copy code {
+  display: block;
+}
+
+.ds-code-copy:hover code {
+  border-color: var(--color-gray-466);
+}
+
+.ds-code-copy:focus-visible {
+  outline: 2px solid var(--color-blue-451);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.ds-dialog-header .ds-code-copy, .ds-facts .ds-code-copy {
+  display: inline-block;
+  width: auto;
+}
+
+.ds-dialog-header .ds-code-copy code, .ds-facts .ds-code-copy code {
+  display: inline;
+}
+
+.ds-card:hover .ds-select, .ds-select:focus-within, .ds-card--selected .ds-select {
   opacity: 1;
 }
 
@@ -1583,16 +1603,9 @@ export const Dedupe = () => {
   white-space: nowrap;
 }
 
-.ds-card:hover .ds-overlay-badges .ds-theme:not(.ds-theme--none), .ds-card:focus-within .ds-overlay-badges .ds-theme:not(.ds-theme--none) {
-  padding-right: 6px;
-}
-
-.ds-card:hover .ds-overlay-badges .ds-theme .ds-theme-label, .ds-card:focus-within .ds-overlay-badges .ds-theme .ds-theme-label {
-  position: static;
-  width: auto;
-  height: auto;
-  overflow: visible;
-  clip-path: none;
+.ds-overlay-badges .ds-theme {
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .ds-in-groups, .ds-in-groups span, .ds-in-groups button {
@@ -1830,8 +1843,11 @@ export const Dedupe = () => {
   font: inherit;
 }
 
-.ds-candidate-custom input {
+.ds-dedupe .ds-candidate-custom input {
+  box-sizing: border-box;
   width: 160px;
+  min-height: 0;
+  height: 26px;
 }
 
 .ds-dedupe-settings, .ds-group-tools, .ds-spec-actions, .ds-candidate-custom {
@@ -2253,7 +2269,7 @@ export const Dedupe = () => {
   margin-left: 0;
 }
 
-.ds-add-to-group, .ds-add-to-group label, .ds-dialog-nav, .ds-group-add {
+.ds-add-to-group, .ds-add-to-group label, .ds-dialog-nav {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
@@ -2301,6 +2317,10 @@ export const Dedupe = () => {
   margin: 8px 0 0;
 }
 
+.ds-label-switch {
+  margin: 8px 0 0;
+}
+
 .ds-candidate-remove {
   justify-content: center;
   width: 18px;
@@ -2330,10 +2350,6 @@ export const Dedupe = () => {
   width: 200px;
 }
 
-.ds-group-add input {
-  width: 180px;
-}
-
 .ds-group-delete {
   margin-left: auto !important;
 }
@@ -2345,6 +2361,8 @@ export const Dedupe = () => {
 
 <RancherSetting />
 
+<ColorLabelSwitch />
+
 <TabStrip />
 
 <TabPanel tab="dedupe">
@@ -2353,7 +2371,7 @@ export const Dedupe = () => {
 
 <TabPanel tab="primitives">
 
-Use these as `var(--color-...)` instead of writing colors out or computing them from other colors. Click a swatch to see the color live in Rancher, ringed where the app paints it, and tick **Group** on swatches to compare them on the Deduplicate tab.
+Use these as `var(--color-...)` instead of writing colors out or computing them from other colors. Click a swatch to see the color live in Rancher, ringed where the app paints it, click its name or value to copy it, and tick **Group** on swatches to compare them on the Deduplicate tab.
 
 - `--color-<family>-<step>`: the step is (1 - OKLCH lightness) x 1000, rounded, so a higher step is darker. When that step is taken in the family, the color takes the nearest free step that keeps the family in lightness order.
 - `--color-<family>-<step>-a<n>`: the same color at n% opacity, shown over a checkerboard, the light theme background and the dark theme background.
