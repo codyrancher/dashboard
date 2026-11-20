@@ -218,7 +218,7 @@ export const ThemeBadge = ({ color }) => (
   <span className={`ds-theme ds-theme--${ themeMode(color) }`}>
     {color.light && <span className="ds-theme-icon ds-theme-icon--light" aria-hidden="true"><SunIcon /></span>}
     {color.dark && <span className="ds-theme-icon ds-theme-icon--dark" aria-hidden="true"><MoonIcon /></span>}
-    {themeLabel(color)}
+    <span className="ds-theme-label">{themeLabel(color)}</span>
   </span>
 );
 
@@ -565,19 +565,21 @@ export const Swatch = ({
       <code>{color.name}</code>
       <code>{color.value}</code>
     </button>
-    <div className="ds-meta">
-      <span>{color.uses === 1 ? '1 use' : `${ color.uses } uses`}</span>
-      <ThemeBadge color={color} />
-      {color.computed.length > 0 && <span className="ds-computed">Computed</span>}
-      <CopyButton name={color.name} />
+    <div className="ds-overlay">
+      <div className="ds-overlay-actions">
+        <label className="ds-select">
+          <input type="checkbox" checked={selected} onChange={() => onSelect(color.name)} aria-label={`Select ${ color.name } for a dedupe group`} />
+          Group
+        </label>
+        <CopyButton name={color.name} />
+      </div>
+      <div className="ds-overlay-badges">
+        <span className="ds-uses">{color.uses === 1 ? '1 use' : `${ color.uses } uses`}</span>
+        <ThemeBadge color={color} />
+        {color.computed.length > 0 && <span className="ds-computed">Computed</span>}
+      </div>
     </div>
-    <div className="ds-meta">
-      <label className="ds-select">
-        <input type="checkbox" checked={selected} onChange={() => onSelect(color.name)} aria-label={`Select ${ color.name } for a dedupe group`} />
-        Group
-      </label>
-      {groups.length > 0 && <span className="ds-in-groups">In <GroupLinks groups={groups} /></span>}
-    </div>
+    {groups.length > 0 && <span className="ds-in-groups">In <GroupLinks groups={groups} /></span>}
   </div>
 );
 
@@ -599,6 +601,10 @@ export const NoUsage = ({ name, note }) => {
 
   return <>Its entry in <code>color-usages.json</code> does not say where Rancher shows it yet.</>;
 };
+
+export const NoLiveView = ({ name, note }) => (
+  <p className="ds-no-live"><strong>No live view.</strong> <NoUsage name={name} note={note} /></p>
+);
 
 export const AddToGroup = ({ names }) => {
   const [groups] = useGroups();
@@ -694,7 +700,7 @@ export const Details = ({
         <CopyButton name={color.name}>Copy name</CopyButton>
         <h3>In Rancher</h3>
         {!spec.usages.length ? (
-          <p className="ds-muted"><NoUsage name={name} note={spec.note} /></p>
+          <NoLiveView name={name} note={spec.note} />
         ) : !joinUrl(base, '/') ? (
           <p className="ds-usage-error">Set the Rancher at the top of the page to see where Rancher shows it.</p>
         ) : spec.usages.map((usage, i) => (
@@ -842,7 +848,7 @@ export const ColorHeader = ({
         <span className="ds-column-chip ds-checker" title={shownAs ? `Now shown as ${ shownAs }` : undefined} style={shownAs ? undefined : { visibility: 'hidden' }}><span className="ds-fill" style={{ background: shownAs || 'none' }} /></span>
       </span>
       <span className="ds-column-name">
-        <button type="button" className="ds-link" onClick={() => onDetails(color.name)} title="Details, spec and your check"><code>{color.name}</code></button>
+        <button type="button" className="ds-link" onClick={() => onDetails(color.name)} title="Details"><code>{color.name}</code></button>
         <span className="ds-muted" title={Object.keys(usage.files).join('\n')}><code>{color.value}</code>, {usage.uses} {usage.uses === 1 ? 'use' : 'uses'} in {files} {files === 1 ? 'file' : 'files'}</span>
         <span className="ds-muted" style={shownAs ? undefined : { visibility: 'hidden' }}>Shown as <code>{shownAs || color.value}</code></span>
       </span>
@@ -1261,7 +1267,7 @@ export const DedupeGroup = ({
                   )) : [
                     <div key={c.name} className="ds-ucard">
                       <ColorHeader color={c} candidate={shown} onPick={pick} onDetails={onDetails} />
-                      <p className="ds-muted"><NoUsage name={c.name} note={c.note} /></p>
+                      <NoLiveView name={c.name} note={c.note} />
                     </div>
                   ]))}
                 </div>
@@ -1497,6 +1503,92 @@ export const Dedupe = () => {
   margin-bottom: 8px;
 }
 
+.ds-card .ds-chip {
+  height: 84px;
+}
+
+.ds-card {
+  position: relative;
+}
+
+.ds-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  height: 84px;
+  padding: 4px;
+  pointer-events: none;
+}
+
+.ds-overlay-actions, .ds-overlay-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.ds-overlay-actions {
+  justify-content: space-between;
+}
+
+.ds-overlay-actions > * {
+  font-size: 12px;
+  padding: 0 6px;
+  border: 1px solid var(--color-gray-96);
+  border-radius: 4px;
+  background: var(--color-white);
+  color: var(--color-gray-806);
+  opacity: 0;
+  pointer-events: auto;
+}
+
+.ds-card:hover .ds-overlay-actions > *, .ds-card:focus-within .ds-overlay-actions > *, .ds-card--selected .ds-select {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .ds-overlay-actions > * {
+    opacity: 1;
+  }
+}
+
+.ds-overlay-badges span {
+  font-size: 12px;
+}
+
+.ds-uses {
+  padding: 0 6px;
+  border: 1px solid var(--color-gray-96);
+  border-radius: 10px;
+}
+
+.ds-uses, .ds-overlay-badges .ds-computed, .ds-overlay-badges .ds-theme:not(.ds-theme--dark) {
+  background: var(--color-white);
+  color: var(--color-gray-806);
+}
+
+.ds-overlay-badges .ds-theme:not(.ds-theme--none):not(:where(.ds-card:hover *)) {
+  padding-right: 2px;
+}
+
+.ds-overlay-badges .ds-theme:not(.ds-theme--none):not(:where(.ds-card:hover *)) .ds-theme-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.ds-in-groups, .ds-in-groups span, .ds-in-groups button {
+  font-size: 12px;
+}
+
 .ds-third {
   flex: 1;
 }
@@ -1521,15 +1613,12 @@ export const Dedupe = () => {
   height: 100%;
 }
 
-.ds-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 8px;
+.ds-no-live {
+  color: var(--color-gray-466);
 }
 
-.ds-meta span, .ds-meta button, .ds-meta label {
-  font-size: 12px;
+.ds-no-live strong {
+  color: var(--color-gray-806);
 }
 
 .ds-theme, .ds-computed {
@@ -2242,10 +2331,6 @@ Use these as `var(--color-...)` instead of writing colors out or computing them 
 
 - `--color-<family>-<step>`: the step is (1 - OKLCH lightness) x 1000, rounded, so a higher step is darker. When that step is taken in the family, the color takes the nearest free step that keeps the family in lightness order.
 - `--color-<family>-<step>-a<n>`: the same color at n% opacity, shown over a checkerboard, the light theme background and the dark theme background.
-- **Uses** counts the references in shell and @rancher/components.
-- **Light + dark**, **Light only** and **Dark only** say which themes paint the color, through a theme variable or a component style. A sun marks the light theme and a moon the dark theme, and a color only the dark theme paints gets a dark badge. A dashed badge means nothing paints it: only a theme variable nothing reads, or a Sass variable that never reaches the CSS, refers to it.
-- **Computed** marks a color that master computed from another color (`darken()`, `color-mix()` and the like) before it became a primitive. The details say how.
-- Under **Group**, a swatch links to the dedupe groups the color is in.
 
 They are defined in `pkg/rancher-components/src/components/design-system/_color-variables.scss`, and `yarn generate:colors` writes their values to `colors.ts`. A color that isn't here yet gets a new primitive there first.
 

@@ -94,7 +94,28 @@
     ]
   },
   "white-a8": {
-    "note": "It's the scroll shadow the New View tab casts over tabs scrolling under it, and the tab strips here never overflow."
+    "usages": [
+      {
+        "label": "Scroll shadow of the Add View tab, with the tab strip narrowed in this frame so tabs pass under it",
+        "route": "/c/local/explorer/configmap",
+        "theme": "classic dark",
+        "steps": [
+          {
+            "waitFor": ".view-tab.new-view-tab"
+          },
+          {
+            "eval": "const s = document.querySelector(\".view-tabs\"); s.style.flex = \"none\"; s.style.width = \"70px\"; s.style.maxWidth = \"70px\"; true"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": ".view-tab.new-view-tab",
+          "color": true
+        }
+      }
+    ]
   },
   "white-a10": {
     "usages": [
@@ -175,7 +196,7 @@
     ]
   },
   "white-a25": {
-    "note": "Its only rule, in Header.vue's scoped styles, matches no element."
+    "note": "Its only rule, in Header.vue's scoped styles, styles a select's chosen items in the header, and the header's namespace filter isn't a select with chosen items, so it matches no element."
   },
   "white-a30": {
     "usages": [
@@ -196,7 +217,7 @@
     ]
   },
   "white-a65": {
-    "note": "Only the pin on the current cluster's row in the pinned shelf paints it, and nothing is pinned on this Rancher."
+    "note": "It colors the pin of the current cluster's row when that row isn't pinned, but the shelf only lists pinned clusters. It could only show for the moment a row is being unpinned, and unpinning saves a preference."
   },
   "black": {
     "usages": [
@@ -230,7 +251,25 @@
     ]
   },
   "black-a0": {
-    "note": "It's fully transparent: it's the clear end of fades, so there's nothing to see."
+    "usages": [
+      {
+        "label": "Background of a select's search box, which is fully transparent",
+        "route": "/c/local/explorer/configmap/create",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".v-select.inline .vs__search"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".v-select.inline .vs__search",
+          "color": true
+        }
+      }
+    ]
   },
   "black-a4": {
     "usages": [
@@ -423,7 +462,31 @@
     ]
   },
   "gray-25-a75": {
-    "note": "It's the mask under the editor's search panel, and it matches the editor's own background, so it changes nothing you can see."
+    "usages": [
+      {
+        "label": "The layer above the editor's search panel, which matches the editor's background, so nothing visible changes",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "eval": "(async () => { const content = document.querySelector('.rc-code-mirror--editor .cm-content'); content.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', code: 'KeyF', keyCode: 70, ctrlKey: true, bubbles: true, cancelable: true })); await new Promise((r) => setTimeout(r, 400)); return true; })()"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".cm-panels-top",
+          "color": true
+        }
+      }
+    ]
   },
   "gray-29": {
     "usages": [
@@ -475,7 +538,28 @@
     ]
   },
   "gray-32": {
-    "note": "It's the count box in a Fleet app's status summary, which needs an app that targets clusters, or Monitoring's dashboard metrics. Neither is on this Rancher."
+    "usages": [
+      {
+        "label": "Background of the count box in a Git repo's summary, with the repo given a target in this frame only",
+        "route": "/c/_/fleet/fleet.cattle.io.gitrepo/fleet-default/pr19443-source",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 4000
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const hold = () => { const r = $store.getters[\"management/all\"](\"fleet.cattle.io.gitrepo\")[0]; if (!r.status?.desiredReadyClusters) { r.status = { ...r.status, desiredReadyClusters: 1 }; } }; hold(); setInterval(hold, 250); true"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": ".fleet-status .count",
+          "color": true
+        }
+      }
+    ]
   },
   "gray-39": {
     "usages": [
@@ -718,7 +802,7 @@
     ]
   },
   "gray-96-a15": {
-    "note": "Only CronExpressionEditorModal paints it, and only its Storybook story renders that modal."
+    "note": "Only CronExpressionEditorModal paints it, and nothing in the dashboard renders that modal. Only its Storybook story does."
   },
   "gray-96-a85": {
     "usages": [
@@ -823,7 +907,7 @@
     ]
   },
   "gray-99-a15": {
-    "note": "Only CronExpressionEditorModal paints it, and only its Storybook story renders that modal."
+    "note": "Only CronExpressionEditorModal paints it, and nothing in the dashboard renders that modal. Only its Storybook story does."
   },
   "gray-99-a85": {
     "usages": [
@@ -1023,7 +1107,7 @@
     "note": "Only CollapsibleCard.vue paints it, and nothing renders that component."
   },
   "gray-220": {
-    "note": "Only RcSectionActions in @rancher/components paints it, and no dashboard page renders that component."
+    "note": "Only RcSectionActions paints it. ArrayListGrouped shows those actions only with useRc, which no page sets, and no other page uses them."
   },
   "gray-221": {
     "usages": [
@@ -1114,7 +1198,28 @@
     ]
   },
   "gray-455": {
-    "note": "It's the default color of a cluster badge, which only shows on a cluster that has badge text and no badge color. No cluster on this Rancher has one."
+    "usages": [
+      {
+        "label": "Background of a cluster badge with text and no color, with the annotation set in this frame only",
+        "route": "/c/local/explorer",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const hold = () => { const c = $store.getters[\"management/byId\"](\"management.cattle.io.cluster\", \"local\"); if (!c.metadata.annotations?.[\"ui.rancher/badge-text\"]) { const { \"ui.rancher/badge-color\": _, ...rest } = c.metadata.annotations || {}; c.metadata.annotations = { ...rest, \"ui.rancher/badge-text\": \"Demo\" }; } }; hold(); setInterval(hold, 250); true"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": ".cluster-badge",
+          "color": true
+        }
+      }
+    ]
   },
   "gray-459": {
     "usages": [
@@ -1130,7 +1235,7 @@
     ]
   },
   "gray-465": {
-    "note": "Only RcSectionActions in @rancher/components paints it, and no dashboard page renders that component."
+    "note": "Only RcSectionActions paints it. ArrayListGrouped shows those actions only with useRc, which no page sets, and no other page uses them."
   },
   "gray-466": {
     "usages": [
@@ -1309,7 +1414,7 @@
     ]
   },
   "gray-680": {
-    "note": "Its rules in SideNav.vue match no element, and in Group.vue it's only a fallback behind a variable every theme sets."
+    "note": "SideNav.vue's rule needs a .tools element it never renders, and in Group.vue it's only a fallback behind variables every theme sets."
   },
   "gray-691": {
     "usages": [
@@ -1348,7 +1453,28 @@
     ]
   },
   "gray-692": {
-    "note": "It's the count box in a Fleet app's status summary, which needs an app that targets clusters, or Monitoring's dashboard metrics. Neither is on this Rancher."
+    "usages": [
+      {
+        "label": "Background of the count box in a Git repo's summary, with the repo given a target in this frame only",
+        "route": "/c/_/fleet/fleet.cattle.io.gitrepo/fleet-default/pr19443-source",
+        "theme": "dark",
+        "steps": [
+          {
+            "wait": 4000
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const hold = () => { const r = $store.getters[\"management/all\"](\"fleet.cattle.io.gitrepo\")[0]; if (!r.status?.desiredReadyClusters) { r.status = { ...r.status, desiredReadyClusters: 1 }; } }; hold(); setInterval(hold, 250); true"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": ".fleet-status .count",
+          "color": true
+        }
+      }
+    ]
   },
   "gray-693": {
     "note": "Only .bg-darker.btn:active paints it, and no button has the bg-darker class."
@@ -1602,7 +1728,7 @@
     ]
   },
   "gray-801-a65": {
-    "note": "Only the pin on the current cluster's row in the pinned shelf paints it, and nothing is pinned on this Rancher."
+    "note": "It colors the pin of the current cluster's row when that row isn't pinned, but the shelf only lists pinned clusters. It could only show for the moment a row is being unpinned, and unpinning saves a preference."
   },
   "gray-806": {
     "usages": [
@@ -1696,7 +1822,28 @@
     ]
   },
   "gray-806-a8": {
-    "note": "It's the scroll shadow the New View tab casts over tabs scrolling under it, and the tab strips here never overflow."
+    "usages": [
+      {
+        "label": "Scroll shadow of the Add View tab, with the tab strip narrowed in this frame so tabs pass under it",
+        "route": "/c/local/explorer/configmap",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".view-tab.new-view-tab"
+          },
+          {
+            "eval": "const s = document.querySelector(\".view-tabs\"); s.style.flex = \"none\"; s.style.width = \"70px\"; s.style.maxWidth = \"70px\"; true"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": ".view-tab.new-view-tab",
+          "color": true
+        }
+      }
+    ]
   },
   "gray-806-a10": {
     "usages": [
@@ -2019,7 +2166,28 @@
     ]
   },
   "red-11-a8": {
-    "note": "It's the scroll shadow the New View tab casts over tabs scrolling under it, and the tab strips here never overflow."
+    "usages": [
+      {
+        "label": "Scroll shadow of the Add View tab, with the tab strip narrowed in this frame so tabs pass under it",
+        "route": "/c/local/explorer/configmap",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": ".view-tab.new-view-tab"
+          },
+          {
+            "eval": "const s = document.querySelector(\".view-tabs\"); s.style.flex = \"none\"; s.style.width = \"70px\"; s.style.maxWidth = \"70px\"; true"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": ".view-tab.new-view-tab",
+          "color": true
+        }
+      }
+    ]
   },
   "red-11-a10": {
     "usages": [
@@ -2103,10 +2271,58 @@
     "note": "Only styles for a log list on the diagnostic page paint it, and that page has no log list."
   },
   "red-79": {
-    "note": "It's the background of an outlined error status badge, such as a deactivated hosted provider's. Every provider on this Rancher is active."
+    "usages": [
+      {
+        "label": "Background of a deactivated hosted provider's state badge, deactivated in this frame only",
+        "route": "/c/_/manager/hostedprovider",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=hosted-provider-list] tbody tr"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "eval": "let c = colorTool.componentOf(document.querySelector(\"[data-testid=hosted-provider-list]\")); while (c && !c.proxy?.rows?.length) c = c.parent; c.proxy.rows[0].active = false; true"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": ".rc-status-badge.error",
+          "color": true
+        }
+      }
+    ]
   },
   "red-180": {
-    "note": "Only the confirm button of the auth provider's Disable dialog paints it. The capture script leaves that dialog alone."
+    "usages": [
+      {
+        "label": "Error icon of an error notification, raised in this frame only",
+        "route": "/home",
+        "theme": "dark",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; $store.dispatch(\"growl/error\", { title: \"An error\", message: \"Shown in this frame only\", timeout: 0 }); true"
+          },
+          {
+            "waitFor": ".growl.bg-error"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".growl.bg-error, .growl.bg-error *",
+          "color": true
+        }
+      }
+    ]
   },
   "red-217": {
     "usages": [
@@ -2145,10 +2361,77 @@
     ]
   },
   "red-256": {
-    "note": "It borders a selected error badge on the Fleet dashboard, which needs an app in error. None was when these screenshots were taken."
+    "usages": [
+      {
+        "label": "Border of a selected Error badge on the Fleet dashboard, with the Git repo shown as error in this frame only",
+        "route": "/c/_/fleet",
+        "theme": "dark",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "waitFor": ".panel .states .badge"
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const hold = () => { $store.getters[\"management/all\"](\"fleet.cattle.io.gitrepo\").forEach((r) => { if (r.metadata.state?.name !== \"error\") { r.metadata.state = { ...r.metadata.state, ...{\"name\":\"error\",\"error\":true,\"transitioning\":false} }; } }); }; hold(); setInterval(hold, 250); true"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "waitFor": ".panel .states .badge.selectable.bg-error"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".badge.selected.bg-error\") || Date.now() - t0 > 40000) { resolve(true); } else { document.querySelector(\".panel .states .badge.selectable.bg-error\")?.click(); setTimeout(tick, 2000); } }; tick(); })"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".badge.selected.bg-error",
+          "color": true
+        }
+      }
+    ]
   },
   "red-272": {
-    "note": "Only the SUSE Rancher Prime card in the What's new dialog paints it, and opening that dialog marks the release notes read in your preferences, so the capture script leaves it alone."
+    "usages": [
+      {
+        "label": "Background of the Prime card's button, in What's new, with preference saves blocked in this frame",
+        "route": "/home",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const d = $store.dispatch; $store.dispatch = (t, ...a) => (t === \"prefs/set\" ? Promise.resolve() : d(t, ...a)); true"
+          },
+          {
+            "click": "[data-testid=\"nav_header_showUserMenu\"]"
+          },
+          {
+            "wait": 800
+          },
+          {
+            "click": "[role=menuitem], [data-testid^=user-menu] a",
+            "text": "What"
+          },
+          {
+            "waitFor": ".prime-card"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": ".prime-card a.rc-button",
+          "color": true
+        }
+      }
+    ]
   },
   "red-348": {
     "usages": [
@@ -2268,7 +2551,7 @@
     "note": "Its only use, in fleet/dashboard/ResourcePanel.vue, is commented out."
   },
   "red-372": {
-    "note": "Its rules on the diagnostic page, in ClusterLink.vue and in graph/Circle.vue match no element."
+    "note": "Its rules on the diagnostic page, in ClusterLink.vue and in graph/Circle.vue all match no element: the page has no log list, nothing uses that tooltip, and only the unused CountGauge renders Circle."
   },
   "red-387": {
     "usages": [
@@ -2624,7 +2907,40 @@
     ]
   },
   "red-630": {
-    "note": "It borders a selected error badge on the Fleet dashboard, which needs an app in error. None was when these screenshots were taken."
+    "usages": [
+      {
+        "label": "Border of a selected Error badge on the Fleet dashboard, with the Git repo shown as error in this frame only",
+        "route": "/c/_/fleet",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "waitFor": ".panel .states .badge"
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const hold = () => { $store.getters[\"management/all\"](\"fleet.cattle.io.gitrepo\").forEach((r) => { if (r.metadata.state?.name !== \"error\") { r.metadata.state = { ...r.metadata.state, ...{\"name\":\"error\",\"error\":true,\"transitioning\":false} }; } }); }; hold(); setInterval(hold, 250); true"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "waitFor": ".panel .states .badge.selectable.bg-error"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".badge.selected.bg-error\") || Date.now() - t0 > 40000) { resolve(true); } else { document.querySelector(\".panel .states .badge.selectable.bg-error\")?.click(); setTimeout(tick, 2000); } }; tick(); })"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".badge.selected.bg-error",
+          "color": true
+        }
+      }
+    ]
   },
   "red-707": {
     "usages": [
@@ -2678,10 +2994,52 @@
     ]
   },
   "orange-208": {
-    "note": "Only the SUSE Rancher Prime card in the What's new dialog paints it, and opening that dialog marks the release notes read in your preferences, so the capture script leaves it alone."
+    "usages": [
+      {
+        "label": "Background of the Prime card's button when hovered, in What's new, with preference saves blocked in this frame",
+        "route": "/home",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const d = $store.dispatch; $store.dispatch = (t, ...a) => (t === \"prefs/set\" ? Promise.resolve() : d(t, ...a)); true"
+          },
+          {
+            "click": "[data-testid=\"nav_header_showUserMenu\"]"
+          },
+          {
+            "wait": 800
+          },
+          {
+            "click": "[role=menuitem], [data-testid^=user-menu] a",
+            "text": "What"
+          },
+          {
+            "waitFor": ".prime-card"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "force": ".prime-card a.rc-button",
+            "state": "hover",
+            "all": true
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".prime-card a.rc-button",
+          "color": true
+        }
+      }
+    ]
   },
   "orange-209": {
-    "note": "Only SelectIconGrid's partner items paint it, and no grid marks an item as a partner."
+    "note": "Only SelectIconGrid items with the partner class paint it, and nothing adds that class."
   },
   "orange-239": {
     "usages": [
@@ -2731,7 +3089,40 @@
     ]
   },
   "orange-243": {
-    "note": "It borders a selected warning badge on the Fleet dashboard, which needs an app in a warning state. None is on this Rancher."
+    "usages": [
+      {
+        "label": "Border of a selected Warning badge on the Fleet dashboard, with the Git repo shown as warning in this frame only",
+        "route": "/c/_/fleet",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "waitFor": ".panel .states .badge"
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const hold = () => { $store.getters[\"management/all\"](\"fleet.cattle.io.gitrepo\").forEach((r) => { if (r.metadata.state?.name !== \"waitcheckin\") { r.metadata.state = { ...r.metadata.state, ...{\"name\":\"waitcheckin\",\"error\":false,\"transitioning\":false} }; } }); }; hold(); setInterval(hold, 250); true"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "waitFor": ".panel .states .badge.selectable.bg-warning"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".badge.selected.bg-warning\") || Date.now() - t0 > 40000) { resolve(true); } else { document.querySelector(\".panel .states .badge.selectable.bg-warning\")?.click(); setTimeout(tick, 2000); } }; tick(); })"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".badge.selected.bg-warning",
+          "color": true
+        }
+      }
+    ]
   },
   "orange-249-a45": {
     "usages": [
@@ -2828,10 +3219,43 @@
     ]
   },
   "orange-267": {
-    "note": "Only SelectIconGrid items in color group 4 paint it, and no grid in the dashboard reaches that group."
+    "note": "Only SelectIconGrid items in color group 4 paint it. That is the cluster create grid's register group, and no cluster type is in it."
   },
   "orange-274": {
-    "note": "It borders a selected warning badge on the Fleet dashboard, which needs an app in a warning state. None is on this Rancher."
+    "usages": [
+      {
+        "label": "Border of a selected Warning badge on the Fleet dashboard, with the Git repo shown as warning in this frame only",
+        "route": "/c/_/fleet",
+        "theme": "dark",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "waitFor": ".panel .states .badge"
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const hold = () => { $store.getters[\"management/all\"](\"fleet.cattle.io.gitrepo\").forEach((r) => { if (r.metadata.state?.name !== \"waitcheckin\") { r.metadata.state = { ...r.metadata.state, ...{\"name\":\"waitcheckin\",\"error\":false,\"transitioning\":false} }; } }); }; hold(); setInterval(hold, 250); true"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "waitFor": ".panel .states .badge.selectable.bg-warning"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".badge.selected.bg-warning\") || Date.now() - t0 > 40000) { resolve(true); } else { document.querySelector(\".panel .states .badge.selectable.bg-warning\")?.click(); setTimeout(tick, 2000); } }; tick(); })"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".badge.selected.bg-warning",
+          "color": true
+        }
+      }
+    ]
   },
   "orange-520": {
     "usages": [
@@ -2900,10 +3324,10 @@
     "note": "Only styles for a log list on the diagnostic page paint it, and that page has no log list."
   },
   "yellow-33": {
-    "note": "Only the Emacs key map's status panel paints it, and nothing opens that panel."
+    "note": "Only the Emacs key map's status panel paints it, and nothing ever sends the effect that opens that panel."
   },
   "yellow-73": {
-    "note": "Only SelectIconGrid items in color group 8 paint it, and no grid in the dashboard reaches that group."
+    "note": "Only SelectIconGrid items in color group 8 paint it. The two grids in the dashboard set their own groups, and neither uses that one."
   },
   "yellow-80": {
     "usages": [
@@ -2972,7 +3396,7 @@
     ]
   },
   "yellow-80-a80": {
-    "note": "Only warning tooltips paint it, and LabeledTooltip never applies the warning class: it reads the global status instead of its own."
+    "note": "Only warning tooltips paint it, and nothing applies the tooltip-warning class: LabeledTooltip reads the global status instead of its own."
   },
   "yellow-105": {
     "note": "Only .bg-warning.btn:hover paints it, and no button has the bg-warning class."
@@ -3212,7 +3636,7 @@
     ]
   },
   "yellow-186-a80": {
-    "note": "Only warning tooltips paint it, and LabeledTooltip never applies the warning class: it reads the global status instead of its own."
+    "note": "Only warning tooltips paint it, and nothing applies the tooltip-warning class: LabeledTooltip reads the global status instead of its own."
   },
   "yellow-259": {
     "note": "Only .bg-warning.btn:hover paints it, and no button has the bg-warning class."
@@ -3372,7 +3796,31 @@
     ]
   },
   "green-119": {
-    "note": "It borders a selected Active badge on the Fleet dashboard, which needs a Ready app. None is on this Rancher."
+    "usages": [
+      {
+        "label": "Border of a selected Active badge on the Fleet dashboard",
+        "route": "/c/_/fleet",
+        "theme": "dark",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "waitFor": ".panel .states .badge.selectable.bg-success"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".badge.selected.bg-success\") || Date.now() - t0 > 40000) { resolve(true); } else { document.querySelector(\".panel .states .badge.selectable.bg-success\")?.click(); setTimeout(tick, 2000); } }; tick(); })"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".badge.selected.bg-success",
+          "color": true
+        }
+      }
+    ]
   },
   "green-132": {
     "usages": [
@@ -3506,10 +3954,68 @@
     ]
   },
   "green-228-a15": {
-    "note": "Only the wash animation after pinning a cluster or setting a default table view paints it, and both of those save a preference."
+    "usages": [
+      {
+        "label": "Wash of a view tab as it moves to the front, held at its first frame in this frame only",
+        "route": "/c/local/explorer/configmap",
+        "theme": "suse dark",
+        "steps": [
+          {
+            "waitFor": ".view-tab-wrap"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "document.querySelector(\".view-tab-wrap\").classList.add(\"flash\"); document.getAnimations().forEach((a) => { if (a.animationName?.includes(\"view-tab-wash\")) { a.pause(); a.currentTime = 0; } }); true"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".view-tab-wrap.flash",
+          "color": true
+        }
+      }
+    ]
   },
   "green-299": {
-    "note": "Only the SUSE Rancher Prime card in the What's new dialog paints it, and opening that dialog marks the release notes read in your preferences, so the capture script leaves it alone."
+    "usages": [
+      {
+        "label": "Border of a product tag on the Prime card, in What's new, with preference saves blocked in this frame",
+        "route": "/home",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const d = $store.dispatch; $store.dispatch = (t, ...a) => (t === \"prefs/set\" ? Promise.resolve() : d(t, ...a)); true"
+          },
+          {
+            "click": "[data-testid=\"nav_header_showUserMenu\"]"
+          },
+          {
+            "wait": 800
+          },
+          {
+            "click": "[role=menuitem], [data-testid^=user-menu] a",
+            "text": "What"
+          },
+          {
+            "waitFor": ".prime-card"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": ".prime-card .rc-tag",
+          "color": true
+        }
+      }
+    ]
   },
   "green-319": {
     "usages": [
@@ -3870,7 +4376,31 @@
     ]
   },
   "green-453-a15": {
-    "note": "Only the wash animation after pinning a cluster or setting a default table view paints it, and both of those save a preference."
+    "usages": [
+      {
+        "label": "Wash of a view tab as it moves to the front, held at its first frame in this frame only",
+        "route": "/c/local/explorer/configmap",
+        "theme": "suse light",
+        "steps": [
+          {
+            "waitFor": ".view-tab-wrap"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "document.querySelector(\".view-tab-wrap\").classList.add(\"flash\"); document.getAnimations().forEach((a) => { if (a.animationName?.includes(\"view-tab-wash\")) { a.pause(); a.currentTime = 0; } }); true"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".view-tab-wrap.flash",
+          "color": true
+        }
+      }
+    ]
   },
   "green-471": {
     "usages": [
@@ -3904,7 +4434,31 @@
     ]
   },
   "green-515": {
-    "note": "It borders a selected Active badge on the Fleet dashboard, which needs a Ready app. None is on this Rancher."
+    "usages": [
+      {
+        "label": "Border of a selected Active badge on the Fleet dashboard",
+        "route": "/c/_/fleet",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "waitFor": ".panel .states .badge.selectable.bg-success"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".badge.selected.bg-success\") || Date.now() - t0 > 40000) { resolve(true); } else { document.querySelector(\".panel .states .badge.selectable.bg-success\")?.click(); setTimeout(tick, 2000); } }; tick(); })"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".badge.selected.bg-success",
+          "color": true
+        }
+      }
+    ]
   },
   "green-523": {
     "usages": [
@@ -4330,7 +4884,34 @@
     ]
   },
   "blue-77": {
-    "note": "It's the background of an outlined info status badge, such as a node's \"+N more\" IP badge. Every node on this Rancher has a single IP."
+    "usages": [
+      {
+        "label": "Background of a node's \"+2 more\" IP badge, with the addresses added in this frame only",
+        "route": "/c/local/explorer/node",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".sortable-table tbody tr.main-row"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "const cells = [...document.querySelectorAll(\".sortable-table tbody tr.main-row td\")].map((t) => t.firstElementChild).filter(Boolean); let c; for (const el of cells) { c = colorTool.componentOf(el); while (c && !c.props?.row) c = c.parent; if (c) break; } const row = c.props.row; const hold = () => { if (row.status.addresses.filter((a) => a.type === \"InternalIP\").length < 3) { row.status.addresses = [...row.status.addresses, { type: \"InternalIP\", address: \"10.20.30.41\" }, { type: \"InternalIP\", address: \"10.20.30.42\" }]; } }; hold(); setInterval(hold, 250); true"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "waitFor": "[data-testid=plus-more]"
+          }
+        ],
+        "highlight": {
+          "selector": "[data-testid=plus-more]",
+          "color": true
+        }
+      }
+    ]
   },
   "blue-82": {
     "usages": [
@@ -4353,10 +4934,77 @@
     ]
   },
   "blue-143": {
-    "note": "Only the SUSE Rancher Prime card in the What's new dialog paints it, and opening that dialog marks the release notes read in your preferences, so the capture script leaves it alone."
+    "usages": [
+      {
+        "label": "Muted text of the Prime card, in What's new, with preference saves blocked in this frame",
+        "route": "/home",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const d = $store.dispatch; $store.dispatch = (t, ...a) => (t === \"prefs/set\" ? Promise.resolve() : d(t, ...a)); true"
+          },
+          {
+            "click": "[data-testid=\"nav_header_showUserMenu\"]"
+          },
+          {
+            "wait": 800
+          },
+          {
+            "click": "[role=menuitem], [data-testid^=user-menu] a",
+            "text": "What"
+          },
+          {
+            "waitFor": ".prime-card"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": ".prime-card p",
+          "color": true
+        }
+      }
+    ]
   },
   "blue-155": {
-    "note": "It borders a selected Pending badge on the Fleet dashboard, which needs a pending app. None is on this Rancher."
+    "usages": [
+      {
+        "label": "Border of a selected Pending badge on the Fleet dashboard, with the Git repo shown as pending in this frame only",
+        "route": "/c/_/fleet",
+        "theme": "dark",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "waitFor": ".panel .states .badge"
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const hold = () => { $store.getters[\"management/all\"](\"fleet.cattle.io.gitrepo\").forEach((r) => { if (r.metadata.state?.name !== \"pending\") { r.metadata.state = { ...r.metadata.state, ...{\"name\":\"pending\",\"error\":false,\"transitioning\":true} }; } }); }; hold(); setInterval(hold, 250); true"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "waitFor": ".panel .states .badge.selectable.bg-info"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".badge.selected.bg-info\") || Date.now() - t0 > 40000) { resolve(true); } else { document.querySelector(\".panel .states .badge.selectable.bg-info\")?.click(); setTimeout(tick, 2000); } }; tick(); })"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".badge.selected.bg-info",
+          "color": true
+        }
+      }
+    ]
   },
   "blue-182": {
     "usages": [
@@ -5222,7 +5870,40 @@
     ]
   },
   "blue-467": {
-    "note": "It borders a selected Pending badge on the Fleet dashboard, which needs a pending app. None is on this Rancher."
+    "usages": [
+      {
+        "label": "Border of a selected Pending badge on the Fleet dashboard, with the Git repo shown as pending in this frame only",
+        "route": "/c/_/fleet",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "waitFor": ".panel .states .badge"
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const hold = () => { $store.getters[\"management/all\"](\"fleet.cattle.io.gitrepo\").forEach((r) => { if (r.metadata.state?.name !== \"pending\") { r.metadata.state = { ...r.metadata.state, ...{\"name\":\"pending\",\"error\":false,\"transitioning\":true} }; } }); }; hold(); setInterval(hold, 250); true"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "waitFor": ".panel .states .badge.selectable.bg-info"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".badge.selected.bg-info\") || Date.now() - t0 > 40000) { resolve(true); } else { document.querySelector(\".panel .states .badge.selectable.bg-info\")?.click(); setTimeout(tick, 2000); } }; tick(); })"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".badge.selected.bg-info",
+          "color": true
+        }
+      }
+    ]
   },
   "blue-483": {
     "usages": [
@@ -5269,7 +5950,34 @@
     ]
   },
   "blue-485": {
-    "note": "It's the info status color of the Rc pills, such as a node's \"+N more\" IP badge. Every node on this Rancher has a single IP."
+    "usages": [
+      {
+        "label": "Text of a node's \"+2 more\" IP badge, with the addresses added in this frame only",
+        "route": "/c/local/explorer/node",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".sortable-table tbody tr.main-row"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "const cells = [...document.querySelectorAll(\".sortable-table tbody tr.main-row td\")].map((t) => t.firstElementChild).filter(Boolean); let c; for (const el of cells) { c = colorTool.componentOf(el); while (c && !c.props?.row) c = c.parent; if (c) break; } const row = c.props.row; const hold = () => { if (row.status.addresses.filter((a) => a.type === \"InternalIP\").length < 3) { row.status.addresses = [...row.status.addresses, { type: \"InternalIP\", address: \"10.20.30.41\" }, { type: \"InternalIP\", address: \"10.20.30.42\" }]; } }; hold(); setInterval(hold, 250); true"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "waitFor": "[data-testid=plus-more]"
+          }
+        ],
+        "highlight": {
+          "selector": "[data-testid=plus-more]",
+          "color": true
+        }
+      }
+    ]
   },
   "blue-500": {
     "note": "Only graph/LinePlot.vue paints it, and nothing renders that component."
@@ -5600,7 +6308,7 @@
     ]
   },
   "blue-624": {
-    "note": "Only SelectIconGrid items in color group 7 paint it, and no grid in the dashboard reaches that group."
+    "note": "Only SelectIconGrid items in color group 7 paint it. The two grids in the dashboard set their own groups, and neither uses that one."
   },
   "blue-625": {
     "usages": [
@@ -5817,10 +6525,44 @@
     ]
   },
   "blue-711": {
-    "note": "Only the SUSE Rancher Prime card in the What's new dialog paints it, and opening that dialog marks the release notes read in your preferences, so the capture script leaves it alone."
+    "usages": [
+      {
+        "label": "Background of the SUSE Rancher Prime card, in What's new, with preference saves blocked in this frame",
+        "route": "/home",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const d = $store.dispatch; $store.dispatch = (t, ...a) => (t === \"prefs/set\" ? Promise.resolve() : d(t, ...a)); true"
+          },
+          {
+            "click": "[data-testid=\"nav_header_showUserMenu\"]"
+          },
+          {
+            "wait": 800
+          },
+          {
+            "click": "[role=menuitem], [data-testid^=user-menu] a",
+            "text": "What"
+          },
+          {
+            "waitFor": ".prime-card"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": ".prime-card",
+          "color": true
+        }
+      }
+    ]
   },
   "purple-467": {
-    "note": "Only SelectIconGrid items in color group 6 paint it, and no grid in the dashboard reaches that group."
+    "note": "Only SelectIconGrid items in color group 6 paint it. The two grids in the dashboard set their own groups, and neither uses that one."
   },
   "purple-524": {
     "note": "Only TableSparkLine.vue paints it, and nothing renders that component."
@@ -5939,5 +6681,14 @@
         }
       }
     ]
+  },
+  "gray-21": {
+    "note": "Only the page shown before the app starts paints it, in shell/static/loading-indicator.html. The color tool isn't running yet at that point, so it can't ring anything there."
+  },
+  "blue-289": {
+    "note": "Only the spinner shown before the app starts paints it, in shell/public/index.html and shell/static/loading-indicator.html. The color tool isn't running yet at that point, so it can't ring anything there."
+  },
+  "blue-394": {
+    "note": "Only the spinner shown before the app starts paints it, in shell/public/index.html and shell/static/loading-indicator.html. The color tool isn't running yet at that point, so it can't ring anything there."
   }
 }
