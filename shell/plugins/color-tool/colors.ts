@@ -157,8 +157,15 @@ export function loadStoredOverrides() {
   writeOverrides();
 }
 
-/** Runs `fn` with the original primitives showing, for finding an element by the color it is painted. */
+/**
+ * Runs `fn` with the original primitives showing, for finding an element by the color it is painted. Transitions are
+ * off meanwhile: a running one reports its start value, and one in an off-screen frame never advances.
+ */
 export async function withOriginalColors<T>(fn: () => T | Promise<T>): Promise<T> {
+  const still = document.createElement('style');
+
+  still.textContent = '*, *::before, *::after { transition: none !important; }';
+  document.head.appendChild(still);
   suspended = true;
   writeOverrides();
   try {
@@ -166,5 +173,7 @@ export async function withOriginalColors<T>(fn: () => T | Promise<T>): Promise<T
   } finally {
     suspended = false;
     writeOverrides();
+    document.documentElement.getBoundingClientRect();
+    still.remove();
   }
 }

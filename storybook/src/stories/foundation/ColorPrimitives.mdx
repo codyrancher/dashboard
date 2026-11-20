@@ -547,7 +547,7 @@ export const normalizeSpec = (raw) => {
         };
       });
 
-      return { name, value, usages };
+      return { name, value, note: color.note, usages };
     });
 
     return { title: group.title || colors.map((c) => shortName(c.name)).join(', '), colors };
@@ -587,11 +587,42 @@ export const EXAMPLE_GROUPS = [
   { title: 'Link blues', colors: ['blue-521', 'blue-523'] },
   { title: 'Pale greens', colors: ['green-80', 'green-82'] },
   { title: 'Dark accent blues', colors: ['blue-196', 'blue-231', 'blue-244', 'blue-282'] },
+  { title: 'Classic blue tints', colors: ['blue-349-a14', 'blue-349-a15'] },
+  { title: 'Faint blue tints', colors: ['blue-438-a5', 'blue-451-a5', 'blue-460-a5'] },
+  { title: 'Primary blue tints', colors: ['blue-451-a14', 'blue-451-a15', 'blue-460-a15'] },
+  { title: 'Dark slate pair', colors: ['blue-628', 'blue-631'] },
 ];
 
 export const EXAMPLE_COLORS = EXAMPLE_GROUPS[0].colors;
 
 export const READ_ONLY_FORM = '/c/local/explorer/configmap/kube-system/kube-root-ca.crt?mode=view&as=config';
+
+export const HELD_COLUMN = {
+  label: 'A column picked up in the View > Columns menu of the pod list',
+  route: '/c/local/explorer/pod',
+  steps: [
+    { waitFor: '[data-testid=table-views-view-menu]' },
+    { wait: 1000 },
+    { click: '[data-testid=table-views-view-menu]' },
+    { click: '[data-testid=table-views-view-columns]' },
+    { waitFor: '.columns-panel .column-handle.grip' },
+    { wait: 500 },
+    {
+      eval: [
+        "const h = document.querySelector('.columns-panel .column-handle.grip');",
+        'const r = h.getBoundingClientRect();',
+        'const x = r.x + r.width / 2;',
+        'const y = r.y + r.height / 2;',
+        "h.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 0 }));",
+        "window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: x, clientY: y + 6 }));",
+        'true',
+      ].join(' '),
+    },
+    { waitFor: 'div.column-row.held' },
+    { wait: 1000 },
+  ],
+  highlight: { selector: 'div.column-row.held', color: true },
+};
 
 export const EXAMPLE_USAGES = {
   '--color-gray-98': {
@@ -630,6 +661,36 @@ export const EXAMPLE_USAGES = {
     steps:     [{ waitFor: '[data-testid=sortable-table-0-checkbox] .checkbox-custom' }, { wait: 1000 }, { click: '[data-testid=sortable-table-0-checkbox] .checkbox-custom' }, { waitFor: 'tr.main-row.row-selected' }],
     highlight: { selector: 'tr.main-row.row-selected', color: true },
   },
+  '--color-blue-349-a14': { ...HELD_COLUMN, theme: 'classic light' },
+  '--color-blue-451-a14': { ...HELD_COLUMN, theme: 'light' },
+  '--color-blue-451-a5': {
+    label:     'A selected row in the pod list',
+    route:     '/c/local/explorer/pod',
+    theme:     'light',
+    steps:     [{ waitFor: '[data-testid=sortable-table-0-checkbox] .checkbox-custom' }, { wait: 1000 }, { click: '[data-testid=sortable-table-0-checkbox] .checkbox-custom' }, { waitFor: 'tr.main-row.row-selected' }],
+    highlight: { selector: 'tr.main-row.row-selected', color: true },
+  },
+  '--color-blue-451-a15': {
+    label:     'The next page button under the config map list, at 10 rows a page',
+    route:     '/c/local/explorer/configmap',
+    theme:     'light',
+    steps:     [
+      { eval: "document.querySelector('#app').__vue_app__.config.globalProperties.$store.commit('prefs/load', { key: 'per-page', value: 10 }); true" },
+      { waitFor: '[data-testid=pagination-next]:not([disabled])' },
+      { wait: 1000 },
+    ],
+    highlight: { selector: '[data-testid=pagination-next]', color: true },
+  },
+  '--color-blue-460-a15': {
+    label:     'The description banner on the node list',
+    route:     '/c/local/explorer/node',
+    theme:     'light',
+    steps:     [
+      { eval: "document.querySelector('#app').__vue_app__.config.globalProperties.$store.commit('prefs/load', { key: 'hide-desc', value: [] }); true" },
+      { waitFor: 'div.banner__content.closable' },
+    ],
+    highlight: { selector: 'div.banner__content.closable', color: true },
+  },
   '--color-blue-523': {
     label: 'Link text, the names in the config map list', route: '/c/local/explorer/configmap', theme: 'light', highlight: { selector: '.sortable-table tbody td a', color: true }
   },
@@ -655,13 +716,18 @@ export const EXAMPLE_USAGES = {
   },
 };
 
+export const EXAMPLE_NOTES = {
+  '--color-blue-438-a5': 'Nothing in Rancher paints this. It is --link-light-bg in the modern theme, which no component reads.',
+  '--color-blue-460-a5': 'Nothing in Rancher paints this. It is --info-light-bg in the modern theme, which no component reads.',
+};
+
 export const specFromScreenshots = (names, screenshots, scenarios, title) => ({
   title:  title || names.map((n) => shortName(primitiveName(n))).join(', '),
   colors: names.map((n) => {
     const name = primitiveName(n);
     const usage = EXAMPLE_USAGES[name] || usageFromScreenshot(name, screenshots[name], scenarios);
 
-    return { name, usages: usage ? [usage] : [] };
+    return { name, note: EXAMPLE_NOTES[name], usages: usage ? [usage] : [] };
   }),
 });
 
@@ -674,6 +740,7 @@ export const SPEC_HELP = `{
     "title": "Near-white grays",
     "colors": [{
       "name": "--color-gray-96",
+      "note": "Shown when it has no usages",          // optional
       "usages": [{
         "label": "Header bar",
         "route": "/c/local/explorer",
@@ -1119,7 +1186,7 @@ export const DedupeGroup = ({
               )) : [
                 <div key={c.name} className="ds-ucard">
                   <ColorHeader color={c} candidate={shown} onPick={pick} />
-                  <p className="ds-muted">No usages in the spec for this color.</p>
+                  <p className="ds-muted">{c.note || 'No usages in the spec for this color.'}</p>
                 </div>
               ]))}
             </div>

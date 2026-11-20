@@ -91,6 +91,12 @@ function status(message: Record<string, unknown>) {
   post({ type: 'status', ...message });
 }
 
+/**
+ * Resolves once the page has drawn, and a moment later. A frame out of view draws nothing, so a menu that opens on an
+ * animation frame is still hidden there and would be measured before it shows.
+ */
+const drawn = () => new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 300)));
+
 const box = (rect: DOMRect) => ({
   x: Math.round(rect.left), y: Math.round(rect.top), width: Math.round(rect.width), height: Math.round(rect.height)
 });
@@ -116,6 +122,7 @@ async function show(message: { theme?: string, steps?: Step[], highlight?: Highl
       await runSteps(message.steps, { trusted: isTrusted });
     }
     if (message.highlight) {
+      await drawn();
       const { el, property } = await locate(message.highlight);
 
       centerInView(el);
