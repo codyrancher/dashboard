@@ -586,6 +586,7 @@ export const EXAMPLE_GROUPS = [
   { title: 'Dark slate blues', colors: ['blue-609', 'blue-616', 'blue-619', 'blue-625', 'blue-628', 'blue-631'] },
   { title: 'Link blues', colors: ['blue-521', 'blue-523'] },
   { title: 'Pale greens', colors: ['green-80', 'green-82'] },
+  { title: 'Dark accent blues', colors: ['blue-196', 'blue-231', 'blue-244', 'blue-282'] },
 ];
 
 export const EXAMPLE_COLORS = EXAMPLE_GROUPS[0].colors;
@@ -615,12 +616,36 @@ export const EXAMPLE_USAGES = {
     ],
     highlight: { selector: 'i.key-combo-icon', color: true },
   },
+  '--color-green-80': {
+    label:     'A tertiary button, hovered',
+    route:     '/home',
+    theme:     'suse light',
+    steps:     [{ force: 'button.rc-button.btn.variant-tertiary', state: 'hover', all: true }],
+    highlight: { selector: 'button.rc-button.btn.variant-tertiary', color: true },
+  },
   '--color-blue-616': {
     label:     'A selected row in the pod list',
     route:     '/c/local/explorer/pod',
     theme:     'dark',
     steps:     [{ waitFor: '[data-testid=sortable-table-0-checkbox] .checkbox-custom' }, { wait: 1000 }, { click: '[data-testid=sortable-table-0-checkbox] .checkbox-custom' }, { waitFor: 'tr.main-row.row-selected' }],
     highlight: { selector: 'tr.main-row.row-selected', color: true },
+  },
+  '--color-blue-523': {
+    label: 'Link text, the names in the config map list', route: '/c/local/explorer/configmap', theme: 'light', highlight: { selector: '.sortable-table tbody td a', color: true }
+  },
+  '--color-blue-231': {
+    label:     'Keys in the YAML editor, creating a config map',
+    route:     '/c/local/explorer/configmap/create?as=yaml',
+    theme:     'dark',
+    steps:     [{ waitFor: 'span.cm-rancher-key' }],
+    highlight: { selector: 'span.cm-rancher-key', color: true },
+  },
+  '--color-blue-244': {
+    label:     'The active Home item in the side menu, hovered',
+    route:     '/home',
+    theme:     'dark',
+    steps:     [{ force: 'a.router-link-active.router-link-exact-active', state: 'hover', all: true }],
+    highlight: { selector: 'a.router-link-active.router-link-exact-active', color: true },
   },
   '--color-blue-619': {
     label: 'Disabled input text, in the read-only config view of a config map', route: READ_ONLY_FORM, theme: 'light', highlight: { selector: 'input:disabled', color: true }
