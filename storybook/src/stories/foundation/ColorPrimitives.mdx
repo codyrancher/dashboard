@@ -626,20 +626,95 @@ export const STATUS = {
   running: 'Making it visible',
 };
 
-export const UsageFrame = ({ base, usage, color, viewport, width, colors, rings, reload }) => {
+export const MAX_ZOOM = 6;
+
+export const clamp = (value, low, high) => Math.min(high, Math.max(low, value));
+
+export const ColorHeader = ({ color, candidate, onPick }) => {
+  const usage = USAGE[color.name] || { uses: 0, files: {} };
+  const files = Object.keys(usage.files).length;
+  const shownAs = candidate && candidate !== color.name ? (COLOR_TOKENS[candidate] || candidate) : null;
+
+  return (
+    <header className="ds-ucard-header">
+      <span className="ds-column-chips">
+        <span className="ds-column-chip ds-checker" title={`${ color.name }: ${ color.value }`}><span className="ds-fill" style={{ background: color.value }} /></span>
+        <span className="ds-column-chip ds-checker" title={shownAs ? `Now shown as ${ shownAs }` : undefined} style={shownAs ? undefined : { visibility: 'hidden' }}><span className="ds-fill" style={{ background: shownAs || 'none' }} /></span>
+      </span>
+      <span className="ds-column-name">
+        <code>{color.name}</code>
+        <span className="ds-muted" title={Object.keys(usage.files).join('\n')}><code>{color.value}</code>, {usage.uses} {usage.uses === 1 ? 'use' : 'uses'} in {files} {files === 1 ? 'file' : 'files'}</span>
+        <span className="ds-muted" style={shownAs ? undefined : { visibility: 'hidden' }}>Shown as <code>{shownAs || color.value}</code></span>
+      </span>
+      <button type="button" className="ds-copy" aria-pressed={candidate === color.name} onClick={() => onPick(candidate === color.name ? null : color.name)}>
+        {candidate === color.name ? 'Picked' : 'Use this'}
+      </button>
+    </header>
+  );
+};
+
+export const UsageCard = ({ base, usage, color, candidate, onPick, viewport, colors, rings, reload, command }) => {
+  const stage = useRef(null);
+  const grab = useRef(null);
   const frame = useRef(null);
-  const latest = useRef({ colors, rings });
+  const drag = useRef(null);
+  const latest = useRef({});
   const [status, setStatus] = useState({ state: 'waiting' });
   const [nonce, setNonce] = useState(0);
-  const scale = width / viewport[0];
+  const [stageWidth, setStageWidth] = useState(0);
+  const [mode, setMode] = useState('focus');
+  const [free, setFree] = useState(null);
+  const [rect, setRect] = useState(null);
+  const [interact, setInteract] = useState(false);
+  const [vw, vh] = viewport;
+  const width = stageWidth;
+  const height = width * vh / vw;
+  const fitScale = width / vw;
   const src = joinUrl(base, usage.route);
   const colorsKey = JSON.stringify(colors);
 
-  latest.current = { colors, rings };
+  const focusOn = (r) => {
+    const s = clamp(Math.min(width / (r.width + 160), height / (r.height + 160)), fitScale, 2);
+
+    return { s, x: width / 2 - (r.x + r.width / 2) * s, y: height / 2 - (r.y + r.height / 2) * s };
+  };
+  const view = !width ? { s: 1, x: 0, y: 0 } : mode === 'free' && free ? { s: free.s * fitScale, x: free.x * width, y: free.y * width } : mode === 'focus' && rect ? focusOn(rect) : { s: fitScale, x: 0, y: 0 };
+  const moveTo = (next) => {
+    setFree({ s: next.s / fitScale, x: next.x / width, y: next.y / width });
+    setMode('free');
+  };
+  const zoomAt = (factor, cx = width / 2, cy = height / 2) => {
+    const s = clamp(view.s * factor, fitScale / 2, MAX_ZOOM);
+
+    moveTo({ s, x: cx - (cx - view.x) * (s / view.s), y: cy - (cy - view.y) * (s / view.s) });
+  };
+
+  latest.current = { colors, rings, view, zoomAt };
   const send = (message) => frame.current?.contentWindow?.postMessage({ source: SOURCE, ...message }, '*');
-  const show = () => send({
-    type: 'show', theme: usage.theme, steps: usage.steps, highlight: usage.highlight, ringWidth: Math.max(3, 2.5 / scale), colors: latest.current.colors
-  });
+  const ringWidth = (s) => Math.max(1, 3 / s);
+
+  useEffect(() => {
+    const observer = new ResizeObserver(() => setStageWidth(stage.current?.clientWidth || 0));
+
+    observer.observe(stage.current);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const onWheel = (event) => {
+      if (event.ctrlKey || event.metaKey) {
+        event.preventDefault();
+        const box = grab.current.getBoundingClientRect();
+
+        latest.current.zoomAt(Math.exp(-clamp(event.deltaY, -50, 50) * 0.01), event.clientX - box.left, event.clientY - box.top);
+      }
+    };
+
+    grab.current.addEventListener('wheel', onWheel, { passive: false });
+
+    return () => grab.current?.removeEventListener('wheel', onWheel);
+  }, []);
 
   useEffect(() => {
     const onMessage = (event) => {
@@ -647,14 +722,22 @@ export const UsageFrame = ({ base, usage, color, viewport, width, colors, rings,
         return;
       }
       if (event.data.type === 'hello') {
-        show();
-        send({ type: 'rings', shown: latest.current.rings });
+        send({
+          type: 'show', theme: usage.theme, steps: usage.steps, highlight: usage.highlight, ringWidth: ringWidth(latest.current.view.s), colors: latest.current.colors
+        });
+        send({ type: 'rings', shown: latest.current.rings, width: ringWidth(latest.current.view.s) });
       } else if (event.data.type === 'status') {
         setStatus(event.data);
+        if (event.data.rect) {
+          setRect(event.data.rect);
+        }
+      } else if (event.data.type === 'rect') {
+        setRect(event.data.rect);
       }
     };
 
     setStatus({ state: 'waiting' });
+    setRect(null);
     window.addEventListener('message', onMessage);
     const timeout = setTimeout(() => setStatus((s) => (s.state === 'waiting' ? { state: 'error', message: 'The page never answered. Is the URL a Rancher share built with the color tool, and does it allow framing?' } : s)), 90000);
 
@@ -665,7 +748,45 @@ export const UsageFrame = ({ base, usage, color, viewport, width, colors, rings,
   }, [src, nonce, reload, JSON.stringify(usage)]);
 
   useEffect(() => send({ type: 'colors', colors }), [colorsKey]);
-  useEffect(() => send({ type: 'rings', shown: rings }), [rings]);
+  useEffect(() => send({ type: 'rings', shown: rings, width: ringWidth(view.s) }), [rings, Math.round(view.s * 100)]);
+  useEffect(() => {
+    if (command?.n) {
+      setMode(command.type);
+    }
+  }, [command?.n]);
+
+  const startDrag = (event) => {
+    if (event.button !== 0) {
+      return;
+    }
+    event.currentTarget.setPointerCapture(event.pointerId);
+    drag.current = { px: event.clientX, py: event.clientY, start: view };
+  };
+  const moveDrag = (event) => {
+    const d = drag.current;
+
+    if (d) {
+      moveTo({ s: d.start.s, x: d.start.x + event.clientX - d.px, y: d.start.y + event.clientY - d.py });
+    }
+  };
+  const endDrag = () => {
+    drag.current = null;
+  };
+  const onKeyDown = (event) => {
+    const step = 40;
+    const moves = {
+      ArrowLeft: [step, 0], ArrowRight: [-step, 0], ArrowUp: [0, step], ArrowDown: [0, -step]
+    };
+
+    if (moves[event.key]) {
+      event.preventDefault();
+      moveTo({ s: view.s, x: view.x + moves[event.key][0], y: view.y + moves[event.key][1] });
+    } else if (event.key === '+' || event.key === '=') {
+      zoomAt(1.25);
+    } else if (event.key === '-') {
+      zoomAt(0.8);
+    }
+  };
 
   const open = joinUrl(base, usage.route, {
     theme:          usage.theme,
@@ -675,18 +796,34 @@ export const UsageFrame = ({ base, usage, color, viewport, width, colors, rings,
     colors:         Object.keys(colors).length ? JSON.stringify(colors) : undefined,
   });
   const busy = STATUS[status.state];
+  const label = `${ shortName(color.name) }: ${ usage.label || usage.route }`;
 
   return (
-    <figure className="ds-usage">
-      <div className="ds-frame" style={{ width, height: viewport[1] * scale }}>
+    <figure className={`ds-ucard${ candidate === color.name ? ' ds-ucard--picked' : '' }`}>
+      <ColorHeader color={color} candidate={candidate} onPick={onPick} />
+      <div ref={stage} className="ds-stage" style={{ height }}>
         <iframe
           key={`${ src }|${ nonce }|${ reload }`}
           ref={frame}
           src={src}
-          title={`${ shortName(color) }: ${ usage.label || usage.route }`}
+          title={label}
           loading="lazy"
-          style={{ width: viewport[0], height: viewport[1], transform: `scale(${ scale })` }}
+          style={{ width: vw, height: vh, transform: `translate(${ view.x }px, ${ view.y }px) scale(${ view.s })` }}
           onLoad={() => send({ type: 'ping' })}
+        />
+        <div
+          ref={grab}
+          className="ds-stage-grab"
+          style={interact ? { pointerEvents: 'none' } : undefined}
+          tabIndex={0}
+          role="application"
+          aria-label={`${ label }. Arrow keys pan, plus and minus zoom.`}
+          onPointerDown={startDrag}
+          onPointerMove={moveDrag}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onDoubleClick={() => setMode(mode === 'focus' ? 'fit' : 'focus')}
+          onKeyDown={onKeyDown}
         />
         {busy && <div className="ds-frame-status" role="status">{busy}...</div>}
         {status.state === 'login' && (
@@ -695,45 +832,27 @@ export const UsageFrame = ({ base, usage, color, viewport, width, colors, rings,
           </div>
         )}
       </div>
-      <figcaption>
+      <div className="ds-stage-controls">
+        <button type="button" className="ds-copy" onClick={() => zoomAt(0.8)} aria-label="Zoom out">-</button>
+        <span className="ds-zoom" aria-live="polite">{Math.round(view.s * 100)}%</span>
+        <button type="button" className="ds-copy" onClick={() => zoomAt(1.25)} aria-label="Zoom in">+</button>
+        <button type="button" className="ds-copy" aria-pressed={mode === 'fit'} onClick={() => setMode('fit')}>Whole page</button>
+        <button type="button" className="ds-copy" aria-pressed={mode === 'focus'} disabled={!rect} onClick={() => setMode('focus')}>Highlight</button>
+        <button type="button" className="ds-copy" aria-pressed={interact} onClick={() => setInteract(!interact)} title="Let clicks and scrolling reach the page instead of panning">Use page</button>
+        <span className="ds-stage-controls-end">
+          <button type="button" className="ds-copy" onClick={() => setNonce((n) => n + 1)}>Reload</button>
+          <a className="ds-copy" href={open} target="_blank" rel="noreferrer" title="Opens the page with the highlight and the colors, without the steps">Open</a>
+        </span>
+      </div>
+      <figcaption className="ds-ucard-caption">
         <div className="ds-usage-label">{usage.label || usage.route}</div>
         <div className="ds-muted">
           <code>{usage.route}</code>, {usage.theme}
           {status.state === 'done' && status.element && <>, {status.property ? <code>{status.property}</code> : 'the element'} of <code>{status.element}</code></>}
         </div>
         {status.state === 'error' && <div className="ds-usage-error">{status.message}</div>}
-        <div className="ds-usage-actions">
-          <button type="button" className="ds-copy" onClick={() => setNonce((n) => n + 1)}>Reload</button>
-          <a className="ds-copy" href={open} target="_blank" rel="noreferrer" title="Opens the page with the highlight and the colors, without the steps">Open</a>
-        </div>
       </figcaption>
     </figure>
-  );
-};
-
-export const ColorColumn = ({ color, candidate, width, onPick, children }) => {
-  const usage = USAGE[color.name] || { uses: 0, files: {} };
-  const files = Object.keys(usage.files).length;
-  const shownAs = candidate && candidate !== color.name ? (COLOR_TOKENS[candidate] || candidate) : null;
-
-  return (
-    <section className={`ds-column${ candidate === color.name ? ' ds-column--picked' : '' }`} style={{ width }} aria-label={color.name}>
-      <header className="ds-column-header">
-        <span className="ds-column-chips">
-          <span className="ds-column-chip ds-checker" title={`${ color.name }: ${ color.value }`}><span className="ds-fill" style={{ background: color.value }} /></span>
-          <span className="ds-column-chip ds-checker" title={shownAs ? `Now shown as ${ shownAs }` : undefined} style={shownAs ? undefined : { visibility: 'hidden' }}><span className="ds-fill" style={{ background: shownAs || 'none' }} /></span>
-        </span>
-        <span className="ds-column-name">
-          <code>{color.name}</code>
-          <span className="ds-muted" title={Object.keys(usage.files).join('\n')}><code>{color.value}</code>, {usage.uses} {usage.uses === 1 ? 'use' : 'uses'} in {files} {files === 1 ? 'file' : 'files'}</span>
-          <span className="ds-muted" style={shownAs ? undefined : { visibility: 'hidden' }}>Shown as <code>{shownAs || color.value}</code></span>
-        </span>
-        <button type="button" className="ds-copy" aria-pressed={candidate === color.name} onClick={() => onPick(candidate === color.name ? null : color.name)}>
-          {candidate === color.name ? 'Picked' : 'Use this'}
-        </button>
-      </header>
-      {color.usages.length ? children : <p className="ds-muted">No usages in the spec for this color.</p>}
-    </section>
   );
 };
 
@@ -777,11 +896,11 @@ export const Dedupe = () => {
   const [candidate, setCandidate] = useState(null);
   const [custom, setCustom] = useState('');
   const [rings, setRings] = useState(true);
-  const [width, setWidth] = useState(() => Number(storage.get('color-dedupe-width', '') || 420));
+  const [size, setSize] = useState(() => Number(storage.get('color-dedupe-size', '') || 560));
   const [reload, setReload] = useState(0);
+  const [command, setCommand] = useState({ type: 'focus', n: 0 });
   const [error, setError] = useState('');
   const [spec, setSpec] = useState(null);
-  const columns = useRef(null);
 
   useEffect(() => {
     if (!text && Object.keys(screenshots).length) {
@@ -821,19 +940,6 @@ export const Dedupe = () => {
   const pickedValue = candidate === 'custom' ? custom.trim() : candidate ? COLOR_TOKENS[candidate] : null;
   const colors = useMemo(() => (group && pickedValue ? Object.fromEntries(group.colors.filter((c) => c.name !== candidate).map((c) => [c.name, pickedValue])) : {}), [group, candidate, pickedValue]);
   const pick = useCallback((name) => setCandidate(name), []);
-  const fit = () => {
-    if (columns.current && group) {
-      const count = group.colors.length;
-
-      setWidth(Math.min(1000, Math.max(200, Math.floor((columns.current.clientWidth - 16 * (count - 1)) / count) - 18)));
-    }
-  };
-
-  useEffect(() => {
-    if (!storage.get('color-dedupe-width', '')) {
-      fit();
-    }
-  }, [group?.title, group?.colors.length, base]);
 
   useEffect(() => {
     const onKey = (event) => {
@@ -856,10 +962,11 @@ export const Dedupe = () => {
     <div className="ds-dedupe">
       <style>{'.sbdocs-content { max-width: none !important; min-width: 0; } .sbdocs-toc--custom { display: none !important; }'}</style>
       <p>
-        Compare primitives that could be one. Each column is a color and each frame a place the spec says it is used,
-        a {spec?.viewport[0] || 1440} x {spec?.viewport[1] || 900} Rancher page scaled down, with the color made visible,
-        ringed and scrolled into view. Pick a color to show it in place of all the others everywhere, and Original
-        (or <kbd>0</kbd>) to go back. <kbd>1</kbd>-<kbd>9</kbd> pick the columns.
+        Compare primitives that could be one. Each card is a place the spec says a color is used: a
+        {' '}{spec?.viewport[0] || 1440} x {spec?.viewport[1] || 900} Rancher page with the color made visible and ringed,
+        zoomed in on the ring. Drag to pan, <kbd>Ctrl</kbd> + scroll or pinch to zoom, and double-click to switch between
+        the ring and the whole page. Pick a color to show it in place of all the others everywhere, and Original
+        (or <kbd>0</kbd>) to go back. <kbd>1</kbd>-<kbd>9</kbd> pick the colors.
       </p>
       <div className="ds-dedupe-settings">
         <label>
@@ -877,24 +984,20 @@ export const Dedupe = () => {
         </label>
         {joinUrl(base, '/') && <a className="ds-copy" href={joinUrl(base, '/')} target="_blank" rel="noreferrer">Sign in</a>}
         <label>
-          Frame width
+          Card size
           <input
             type="range"
-            min="200"
-            max="1000"
+            min="280"
+            max="1440"
             step="20"
-            value={width}
+            value={size}
             onChange={(e) => {
-              setWidth(Number(e.target.value));
-              storage.set('color-dedupe-width', e.target.value);
+              setSize(Number(e.target.value));
+              storage.set('color-dedupe-size', e.target.value);
             }}
           />
-          <span className="ds-muted">{width}px</span>
+          <span className="ds-muted">{size}px</span>
         </label>
-        <button type="button" className="ds-copy" onClick={() => {
-          storage.set('color-dedupe-width', '');
-          fit();
-        }}>Fit</button>
       </div>
       <SpecEditor text={text} onApply={apply} error={error} screenshots={screenshots} scenarios={scenarios} />
       {group && (
@@ -923,21 +1026,24 @@ export const Dedupe = () => {
               <button type="button" className="ds-copy" aria-pressed={candidate === 'custom'} disabled={!custom.trim() || !CSS.supports('color', custom.trim())} onClick={() => setCandidate('custom')}>Try</button>
             </span>
             <span className="ds-dedupe-toolbar-end">
-              <label><input type="checkbox" checked={rings} onChange={(e) => setRings(e.target.checked)} /> Highlight</label>
+              <label><input type="checkbox" checked={rings} onChange={(e) => setRings(e.target.checked)} /> Ring</label>
+              <button type="button" className="ds-copy" onClick={() => setCommand((c) => ({ type: 'focus', n: c.n + 1 }))}>Zoom all to rings</button>
+              <button type="button" className="ds-copy" onClick={() => setCommand((c) => ({ type: 'fit', n: c.n + 1 }))}>Whole pages</button>
               <button type="button" className="ds-copy" onClick={() => setReload((n) => n + 1)}>Reload all</button>
             </span>
           </div>
           {!joinUrl(base, '/') ? (
             <p className="ds-usage-error">Set the Rancher share these pages come from: the URL of a dashboard built with the color tool, in front of a Rancher you are signed in to.</p>
           ) : (
-            <div className="ds-columns" ref={columns} style={{ '--ds-rows': 1 + Math.max(1, ...group.colors.map((c) => c.usages.length)) }}>
-              {group.colors.map((c) => (
-                <ColorColumn key={c.name} color={c} candidate={candidate === 'custom' ? custom.trim() : candidate} width={width} onPick={pick}>
-                  {c.usages.map((usage, i) => (
-                    <UsageFrame key={i} base={base} usage={usage} color={c.name} viewport={spec.viewport} width={width} colors={colors} rings={rings} reload={reload} />
-                  ))}
-                </ColorColumn>
-              ))}
+            <div className="ds-ucards" style={{ '--ds-card': `${ size }px` }}>
+              {group.colors.flatMap((c) => (c.usages.length ? c.usages.map((usage, i) => (
+                <UsageCard key={`${ c.name }-${ i }`} base={base} usage={usage} color={c} candidate={candidate === 'custom' ? custom.trim() : candidate} onPick={pick} viewport={spec.viewport} colors={colors} rings={rings} reload={reload} command={command} />
+              )) : [
+                <div key={c.name} className="ds-ucard">
+                  <ColorHeader color={c} candidate={candidate === 'custom' ? custom.trim() : candidate} onPick={pick} />
+                  <p className="ds-muted">No usages in the spec for this color.</p>
+                </div>
+              ]))}
             </div>
           )}
         </>
@@ -1320,7 +1426,7 @@ export const Dedupe = () => {
   background: var(--color-white);
 }
 
-.ds-dedupe-toolbar .ds-copy, .ds-dedupe .ds-usage-actions .ds-copy, .ds-dedupe-settings .ds-copy {
+.ds-dedupe-toolbar .ds-copy, .ds-dedupe-settings .ds-copy {
   margin-left: 0;
 }
 
@@ -1351,37 +1457,38 @@ export const Dedupe = () => {
   margin-left: auto;
 }
 
-.ds-columns {
+.ds-ucards {
   display: grid;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(var(--ds-rows), auto);
-  justify-content: start;
-  column-gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(min(var(--ds-card), 100%), 1fr));
+  gap: 16px;
   padding-bottom: 16px;
-  overflow-x: auto;
 }
 
-.ds-column {
-  display: grid;
-  grid-row: span var(--ds-rows);
-  grid-template-rows: subgrid;
-  row-gap: 12px;
-  align-content: start;
-  box-sizing: content-box;
+.ds-ucard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
   padding: 8px;
   border: 1px solid var(--color-gray-96);
   border-radius: 6px;
 }
 
-.ds-column--picked {
+.ds-ucard--picked {
   border-color: var(--color-blue-451);
   box-shadow: inset 0 0 0 1px var(--color-blue-451);
 }
 
-.ds-column-header {
+.ds-ucard .ds-copy {
+  margin-left: 0;
+}
+
+.ds-ucard-header {
   display: flex;
   align-items: flex-start;
   gap: 8px;
+  min-width: 0;
 }
 
 .ds-column-chips {
@@ -1414,11 +1521,7 @@ export const Dedupe = () => {
   white-space: nowrap;
 }
 
-.ds-usage {
-  margin: 0;
-}
-
-.ds-frame {
+.ds-stage {
   position: relative;
   border: 1px solid var(--color-gray-96);
   border-radius: 4px;
@@ -1426,10 +1529,29 @@ export const Dedupe = () => {
   overflow: hidden;
 }
 
-.ds-frame iframe {
+.ds-stage iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: block;
   border: 0;
   transform-origin: 0 0;
+}
+
+.ds-stage-grab {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+  touch-action: none;
+}
+
+.ds-stage-grab:active {
+  cursor: grabbing;
+}
+
+.ds-stage-grab:focus-visible {
+  outline: 2px solid var(--color-blue-451);
+  outline-offset: -2px;
 }
 
 .ds-frame-status {
@@ -1447,13 +1569,39 @@ export const Dedupe = () => {
   background: var(--color-white);
 }
 
-.ds-usage figcaption {
-  overflow-wrap: anywhere;
+.ds-stage-controls, .ds-stage-controls-end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.ds-stage-controls-end {
+  margin-left: auto;
+}
+
+.ds-stage-controls a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ds-zoom {
+  min-width: 40px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.ds-ucard-caption {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  margin-top: 4px;
   font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.ds-ucard-caption code {
+  white-space: normal;
 }
 
 .ds-usage-label {
@@ -1464,15 +1612,6 @@ export const Dedupe = () => {
   color: var(--color-red-488);
 }
 
-.ds-usage-actions {
-  display: flex;
-  gap: 6px;
-}
-
-.ds-usage-actions a {
-  color: inherit;
-  text-decoration: none;
-}
 `}
 </style>
 

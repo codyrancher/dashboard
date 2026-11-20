@@ -350,10 +350,18 @@ const rings: { el: Element, ring: HTMLElement }[] = [];
 let ringsShown = true;
 let ringWidth = 3;
 let frame = 0;
+let moved: ((rect: DOMRect) => void) | null = null;
+let last = '';
 
 function placeRings() {
-  for (const { el, ring } of rings) {
+  for (const [i, { el, ring }] of rings.entries()) {
     const rect = el.getBoundingClientRect();
+    const where = [rect.left, rect.top, rect.width, rect.height].map(Math.round).join();
+
+    if (i === 0 && where !== last) {
+      last = where;
+      moved?.(rect);
+    }
     const gap = ringWidth + 2;
 
     ring.style.display = ringsShown && el.isConnected && rect.width ? 'block' : 'none';
@@ -392,6 +400,15 @@ export function clearRings() {
   frame = 0;
 }
 
-export function showRings(shown: boolean) {
+/** Shows or hides the rings, and sets their thickness in CSS pixels when `width` is given. */
+export function showRings(shown: boolean, width?: number) {
   ringsShown = shown;
+  if (width) {
+    ringWidth = width;
+  }
+}
+
+/** Calls `listener` with the first ringed element's viewport rectangle whenever it moves or resizes. */
+export function onRingMove(listener: (rect: DOMRect) => void) {
+  moved = listener;
 }

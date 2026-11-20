@@ -2,7 +2,7 @@ import { createApp } from 'vue';
 import ColorToolPanel from './ColorToolPanel.vue';
 import { loadStoredOverrides, setExternalOverrides } from './colors';
 import {
-  Highlight, Step, centerInView, clearForced, clearRings, describe, locate, lockTheme, onLoginPage, pageReady, ring, runSteps, showRings
+  Highlight, Step, centerInView, clearForced, clearRings, describe, locate, lockTheme, onLoginPage, onRingMove, pageReady, ring, runSteps, showRings
 } from './page';
 
 const SOURCE = 'rancher-color-tool';
@@ -82,6 +82,10 @@ async function highlightFromQuery(query: URLSearchParams, path: string) {
 
 let showing: Promise<void> = Promise.resolve();
 
+const box = (rect: DOMRect) => ({
+  x: Math.round(rect.left), y: Math.round(rect.top), width: Math.round(rect.width), height: Math.round(rect.height)
+});
+
 async function show(message: { theme?: string, steps?: Step[], highlight?: Highlight, ringWidth?: number, colors?: Record<string, string> }, isTrusted: boolean) {
   clearRings();
   clearForced();
@@ -108,7 +112,7 @@ async function show(message: { theme?: string, steps?: Step[], highlight?: Highl
       centerInView(el);
       ring([el], { width: message.ringWidth || 3 });
       post({
-        type: 'status', state: 'done', element: describe(el), property
+        type: 'status', state: 'done', element: describe(el), property, rect: box(el.getBoundingClientRect())
       });
     } else {
       post({ type: 'status', state: 'done' });
@@ -132,11 +136,12 @@ function listen() {
     } else if (message.type === 'colors') {
       setExternalOverrides(message.colors || {});
     } else if (message.type === 'rings') {
-      showRings(message.shown !== false);
+      showRings(message.shown !== false, message.width);
     } else if (message.type === 'ping') {
       post({ type: 'hello', path: window.location.pathname });
     }
   });
+  onRingMove((rect) => post({ type: 'rect', rect: box(rect) }));
   post({ type: 'hello', path: window.location.pathname });
 }
 
@@ -160,8 +165,10 @@ function mountPanel() {
  * Messages from a parent frame, `{ source: 'rancher-color-tool', type, ... }`:
  * - `show`: `{ theme, steps, highlight, ringWidth, colors }`. Steps only run for a parent on a sibling host (the other
  *   shares on this node) or localhost, because they click and type as the signed-in user.
- * - `colors`: `{ colors }` replaces the overrides. `rings`: `{ shown }` shows or hides the ring. `ping` asks for `hello`.
+ * - `colors`: `{ colors }` replaces the overrides. `rings`: `{ shown, width }` shows or hides the ring and sets its
+ *   thickness. `ping` asks for `hello`.
  * The page answers `hello` when it starts and `status` (`loading`, `login`, `running`, `done` or `error`) as it works.
+ * `done` and `rect` carry the ringed element's `rect` (`{ x, y, width, height }` in the page's viewport) when it moves.
  */
 export default function colorTool(context: any) {
   const query = new URLSearchParams(window.location.search);
