@@ -13,7 +13,31 @@
     ]
   },
   "white-a4": {
-    "note": "Only RcCodeMirror reads it, for the active line in the dark theme, and an editor draws that line only when it is given highlightActiveLine() or the old styleActiveLine option. Nothing in shell does that, so only extensions can show it."
+    "usages": [
+      {
+        "label": "Staged: background of the editor's active line. No editor in shell turns that line on, so this frame marks one",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "eval": "setInterval(() => document.querySelector(\".rc-code-mirror--editor .cm-line\")?.classList.add(\"cm-activeLine\"), 200); true"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".cm-line.cm-activeLine",
+          "color": true
+        }
+      }
+    ]
   },
   "white-a6": {
     "usages": [
@@ -196,7 +220,34 @@
     ]
   },
   "white-a25": {
-    "note": "Its only rule, in Header.vue's scoped styles, styles a select's chosen items in the header, and the header's namespace filter isn't a select with chosen items, so it matches no element."
+    "usages": [
+      {
+        "label": "Staged: border of a chosen item in a select in the header. The header's namespace filter has no chosen items, so this frame adds one",
+        "route": "/c/local/explorer/configmap",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": ".rd-header-right > .top"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "eval": "(() => { const scope = [...document.styleSheets].flatMap((s) => { try { return [...s.cssRules]; } catch (e) { return []; } }).map((r) => r.selectorText || \"\").find((t) => t.includes(\".rd-header-right > .top .vs__selected\"))?.match(/data-v-\\w+/)?.[0]; const add = () => { const top = document.querySelector(\".rd-header-right > .top\"); if (top && !top.querySelector(\".vs__selected\")) { top.insertAdjacentHTML(\"afterbegin\", '<span class=\"vs__selected\" ' + scope + ' style=\"border-width: 1px; border-style: solid; padding: 2px 6px; margin-right: 8px\">Chosen</span>'); } }; add(); setInterval(add, 200); return true; })()"
+          },
+          {
+            "waitFor": "header .rd-header-right > .top .vs__selected"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "header .rd-header-right > .top .vs__selected",
+          "color": true
+        }
+      }
+    ]
   },
   "white-a30": {
     "usages": [
@@ -217,7 +268,42 @@
     ]
   },
   "white-a65": {
-    "note": "It colors the pin of the current cluster's row when that row isn't pinned, but the shelf only lists pinned clusters. It could only show for the moment a row is being unpinned, and unpinning saves a preference."
+    "usages": [
+      {
+        "label": "Staged: pin of the current cluster's row as it is being unpinned, which saves a preference, so this frame only removes the row's pinned class. The local cluster has no pin, so this frame moves to another one",
+        "route": "/c/local/explorer",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".side-menu"
+          },
+          {
+            "wait": 2000
+          },
+          {
+            "eval": "(async () => { const { $store, $router } = [...document.querySelectorAll('body *')].find((e) => e.__vue_app__).__vue_app__.config.globalProperties; const clusters = await $store.dispatch('management/findAll', { type: 'management.cattle.io.cluster' }); const c = clusters.find((x) => x.id !== 'local' && x.isReady); if (!c) { throw new Error('The pin needs another ready cluster to switch to, and this Rancher has none.'); } await $router.push('/c/' + c.id + '/explorer'); await new Promise((r) => setTimeout(r, 4000)); setInterval(() => { if (!$store.getters['prefs/get']('pinned-clusters')?.includes(c.id)) { $store.commit('prefs/load', { key: 'pinned-clusters', value: [c.id] }); } document.querySelectorAll('.shelf-row.is-active .pin').forEach((p) => p.classList.remove('is-pinned')); }, 100); return true; })()"
+          },
+          {
+            "click": ".menu-icon"
+          },
+          {
+            "waitFor": ".shelf-row.is-active .pin:not(.is-pinned)"
+          },
+          {
+            "force": ".shelf-row.is-active",
+            "state": "hover",
+            "all": true
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".shelf-row.is-active .pin:not(.is-pinned)",
+          "color": true
+        }
+      }
+    ]
   },
   "black": {
     "usages": [
@@ -645,7 +731,28 @@
     ]
   },
   "gray-48-a15": {
-    "note": "Only a Banner with the default secondary color paints it, and every Banner in the dashboard sets another color."
+    "usages": [
+      {
+        "label": "Staged: background of a Banner with the default secondary color. Every Banner in the dashboard sets another color, so this frame switches one",
+        "route": "/c/local/explorer/members",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".banner .banner__content"
+          },
+          {
+            "eval": "setInterval(() => { const b = document.querySelector(\".banner\"); for (const c of [\"error\", \"warning\", \"info\", \"success\", \"primary\"]) { b?.classList.remove(c); } b?.classList.add(\"secondary\"); }, 200); true"
+          },
+          {
+            "wait": 600
+          }
+        ],
+        "highlight": {
+          "selector": ".secondary .banner__content",
+          "color": true
+        }
+      }
+    ]
   },
   "gray-49": {
     "usages": [
@@ -802,7 +909,31 @@
     ]
   },
   "gray-96-a15": {
-    "note": "Only CronExpressionEditorModal paints it, and nothing in the dashboard renders that modal. Only its Storybook story does."
+    "usages": [
+      {
+        "label": "Staged: background of a Workload Dashboard state card for workloads in a disabled state. No workload here is in one, so this frame recolors a card",
+        "route": "/c/local/explorer/workload-dashboard",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".bento-grid .state-card"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "eval": "setInterval(() => { const c = document.querySelector(\".bento-grid .state-card\"); if (c) { c.className = c.className.replace(/state-card--\\w+/, \"state-card--disabled\"); } }, 200); true"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".bento-grid .state-card--disabled",
+          "color": true
+        }
+      }
+    ]
   },
   "gray-96-a85": {
     "usages": [
@@ -907,7 +1038,31 @@
     ]
   },
   "gray-99-a15": {
-    "note": "Only CronExpressionEditorModal paints it, and nothing in the dashboard renders that modal. Only its Storybook story does."
+    "usages": [
+      {
+        "label": "Staged: background of a Workload Dashboard state card for workloads in a disabled state. No workload here is in one, so this frame recolors a card",
+        "route": "/c/local/explorer/workload-dashboard",
+        "theme": "classic light",
+        "steps": [
+          {
+            "waitFor": ".bento-grid .state-card"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "eval": "setInterval(() => { const c = document.querySelector(\".bento-grid .state-card\"); if (c) { c.className = c.className.replace(/state-card--\\w+/, \"state-card--disabled\"); } }, 200); true"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".bento-grid .state-card--disabled",
+          "color": true
+        }
+      }
+    ]
   },
   "gray-99-a85": {
     "usages": [
@@ -1058,10 +1213,61 @@
     ]
   },
   "gray-155": {
-    "note": "Only styles for a log list on the diagnostic page paint it, and that page has no log list."
+    "usages": [
+      {
+        "label": "Staged: bottom border of a line in the diagnostic page's log list. The page no longer renders that list, so this frame adds one",
+        "route": "/diagnostic",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "(() => { const scope = [...document.styleSheets].flatMap((s) => { try { return [...s.cssRules]; } catch (e) { return []; } }).map((r) => r.selectorText || \"\").find((t) => t.includes(\".logs-container li\"))?.match(/data-v-\\w+/)?.[0]; const ul = document.createElement(\"ul\"); ul.className = \"logs-container\"; ul.setAttribute(scope, \"\"); ul.style.cssText = \"position: fixed; top: 120px; left: 300px; width: 600px; z-index: 50; list-style: none; padding: 0; background: var(--body-bg); height: auto; max-height: 220px\"; for (const c of [\"log\", \"warn\", \"info\", \"error\"]) { const li = document.createElement(\"li\"); li.className = c; li.setAttribute(scope, \"\"); li.textContent = \"A \" + c + \" line\"; ul.append(li); } document.body.append(ul); return true; })()"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".logs-container li.log",
+          "color": true
+        }
+      }
+    ]
   },
   "gray-168": {
-    "note": "It's only a fallback in the editor theme, and the variable it falls back from is always set."
+    "usages": [
+      {
+        "label": "Staged: border of the editor's search field. --input-border normally covers this fallback, so this frame unsets it",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "eval": "(async () => { const content = document.querySelector('.rc-code-mirror--editor .cm-content'); content.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', code: 'KeyF', keyCode: 70, ctrlKey: true, bubbles: true, cancelable: true })); await new Promise((r) => setTimeout(r, 400)); return true; })()"
+          },
+          {
+            "waitFor": ".cm-search-field"
+          },
+          {
+            "eval": "document.querySelector(\".cm-search-field\").style.setProperty(\"--input-border\", \"initial\"); true"
+          },
+          {
+            "wait": 300
+          }
+        ],
+        "highlight": {
+          "selector": ".cm-search-field",
+          "color": true
+        }
+      }
+    ]
   },
   "gray-212": {
     "usages": [
@@ -1107,7 +1313,37 @@
     "note": "Only CollapsibleCard.vue paints it, and nothing renders that component."
   },
   "gray-220": {
-    "note": "Only RcSectionActions paints it. ArrayListGrouped shows those actions only with useRc, which no page sets, and no other page uses them."
+    "usages": [
+      {
+        "label": "Staged: icon of a section's remove action on the Ingress form. No page turns on ArrayListGrouped's useRc, so this frame does",
+        "route": "/c/local/explorer/networking.k8s.io.ingress/create",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": "[data-testid=array-list-button]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=array-list-button]"
+          },
+          {
+            "wait": 800
+          },
+          {
+            "eval": "(() => { const found = []; const walk = (c) => { if (!c) { return; } if (c.props && 'useRc' in c.props) { found.push(c); } let v = c.subTree; const visit = (n) => { if (!n) { return; } if (n.component) { walk(n.component); } if (Array.isArray(n.children)) { n.children.forEach(visit); } if (n.suspense) { visit(n.suspense.activeBranch); } }; visit(v); }; walk(colorTool.componentOf(document.querySelector('form, .cru, main'))); found.forEach((c) => { c.props.useRc = true; }); return found.length; })()"
+          },
+          {
+            "wait": 800
+          }
+        ],
+        "highlight": {
+          "selector": "[data-testid^=remove-item-] .rc-button.variant-link, [data-testid^=remove-item-].rc-button.variant-link, .rc-button.btn-medium.variant-link",
+          "color": true
+        }
+      }
+    ]
   },
   "gray-221": {
     "usages": [
@@ -1235,7 +1471,37 @@
     ]
   },
   "gray-465": {
-    "note": "Only RcSectionActions paints it. ArrayListGrouped shows those actions only with useRc, which no page sets, and no other page uses them."
+    "usages": [
+      {
+        "label": "Staged: icon of a section's remove action on the Ingress form. No page turns on ArrayListGrouped's useRc, so this frame does",
+        "route": "/c/local/explorer/networking.k8s.io.ingress/create",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=array-list-button]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=array-list-button]"
+          },
+          {
+            "wait": 800
+          },
+          {
+            "eval": "(() => { const found = []; const walk = (c) => { if (!c) { return; } if (c.props && 'useRc' in c.props) { found.push(c); } let v = c.subTree; const visit = (n) => { if (!n) { return; } if (n.component) { walk(n.component); } if (Array.isArray(n.children)) { n.children.forEach(visit); } if (n.suspense) { visit(n.suspense.activeBranch); } }; visit(v); }; walk(colorTool.componentOf(document.querySelector('form, .cru, main'))); found.forEach((c) => { c.props.useRc = true; }); return found.length; })()"
+          },
+          {
+            "wait": 800
+          }
+        ],
+        "highlight": {
+          "selector": "[data-testid^=remove-item-] .rc-button.variant-link, [data-testid^=remove-item-].rc-button.variant-link, .rc-button.btn-medium.variant-link",
+          "color": true
+        }
+      }
+    ]
   },
   "gray-466": {
     "usages": [
@@ -1414,7 +1680,28 @@
     ]
   },
   "gray-680": {
-    "note": "SideNav.vue's rule needs a .tools element it never renders, and in Group.vue it's only a fallback behind variables every theme sets."
+    "usages": [
+      {
+        "label": "Staged: background of the side nav's active group. A section variable every theme sets normally covers it, so this frame unsets that",
+        "route": "/c/local/explorer/configmap",
+        "theme": "classic dark",
+        "steps": [
+          {
+            "waitFor": ".accordion.depth-0.group-highlight"
+          },
+          {
+            "eval": "setInterval(() => { document.querySelectorAll(\".accordion.depth-0.group-highlight\").forEach((g) => g.style.setProperty(\"--rc-section-background-secondary\", \"initial\")); }, 200); true"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".accordion.depth-0.group-highlight",
+          "color": true
+        }
+      }
+    ]
   },
   "gray-691": {
     "usages": [
@@ -1477,7 +1764,35 @@
     ]
   },
   "gray-693": {
-    "note": "Only .bg-darker.btn:active paints it, and no button has the bg-darker class."
+    "usages": [
+      {
+        "label": "Staged: pressed background of a .bg-darker button. No button has that class, so this frame adds it to the Create button",
+        "route": "/c/local/explorer/configmap",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=masthead-create]"
+          },
+          {
+            "eval": "setInterval(() => { const b = document.querySelector(\"[data-testid=masthead-create]\"); b?.classList.remove(\"role-primary\"); b?.classList.add(\"bg-darker\"); }, 200); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "force": "[data-testid=masthead-create]",
+            "state": "active"
+          },
+          {
+            "wait": 300
+          }
+        ],
+        "highlight": {
+          "selector": "[data-testid=masthead-create]",
+          "color": true
+        }
+      }
+    ]
   },
   "gray-703": {
     "usages": [
@@ -1566,7 +1881,28 @@
     ]
   },
   "gray-719-a15": {
-    "note": "Only a Banner with the default secondary color paints it, and every Banner in the dashboard sets another color."
+    "usages": [
+      {
+        "label": "Staged: background of a Banner with the default secondary color. Every Banner in the dashboard sets another color, so this frame switches one",
+        "route": "/c/local/explorer/members",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": ".banner .banner__content"
+          },
+          {
+            "eval": "setInterval(() => { const b = document.querySelector(\".banner\"); for (const c of [\"error\", \"warning\", \"info\", \"success\", \"primary\"]) { b?.classList.remove(c); } b?.classList.add(\"secondary\"); }, 200); true"
+          },
+          {
+            "wait": 600
+          }
+        ],
+        "highlight": {
+          "selector": ".secondary .banner__content",
+          "color": true
+        }
+      }
+    ]
   },
   "gray-723": {
     "usages": [
@@ -1728,7 +2064,42 @@
     ]
   },
   "gray-801-a65": {
-    "note": "It colors the pin of the current cluster's row when that row isn't pinned, but the shelf only lists pinned clusters. It could only show for the moment a row is being unpinned, and unpinning saves a preference."
+    "usages": [
+      {
+        "label": "Staged: pin of the current cluster's row as it is being unpinned, which saves a preference, so this frame only removes the row's pinned class. The local cluster has no pin, so this frame moves to another one",
+        "route": "/c/local/explorer",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": ".side-menu"
+          },
+          {
+            "wait": 2000
+          },
+          {
+            "eval": "(async () => { const { $store, $router } = [...document.querySelectorAll('body *')].find((e) => e.__vue_app__).__vue_app__.config.globalProperties; const clusters = await $store.dispatch('management/findAll', { type: 'management.cattle.io.cluster' }); const c = clusters.find((x) => x.id !== 'local' && x.isReady); if (!c) { throw new Error('The pin needs another ready cluster to switch to, and this Rancher has none.'); } await $router.push('/c/' + c.id + '/explorer'); await new Promise((r) => setTimeout(r, 4000)); setInterval(() => { if (!$store.getters['prefs/get']('pinned-clusters')?.includes(c.id)) { $store.commit('prefs/load', { key: 'pinned-clusters', value: [c.id] }); } document.querySelectorAll('.shelf-row.is-active .pin').forEach((p) => p.classList.remove('is-pinned')); }, 100); return true; })()"
+          },
+          {
+            "click": ".menu-icon"
+          },
+          {
+            "waitFor": ".shelf-row.is-active .pin:not(.is-pinned)"
+          },
+          {
+            "force": ".shelf-row.is-active",
+            "state": "hover",
+            "all": true
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".shelf-row.is-active .pin:not(.is-pinned)",
+          "color": true
+        }
+      }
+    ]
   },
   "gray-806": {
     "usages": [
@@ -2268,7 +2639,28 @@
     ]
   },
   "red-60": {
-    "note": "Only styles for a log list on the diagnostic page paint it, and that page has no log list."
+    "usages": [
+      {
+        "label": "Staged: background of a line in the diagnostic page's log list. The page no longer renders that list, so this frame adds one",
+        "route": "/diagnostic",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "(() => { const scope = [...document.styleSheets].flatMap((s) => { try { return [...s.cssRules]; } catch (e) { return []; } }).map((r) => r.selectorText || \"\").find((t) => t.includes(\".logs-container li\"))?.match(/data-v-\\w+/)?.[0]; const ul = document.createElement(\"ul\"); ul.className = \"logs-container\"; ul.setAttribute(scope, \"\"); ul.style.cssText = \"position: fixed; top: 120px; left: 300px; width: 600px; z-index: 50; list-style: none; padding: 0; background: var(--body-bg); height: auto; max-height: 220px\"; for (const c of [\"log\", \"warn\", \"info\", \"error\"]) { const li = document.createElement(\"li\"); li.className = c; li.setAttribute(scope, \"\"); li.textContent = \"A \" + c + \" line\"; ul.append(li); } document.body.append(ul); return true; })()"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".logs-container li.error",
+          "color": true
+        }
+      }
+    ]
   },
   "red-79": {
     "usages": [
@@ -2551,7 +2943,28 @@
     "note": "Its only use, in fleet/dashboard/ResourcePanel.vue, is commented out."
   },
   "red-372": {
-    "note": "Its rules on the diagnostic page, in ClusterLink.vue and in graph/Circle.vue all match no element: the page has no log list, nothing uses that tooltip, and only the unused CountGauge renders Circle."
+    "usages": [
+      {
+        "label": "Staged: text of a line in the diagnostic page's log list. The page no longer renders that list, so this frame adds one",
+        "route": "/diagnostic",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "(() => { const scope = [...document.styleSheets].flatMap((s) => { try { return [...s.cssRules]; } catch (e) { return []; } }).map((r) => r.selectorText || \"\").find((t) => t.includes(\".logs-container li\"))?.match(/data-v-\\w+/)?.[0]; const ul = document.createElement(\"ul\"); ul.className = \"logs-container\"; ul.setAttribute(scope, \"\"); ul.style.cssText = \"position: fixed; top: 120px; left: 300px; width: 600px; z-index: 50; list-style: none; padding: 0; background: var(--body-bg); height: auto; max-height: 220px\"; for (const c of [\"log\", \"warn\", \"info\", \"error\"]) { const li = document.createElement(\"li\"); li.className = c; li.setAttribute(scope, \"\"); li.textContent = \"A \" + c + \" line\"; ul.append(li); } document.body.append(ul); return true; })()"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".logs-container li.error",
+          "color": true
+        }
+      }
+    ]
   },
   "red-387": {
     "usages": [
@@ -3039,7 +3452,31 @@
     ]
   },
   "orange-209": {
-    "note": "Only SelectIconGrid items with the partner class paint it, and nothing adds that class."
+    "usages": [
+      {
+        "label": "Staged: bar across the top of a cluster type card for a partner. No card in the dashboard's grids is in that group, so this frame moves one",
+        "route": "/c/_/manager/provisioning.cattle.io.cluster/create",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".grid .item"
+          },
+          {
+            "wait": 2000
+          },
+          {
+            "eval": "setInterval(() => { const i = document.querySelector(\".grid .item\"); if (i) { i.className = i.className.replace(/\\bcolor\\d+\\b|\\bpartner\\b/g, \"\") + \" partner\"; } }, 200); true"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".grid .item.partner .side-label",
+          "color": true
+        }
+      }
+    ]
   },
   "orange-239": {
     "usages": [
@@ -3219,7 +3656,31 @@
     ]
   },
   "orange-267": {
-    "note": "Only SelectIconGrid items in color group 4 paint it. That is the cluster create grid's register group, and no cluster type is in it."
+    "usages": [
+      {
+        "label": "Staged: bar across the top of a cluster type card in color group 4. No card in the dashboard's grids is in that group, so this frame moves one",
+        "route": "/c/_/manager/provisioning.cattle.io.cluster/create",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".grid .item"
+          },
+          {
+            "wait": 2000
+          },
+          {
+            "eval": "setInterval(() => { const i = document.querySelector(\".grid .item\"); if (i) { i.className = i.className.replace(/\\bcolor\\d+\\b|\\bpartner\\b/g, \"\") + \" color4\"; } }, 200); true"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".grid .item.color4 .side-label",
+          "color": true
+        }
+      }
+    ]
   },
   "orange-274": {
     "usages": [
@@ -3305,36 +3766,160 @@
     ]
   },
   "orange-529": {
-    "note": "Only styles for a log list on the diagnostic page paint it, and that page has no log list."
+    "usages": [
+      {
+        "label": "Staged: text of a line in the diagnostic page's log list. The page no longer renders that list, so this frame adds one",
+        "route": "/diagnostic",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "(() => { const scope = [...document.styleSheets].flatMap((s) => { try { return [...s.cssRules]; } catch (e) { return []; } }).map((r) => r.selectorText || \"\").find((t) => t.includes(\".logs-container li\"))?.match(/data-v-\\w+/)?.[0]; const ul = document.createElement(\"ul\"); ul.className = \"logs-container\"; ul.setAttribute(scope, \"\"); ul.style.cssText = \"position: fixed; top: 120px; left: 300px; width: 600px; z-index: 50; list-style: none; padding: 0; background: var(--body-bg); height: auto; max-height: 220px\"; for (const c of [\"log\", \"warn\", \"info\", \"error\"]) { const li = document.createElement(\"li\"); li.className = c; li.setAttribute(scope, \"\"); li.textContent = \"A \" + c + \" line\"; ul.append(li); } document.body.append(ul); return true; })()"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".logs-container li.warn",
+          "color": true
+        }
+      }
+    ]
   },
   "orange-629": {
     "usages": [
       {
-        "label": "Text of i.icon.icon-warning::before",
+        "label": "Warning icon on a Git repo's card on the Fleet dashboard, with the Git repo shown as warning in this frame only",
         "route": "/c/_/fleet",
         "theme": "dark",
+        "steps": [
+          {
+            "waitFor": ".panel .states .badge"
+          },
+          {
+            "eval": "const { $store } = [...document.querySelectorAll(\"body *\")].find((e) => e.__vue_app__).__vue_app__.config.globalProperties; const hold = () => { $store.getters[\"management/all\"](\"fleet.cattle.io.gitrepo\").forEach((r) => { if (r.metadata.state?.name !== \"waitcheckin\") { r.metadata.state = { ...r.metadata.state, ...{\"name\":\"waitcheckin\",\"error\":false,\"transitioning\":false} }; } }); }; hold(); setInterval(hold, 250); true"
+          },
+          {
+            "waitFor": ".item-card-header-statuses-status i.icon-warning"
+          },
+          {
+            "wait": 1000
+          }
+        ],
         "highlight": {
-          "selector": "i.icon.icon-warning",
+          "selector": ".item-card-header-statuses-status i.icon-warning",
           "color": true
         }
       }
     ]
   },
   "yellow-25": {
-    "note": "Only styles for a log list on the diagnostic page paint it, and that page has no log list."
+    "usages": [
+      {
+        "label": "Staged: background of a line in the diagnostic page's log list. The page no longer renders that list, so this frame adds one",
+        "route": "/diagnostic",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "(() => { const scope = [...document.styleSheets].flatMap((s) => { try { return [...s.cssRules]; } catch (e) { return []; } }).map((r) => r.selectorText || \"\").find((t) => t.includes(\".logs-container li\"))?.match(/data-v-\\w+/)?.[0]; const ul = document.createElement(\"ul\"); ul.className = \"logs-container\"; ul.setAttribute(scope, \"\"); ul.style.cssText = \"position: fixed; top: 120px; left: 300px; width: 600px; z-index: 50; list-style: none; padding: 0; background: var(--body-bg); height: auto; max-height: 220px\"; for (const c of [\"log\", \"warn\", \"info\", \"error\"]) { const li = document.createElement(\"li\"); li.className = c; li.setAttribute(scope, \"\"); li.textContent = \"A \" + c + \" line\"; ul.append(li); } document.body.append(ul); return true; })()"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".logs-container li.warn",
+          "color": true
+        }
+      }
+    ]
   },
   "yellow-33": {
-    "note": "Only the Emacs key map's status panel paints it, and nothing ever sends the effect that opens that panel."
+    "usages": [
+      {
+        "label": "Staged: background of the Emacs key map's status panel, with that key map set in this tab only. Nothing ever opens the panel, so this frame adds one",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; $store.commit(\"prefs/load\", { key: \"keymap\", value: \"emacs\" }); true"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "const p = document.createElement(\"div\"); p.className = \"cm-vim-panel\"; p.textContent = \"M-x\"; document.querySelector(\".rc-code-mirror--editor .cm-editor\").append(p); true"
+          },
+          {
+            "wait": 300
+          }
+        ],
+        "highlight": {
+          "selector": ".cm-vim-panel",
+          "color": true
+        }
+      }
+    ]
   },
   "yellow-73": {
-    "note": "Only SelectIconGrid items in color group 8 paint it. The two grids in the dashboard set their own groups, and neither uses that one."
+    "usages": [
+      {
+        "label": "Staged: bar across the top of a cluster type card in color group 8. No card in the dashboard's grids is in that group, so this frame moves one",
+        "route": "/c/_/manager/provisioning.cattle.io.cluster/create",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".grid .item"
+          },
+          {
+            "wait": 2000
+          },
+          {
+            "eval": "setInterval(() => { const i = document.querySelector(\".grid .item\"); if (i) { i.className = i.className.replace(/\\bcolor\\d+\\b|\\bpartner\\b/g, \"\") + \" color8\"; } }, 200); true"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".grid .item.color8 .side-label",
+          "color": true
+        }
+      }
+    ]
   },
   "yellow-80": {
     "usages": [
       {
-        "label": "Background of span.badge-state.bg-warning",
+        "label": "Background of a warning state badge on the Fleet dashboard, with the Git repo shown as warning in this frame only",
         "route": "/c/_/fleet",
         "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".panel .states .badge"
+          },
+          {
+            "eval": "const { $store } = [...document.querySelectorAll(\"body *\")].find((e) => e.__vue_app__).__vue_app__.config.globalProperties; const hold = () => { $store.getters[\"management/all\"](\"fleet.cattle.io.gitrepo\").forEach((r) => { if (r.metadata.state?.name !== \"waitcheckin\") { r.metadata.state = { ...r.metadata.state, ...{\"name\":\"waitcheckin\",\"error\":false,\"transitioning\":false} }; } }); }; hold(); setInterval(hold, 250); true"
+          },
+          {
+            "waitFor": "span.badge-state.bg-warning"
+          },
+          {
+            "wait": 1000
+          }
+        ],
         "highlight": {
           "selector": "span.badge-state.bg-warning",
           "color": true
@@ -3396,10 +3981,68 @@
     ]
   },
   "yellow-80-a80": {
-    "note": "Only warning tooltips paint it, and nothing applies the tooltip-warning class: LabeledTooltip reads the global status instead of its own."
+    "usages": [
+      {
+        "label": "Staged: background of a warning tooltip. Nothing applies the tooltip-warning class, so this frame adds it to a real tooltip",
+        "route": "/c/local/apps/charts",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".item-card-pill.has-clean-tooltip"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "hover": ".item-card-pill.has-clean-tooltip"
+          },
+          {
+            "waitFor": ".v-popper__popper"
+          },
+          {
+            "eval": "setInterval(() => document.querySelectorAll(\".v-popper__popper\").forEach((p) => p.classList.add(\"tooltip-warning\")), 100); true"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".v-popper__popper.tooltip-warning .v-popper__inner",
+          "color": true
+        }
+      }
+    ]
   },
   "yellow-105": {
-    "note": "Only .bg-warning.btn:hover paints it, and no button has the bg-warning class."
+    "usages": [
+      {
+        "label": "Staged: hover background of a .bg-warning button. No button has that class, so this frame adds it to the Create button",
+        "route": "/c/local/explorer/configmap",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=masthead-create]"
+          },
+          {
+            "eval": "setInterval(() => { const b = document.querySelector(\"[data-testid=masthead-create]\"); b?.classList.remove(\"role-primary\"); b?.classList.add(\"bg-warning\"); }, 200); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "force": "[data-testid=masthead-create]",
+            "state": "hover"
+          },
+          {
+            "wait": 300
+          }
+        ],
+        "highlight": {
+          "selector": "[data-testid=masthead-create]",
+          "color": true
+        }
+      }
+    ]
   },
   "yellow-117-a25": {
     "usages": [
@@ -3498,12 +4141,21 @@
   "yellow-135": {
     "usages": [
       {
-        "label": "Background of span.badge-state.bg-warning",
+        "label": "Background of the state badge on a Fleet cluster's page, with the cluster shown as warning in this frame only",
         "route": "/c/_/fleet/fleet.cattle.io.cluster/fleet-local/local",
         "theme": "dark",
         "steps": [
           {
-            "wait": 3000
+            "waitFor": "span.badge-state"
+          },
+          {
+            "eval": "const { $store } = [...document.querySelectorAll(\"body *\")].find((e) => e.__vue_app__).__vue_app__.config.globalProperties; const hold = () => { $store.getters[\"management/all\"](\"fleet.cattle.io.cluster\").forEach((r) => { if (r.metadata.state?.name !== \"waitcheckin\") { r.metadata.state = { ...r.metadata.state, ...{\"name\":\"waitcheckin\",\"error\":false,\"transitioning\":false} }; } }); }; hold(); setInterval(hold, 250); true"
+          },
+          {
+            "waitFor": "span.badge-state.bg-warning"
+          },
+          {
+            "wait": 1000
           }
         ],
         "highlight": {
@@ -3516,9 +4168,23 @@
   "yellow-136": {
     "usages": [
       {
-        "label": "Background of span.badge-state.bg-warning",
+        "label": "Background of a warning state badge on the Fleet dashboard, with the Git repo shown as warning in this frame only",
         "route": "/c/_/fleet",
         "theme": "dark",
+        "steps": [
+          {
+            "waitFor": ".panel .states .badge"
+          },
+          {
+            "eval": "const { $store } = [...document.querySelectorAll(\"body *\")].find((e) => e.__vue_app__).__vue_app__.config.globalProperties; const hold = () => { $store.getters[\"management/all\"](\"fleet.cattle.io.gitrepo\").forEach((r) => { if (r.metadata.state?.name !== \"waitcheckin\") { r.metadata.state = { ...r.metadata.state, ...{\"name\":\"waitcheckin\",\"error\":false,\"transitioning\":false} }; } }); }; hold(); setInterval(hold, 250); true"
+          },
+          {
+            "waitFor": "span.badge-state.bg-warning"
+          },
+          {
+            "wait": 1000
+          }
+        ],
         "highlight": {
           "selector": "span.badge-state.bg-warning",
           "color": true
@@ -3527,7 +4193,35 @@
     ]
   },
   "yellow-150": {
-    "note": "Only .bg-warning.btn:active paints it, and no button has the bg-warning class."
+    "usages": [
+      {
+        "label": "Staged: pressed background of a .bg-warning button. No button has that class, so this frame adds it to the Create button",
+        "route": "/c/local/explorer/configmap",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=masthead-create]"
+          },
+          {
+            "eval": "setInterval(() => { const b = document.querySelector(\"[data-testid=masthead-create]\"); b?.classList.remove(\"role-primary\"); b?.classList.add(\"bg-warning\"); }, 200); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "force": "[data-testid=masthead-create]",
+            "state": "active"
+          },
+          {
+            "wait": 300
+          }
+        ],
+        "highlight": {
+          "selector": "[data-testid=masthead-create]",
+          "color": true
+        }
+      }
+    ]
   },
   "yellow-170-a50": {
     "usages": [
@@ -3636,22 +4330,122 @@
     ]
   },
   "yellow-186-a80": {
-    "note": "Only warning tooltips paint it, and nothing applies the tooltip-warning class: LabeledTooltip reads the global status instead of its own."
+    "usages": [
+      {
+        "label": "Staged: background of a warning tooltip. Nothing applies the tooltip-warning class, so this frame adds it to a real tooltip",
+        "route": "/c/local/apps/charts",
+        "theme": "classic light",
+        "steps": [
+          {
+            "waitFor": ".item-card-pill.has-clean-tooltip"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "hover": ".item-card-pill.has-clean-tooltip"
+          },
+          {
+            "waitFor": ".v-popper__popper"
+          },
+          {
+            "eval": "setInterval(() => document.querySelectorAll(\".v-popper__popper\").forEach((p) => p.classList.add(\"tooltip-warning\")), 100); true"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".v-popper__popper.tooltip-warning .v-popper__inner",
+          "color": true
+        }
+      }
+    ]
   },
   "yellow-259": {
-    "note": "Only .bg-warning.btn:hover paints it, and no button has the bg-warning class."
+    "usages": [
+      {
+        "label": "Staged: hover background of a .bg-warning button. No button has that class, so this frame adds it to the Create button",
+        "route": "/c/local/explorer/configmap",
+        "theme": "classic light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=masthead-create]"
+          },
+          {
+            "eval": "setInterval(() => { const b = document.querySelector(\"[data-testid=masthead-create]\"); b?.classList.remove(\"role-primary\"); b?.classList.add(\"bg-warning\"); }, 200); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "force": "[data-testid=masthead-create]",
+            "state": "hover"
+          },
+          {
+            "wait": 300
+          }
+        ],
+        "highlight": {
+          "selector": "[data-testid=masthead-create]",
+          "color": true
+        }
+      }
+    ]
   },
   "yellow-445": {
-    "note": "Only .bg-warning.btn:active paints it, and no button has the bg-warning class."
+    "usages": [
+      {
+        "label": "Staged: pressed background of a .bg-warning button. No button has that class, so this frame adds it to the Create button",
+        "route": "/c/local/explorer/configmap",
+        "theme": "classic light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=masthead-create]"
+          },
+          {
+            "eval": "setInterval(() => { const b = document.querySelector(\"[data-testid=masthead-create]\"); b?.classList.remove(\"role-primary\"); b?.classList.add(\"bg-warning\"); }, 200); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "force": "[data-testid=masthead-create]",
+            "state": "active"
+          },
+          {
+            "wait": 300
+          }
+        ],
+        "highlight": {
+          "selector": "[data-testid=masthead-create]",
+          "color": true
+        }
+      }
+    ]
   },
   "yellow-651": {
     "usages": [
       {
-        "label": "Text of i.icon.icon-warning::before",
+        "label": "Warning icon on a Git repo's card on the Fleet dashboard, with the Git repo shown as warning in this frame only",
         "route": "/c/_/fleet",
         "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".panel .states .badge"
+          },
+          {
+            "eval": "const { $store } = [...document.querySelectorAll(\"body *\")].find((e) => e.__vue_app__).__vue_app__.config.globalProperties; const hold = () => { $store.getters[\"management/all\"](\"fleet.cattle.io.gitrepo\").forEach((r) => { if (r.metadata.state?.name !== \"waitcheckin\") { r.metadata.state = { ...r.metadata.state, ...{\"name\":\"waitcheckin\",\"error\":false,\"transitioning\":false} }; } }); }; hold(); setInterval(hold, 250); true"
+          },
+          {
+            "waitFor": ".item-card-header-statuses-status i.icon-warning"
+          },
+          {
+            "wait": 1000
+          }
+        ],
         "highlight": {
-          "selector": "i.icon.icon-warning",
+          "selector": ".item-card-header-statuses-status i.icon-warning",
           "color": true
         }
       }
@@ -3858,18 +4652,21 @@
   "green-158": {
     "usages": [
       {
-        "label": "Background of a.router-link-active.router-link-exact-active, with :hover forced on a.router-link-active.router-link-exact-active",
+        "label": "Background of the Home link in the side menu, hovered",
         "route": "/home",
         "theme": "suse dark",
         "steps": [
           {
-            "force": "a.router-link-active.router-link-exact-active",
+            "waitFor": "a.option.home.router-link-active"
+          },
+          {
+            "force": "a.option.home.router-link-active",
             "state": "hover",
             "all": true
           }
         ],
         "highlight": {
-          "selector": "a.router-link-active.router-link-exact-active",
+          "selector": "a.option.home.router-link-active",
           "color": true
         }
       }
@@ -4633,13 +5430,21 @@
   "green-534": {
     "usages": [
       {
-        "label": "Background of a.router-link-active.router-link-exact-active",
+        "label": "Background of the Home link in the side menu",
         "route": "/home",
         "theme": "suse light",
         "highlight": {
-          "selector": "a.router-link-active.router-link-exact-active",
+          "selector": "a.option.home.router-link-active",
           "color": true
-        }
+        },
+        "steps": [
+          {
+            "waitFor": "a.option.home.router-link-active"
+          },
+          {
+            "wait": 500
+          }
+        ]
       }
     ]
   },
@@ -4821,7 +5626,28 @@
     ]
   },
   "green-674": {
-    "note": "It's only a fallback in Group.vue, behind --rc-section-background-secondary, which every theme sets."
+    "usages": [
+      {
+        "label": "Staged: background of the side nav's active group. A section variable every theme sets normally covers it, so this frame unsets that",
+        "route": "/c/local/explorer/configmap",
+        "theme": "suse dark",
+        "steps": [
+          {
+            "waitFor": ".accordion.depth-0.group-highlight"
+          },
+          {
+            "eval": "setInterval(() => { document.querySelectorAll(\".accordion.depth-0.group-highlight\").forEach((g) => g.style.setProperty(\"--rc-section-background-secondary\", \"initial\")); }, 200); true"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".accordion.depth-0.group-highlight",
+          "color": true
+        }
+      }
+    ]
   },
   "green-685": {
     "usages": [
@@ -4868,7 +5694,28 @@
     ]
   },
   "blue-11": {
-    "note": "Only styles for a log list on the diagnostic page paint it, and that page has no log list."
+    "usages": [
+      {
+        "label": "Staged: background of a line in the diagnostic page's log list. The page no longer renders that list, so this frame adds one",
+        "route": "/diagnostic",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "(() => { const scope = [...document.styleSheets].flatMap((s) => { try { return [...s.cssRules]; } catch (e) { return []; } }).map((r) => r.selectorText || \"\").find((t) => t.includes(\".logs-container li\"))?.match(/data-v-\\w+/)?.[0]; const ul = document.createElement(\"ul\"); ul.className = \"logs-container\"; ul.setAttribute(scope, \"\"); ul.style.cssText = \"position: fixed; top: 120px; left: 300px; width: 600px; z-index: 50; list-style: none; padding: 0; background: var(--body-bg); height: auto; max-height: 220px\"; for (const c of [\"log\", \"warn\", \"info\", \"error\"]) { const li = document.createElement(\"li\"); li.className = c; li.setAttribute(scope, \"\"); li.textContent = \"A \" + c + \" line\"; ul.append(li); } document.body.append(ul); return true; })()"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".logs-container li.info",
+          "color": true
+        }
+      }
+    ]
   },
   "blue-40": {
     "usages": [
@@ -5031,7 +5878,31 @@
     ]
   },
   "blue-183": {
-    "note": "Only ImagePercentageBar.vue paints it, and nothing renders that component."
+    "usages": [
+      {
+        "label": "Staged: track of the image percentage bar, drawn into a table cell here. No table uses that formatter",
+        "route": "/c/local/explorer/configmap",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "table.sortable-table tbody tr"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "(() => { const scope = [...document.styleSheets].flatMap((s) => { try { return [...s.cssRules]; } catch (e) { return []; } }).map((r) => r.selectorText || \"\").find((t) => t.includes(\".parent .progress\"))?.match(/data-v-\\w+/)?.[0]; const add = () => { const td = document.querySelector(\"table.sortable-table tbody tr td:nth-child(3)\"); if (td && !td.querySelector(\".parent\")) { td.insertAdjacentHTML(\"beforeend\", '<div class=\"parent\" ' + scope + ' style=\"min-width: 260px\"><div class=\"progress-box\" ' + scope + '><div class=\"progress\" ' + scope + ' style=\"height: 12px\"></div></div><div>40%</div></div>'); } }; add(); setInterval(add, 300); return true; })()"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".parent .progress",
+          "color": true
+        }
+      }
+    ]
   },
   "blue-186": {
     "usages": [
@@ -5763,7 +6634,37 @@
     ]
   },
   "blue-459": {
-    "note": "It's only a fallback in the editor theme, and the variable it falls back from is always set."
+    "usages": [
+      {
+        "label": "Staged: icons of the editor's search controls. --muted normally covers this fallback, so this frame unsets it",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "eval": "(async () => { const content = document.querySelector('.rc-code-mirror--editor .cm-content'); content.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', code: 'KeyF', keyCode: 70, ctrlKey: true, bubbles: true, cancelable: true })); await new Promise((r) => setTimeout(r, 400)); return true; })()"
+          },
+          {
+            "waitFor": ".cm-search-controls"
+          },
+          {
+            "eval": "document.querySelector(\".cm-search-controls\").style.setProperty(\"--muted\", \"initial\"); true"
+          },
+          {
+            "wait": 300
+          }
+        ],
+        "highlight": {
+          "selector": ".cm-search-controls",
+          "color": true
+        }
+      }
+    ]
   },
   "blue-460": {
     "usages": [
@@ -5840,7 +6741,7 @@
             "waitFor": "span.badge-state"
           },
           {
-            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const c = $store.getters[\"management/byId\"](\"management.cattle.io.cluster\", \"local\"); c.metadata.state = { ...c.metadata.state, name: \"updating\", transitioning: true, error: false }; true"
+            "eval": "const { $store } = [...document.querySelectorAll(\"body *\")].find((e) => e.__vue_app__).__vue_app__.config.globalProperties; const hold = () => { const c = $store.getters[\"management/byId\"](\"management.cattle.io.cluster\", \"local\"); if (c && c.metadata.state?.name !== \"updating\") { c.metadata.state = { ...c.metadata.state, name: \"updating\", transitioning: true, error: false }; } }; hold(); setInterval(hold, 250); true"
           },
           {
             "waitFor": "span.badge-state.bg-info"
@@ -6147,7 +7048,28 @@
     ]
   },
   "blue-548": {
-    "note": "Only styles for a log list on the diagnostic page paint it, and that page has no log list."
+    "usages": [
+      {
+        "label": "Staged: text of a line in the diagnostic page's log list. The page no longer renders that list, so this frame adds one",
+        "route": "/diagnostic",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "(() => { const scope = [...document.styleSheets].flatMap((s) => { try { return [...s.cssRules]; } catch (e) { return []; } }).map((r) => r.selectorText || \"\").find((t) => t.includes(\".logs-container li\"))?.match(/data-v-\\w+/)?.[0]; const ul = document.createElement(\"ul\"); ul.className = \"logs-container\"; ul.setAttribute(scope, \"\"); ul.style.cssText = \"position: fixed; top: 120px; left: 300px; width: 600px; z-index: 50; list-style: none; padding: 0; background: var(--body-bg); height: auto; max-height: 220px\"; for (const c of [\"log\", \"warn\", \"info\", \"error\"]) { const li = document.createElement(\"li\"); li.className = c; li.setAttribute(scope, \"\"); li.textContent = \"A \" + c + \" line\"; ul.append(li); } document.body.append(ul); return true; })()"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".logs-container li.info",
+          "color": true
+        }
+      }
+    ]
   },
   "blue-552": {
     "usages": [
@@ -6198,7 +7120,28 @@
     ]
   },
   "blue-571": {
-    "note": "It's only a fallback in Group.vue, behind --rc-section-background-secondary, which every theme sets."
+    "usages": [
+      {
+        "label": "Staged: background of the side nav's active group. A section variable every theme sets normally covers it, so this frame unsets that",
+        "route": "/c/local/explorer/configmap",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": ".accordion.depth-0.group-highlight"
+          },
+          {
+            "eval": "setInterval(() => { document.querySelectorAll(\".accordion.depth-0.group-highlight\").forEach((g) => g.style.setProperty(\"--rc-section-background-secondary\", \"initial\")); }, 200); true"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".accordion.depth-0.group-highlight",
+          "color": true
+        }
+      }
+    ]
   },
   "blue-579": {
     "usages": [
@@ -6308,7 +7251,31 @@
     ]
   },
   "blue-624": {
-    "note": "Only SelectIconGrid items in color group 7 paint it. The two grids in the dashboard set their own groups, and neither uses that one."
+    "usages": [
+      {
+        "label": "Staged: bar across the top of a cluster type card in color group 7. No card in the dashboard's grids is in that group, so this frame moves one",
+        "route": "/c/_/manager/provisioning.cattle.io.cluster/create",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".grid .item"
+          },
+          {
+            "wait": 2000
+          },
+          {
+            "eval": "setInterval(() => { const i = document.querySelector(\".grid .item\"); if (i) { i.className = i.className.replace(/\\bcolor\\d+\\b|\\bpartner\\b/g, \"\") + \" color7\"; } }, 200); true"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".grid .item.color7 .side-label",
+          "color": true
+        }
+      }
+    ]
   },
   "blue-625": {
     "usages": [
@@ -6390,7 +7357,35 @@
     ]
   },
   "blue-641": {
-    "note": "Only .bg-link.btn:active paints it, and nothing uses the bg-link class."
+    "usages": [
+      {
+        "label": "Staged: pressed background of a .bg-link button. No button has that class, so this frame adds it to the Create button",
+        "route": "/c/local/explorer/configmap",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=masthead-create]"
+          },
+          {
+            "eval": "setInterval(() => { const b = document.querySelector(\"[data-testid=masthead-create]\"); b?.classList.remove(\"role-primary\"); b?.classList.add(\"bg-link\"); }, 200); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "force": "[data-testid=masthead-create]",
+            "state": "active"
+          },
+          {
+            "wait": 300
+          }
+        ],
+        "highlight": {
+          "selector": "[data-testid=masthead-create]",
+          "color": true
+        }
+      }
+    ]
   },
   "blue-648": {
     "usages": [
@@ -6562,7 +7557,31 @@
     ]
   },
   "purple-467": {
-    "note": "Only SelectIconGrid items in color group 6 paint it. The two grids in the dashboard set their own groups, and neither uses that one."
+    "usages": [
+      {
+        "label": "Staged: bar across the top of a cluster type card in color group 6. No card in the dashboard's grids is in that group, so this frame moves one",
+        "route": "/c/_/manager/provisioning.cattle.io.cluster/create",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".grid .item"
+          },
+          {
+            "wait": 2000
+          },
+          {
+            "eval": "setInterval(() => { const i = document.querySelector(\".grid .item\"); if (i) { i.className = i.className.replace(/\\bcolor\\d+\\b|\\bpartner\\b/g, \"\") + \" color6\"; } }, 200); true"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": ".grid .item.color6 .side-label",
+          "color": true
+        }
+      }
+    ]
   },
   "purple-524": {
     "note": "Only TableSparkLine.vue paints it, and nothing renders that component."
@@ -6683,12 +7702,75 @@
     ]
   },
   "gray-21": {
-    "note": "Only the page shown before the app starts paints it, in shell/static/loading-indicator.html. The color tool isn't running yet at that point, so it can't ring anything there."
+    "usages": [
+      {
+        "label": "Staged: background of shell/static/loading-indicator.html, redrawn in this frame. That page writes its hex directly, so picking another color does not change it",
+        "route": "/c/local/explorer",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "(async () => { const html = await (await fetch(\"/dashboard/loading-indicator.html\")).text(); document.querySelector(\"#app\").style.visibility = \"hidden\"; const d = document.createElement(\"div\"); d.innerHTML = html; d.querySelectorAll(\"script\").forEach((s) => s.remove()); document.body.append(d); d.querySelector(\".initial-load-spinner\")?.style.setProperty(\"animation\", \"none\"); return true; })()"
+          },
+          {
+            "wait": 300
+          }
+        ],
+        "highlight": {
+          "selector": ".initial-load-spinner-container",
+          "color": true
+        }
+      }
+    ]
   },
   "blue-289": {
-    "note": "Only the spinner shown before the app starts paints it, in shell/public/index.html and shell/static/loading-indicator.html. The color tool isn't running yet at that point, so it can't ring anything there."
+    "usages": [
+      {
+        "label": "Staged: top of the spinner shown before the app starts, redrawn in this frame. index.html writes its hex directly, so picking another color does not change it",
+        "route": "/c/local/explorer",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "(() => { document.querySelector(\"#app\").style.visibility = \"hidden\"; const d = document.createElement(\"div\"); d.innerHTML = '<div class=\"initial-load-spinner-container\" style=\"z-index: 50\"><i class=\"initial-load-spinner\" style=\"animation: none\"></i></div>'; document.body.append(d);  return true; })()"
+          },
+          {
+            "wait": 300
+          }
+        ],
+        "highlight": {
+          "selector": ".initial-load-spinner",
+          "color": true
+        }
+      }
+    ]
   },
   "blue-394": {
-    "note": "Only the spinner shown before the app starts paints it, in shell/public/index.html and shell/static/loading-indicator.html. The color tool isn't running yet at that point, so it can't ring anything there."
+    "usages": [
+      {
+        "label": "Staged: ring of the spinner shown before the app starts, redrawn in this frame. index.html writes its hex directly, so picking another color does not change it",
+        "route": "/c/local/explorer",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "(() => { document.querySelector(\"#app\").style.visibility = \"hidden\"; const d = document.createElement(\"div\"); d.innerHTML = '<div class=\"initial-load-spinner-container\" style=\"z-index: 50\"><i class=\"initial-load-spinner\" style=\"animation: none\"></i></div>'; document.body.append(d);  return true; })()"
+          },
+          {
+            "wait": 300
+          }
+        ],
+        "highlight": {
+          "selector": ".initial-load-spinner",
+          "color": true
+        }
+      }
+    ]
   }
 }
