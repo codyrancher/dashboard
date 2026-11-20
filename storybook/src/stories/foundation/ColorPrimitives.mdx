@@ -397,9 +397,27 @@ export const normalizeGroups = (raw, { dropUnknown = false } = {}) => {
 
       return shortName(name);
     }).filter(Boolean);
+    const unique = [...new Set(colors)];
+    const chosen = chosenOf(group?.chosen, unique);
 
-    return { title: String(group?.title || ''), colors: [...new Set(colors)] };
+    return { title: String(group?.title || ''), colors: unique, ...(chosen ? { chosen } : {}) };
   });
+};
+
+export const isColorValue = (value) => typeof CSS !== 'undefined' && !!value && CSS.supports('color', value);
+
+export const chosenOf = (value, colors) => {
+  const text = String(value || '').trim();
+  const name = text && shortName(primitiveName(text));
+
+  if (!text) {
+    return '';
+  }
+  if (COLOR_TOKENS[primitiveName(text)] || isClassicRemoved(text)) {
+    return colors.includes(name) && !isClassicRemoved(name) ? name : '';
+  }
+
+  return isColorValue(text) ? text : '';
 };
 
 export const BUILT_IN_GROUPS = normalizeGroups(builtInGroups);
@@ -408,62 +426,21 @@ export const groupKey = (group) => group.colors.map((c) => shortName(primitiveNa
 
 export const groupTitle = (group) => group.title?.trim() || group.colors.map((c) => shortName(primitiveName(c.name || c))).join(', ') || 'New group';
 
-export const importDedupeSpec = () => {
-  const old = storage.get('color-dedupe-spec', null);
-
-  if (old === null) {
-    return;
-  }
-  try {
-    const groups = normalizeGroups(parseSpec(old));
-    const builtIn = new Set(BUILT_IN_GROUPS.map((g) => JSON.stringify(g)));
-
-    if (storage.get('color-dedupe-groups', null) === null && groups.some((g) => !builtIn.has(JSON.stringify(g)))) {
-      const keys = new Set(groups.map(groupKey));
-
-      storage.set('color-dedupe-groups', JSON.stringify([...groups, ...BUILT_IN_GROUPS.filter((g) => !keys.has(groupKey(g)))]));
-    }
-  } catch (e) {}
-  storage.remove('color-dedupe-spec');
-};
-
 export const tabs = shared('color-primitives-tab', 'primitives', false);
 
 export const sameGroups = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
-export const LOCAL_GROUPS_KEY = 'color-dedupe-groups';
-
-export const localGroups = (() => {
-  importDedupeSpec();
-  try {
-    const groups = normalizeGroups(JSON.parse(storage.get(LOCAL_GROUPS_KEY, 'null')), { dropUnknown: true });
-
-    return sameGroups(groups, BUILT_IN_GROUPS) ? null : groups;
-  } catch (e) {
-    return null;
-  }
-})();
-
-export const SPEC_CACHE_KEY = 'color-dedupe-spec-cache';
-
 export const specStore = (() => {
-  const cached = (() => {
-    try {
-      return JSON.parse(storage.get(SPEC_CACHE_KEY, 'null')) || {};
-    } catch (e) {
-      return {};
-    }
-  })();
   let state = {
-    base:      cached.base || '',
-    groups:    cached.groups ? normalizeGroups(cached.groups, { dropUnknown: true }) : null,
-    version:   cached.version || '',
-    updatedBy: cached.updatedBy || '',
-    updatedAt: cached.updatedAt || '',
+    base:      '',
+    groups:    [],
+    missing:   false,
+    version:   '',
+    updatedBy: '',
+    updatedAt: '',
     status:    'connecting',
     message:   '',
     saving:    false,
-    local:     localGroups,
   };
   const listeners = new Set();
   const waiting = new Map();
@@ -478,9 +455,6 @@ export const specStore = (() => {
   let seq = 0;
   const emit = (patch) => {
     state = { ...state, ...patch };
-    storage.set(SPEC_CACHE_KEY, JSON.stringify({
-      base: state.base, groups: state.groups, version: state.version, updatedBy: state.updatedBy, updatedAt: state.updatedAt
-    }));
     listeners.forEach((listener) => listener());
   };
   const request = async(type, body = {}) => {
@@ -498,21 +472,21 @@ export const specStore = (() => {
   const fail = (e) => emit({
     status:  e.status === 401 ? 'signed-out' : 'error',
     saving:  false,
-    message: e.status === 401 ? '' : e.status === 403 ? 'You can\'t read config maps in the default namespace on this Rancher, where the shared groups are kept.' : e.message || 'The Rancher did not answer.',
+    message: e.status === 401 ? '' : e.status === 403 ? 'You can\'t read config maps in the default namespace on this Rancher, where the dedupe groups are kept.' : e.message || 'The Rancher did not answer.',
   });
   const apply = (spec) => {
     if (spec.missing) {
       emit({
-        groups: null, version: '', updatedBy: '', updatedAt: '', status: 'ready'
+        groups: [], missing: true, version: '', updatedBy: '', updatedAt: '', status: 'ready'
       });
     } else if (spec.version !== state.version || state.status !== 'ready') {
       emit({
-        groups: normalizeGroups(spec.groups, { dropUnknown: true }), version: spec.version, updatedBy: spec.updatedBy, updatedAt: spec.updatedAt, status: 'ready'
+        groups: normalizeGroups(spec.groups, { dropUnknown: true }), missing: false, version: spec.version, updatedBy: spec.updatedBy, updatedAt: spec.updatedAt, status: 'ready'
       });
     }
   };
   const refresh = async(force = false) => {
-    if (!force && (dirty || state.saving)) {
+    if (!connected || (!force && (dirty || state.saving))) {
       return;
     }
     try {
@@ -525,10 +499,10 @@ export const specStore = (() => {
     dirty = false;
     emit({ saving: true });
     try {
-      const spec = await request('spec-set', { groups: state.groups || BUILT_IN_GROUPS, version: state.version });
+      const spec = await request('spec-set', { groups: state.groups, version: state.version });
 
       emit({
-        version: spec.version, updatedBy: spec.updatedBy, updatedAt: spec.updatedAt, saving: false
+        missing: false, version: spec.version, updatedBy: spec.updatedBy, updatedAt: spec.updatedAt, saving: false
       });
       if (dirty) {
         clearTimeout(timer);
@@ -561,6 +535,8 @@ export const specStore = (() => {
         (message.type === 'spec-error' ? reject : resolve)(message);
       }
     });
+    window.addEventListener('focus', () => refresh());
+    storage.remove('color-dedupe-spec-cache');
   }
 
   return {
@@ -577,9 +553,9 @@ export const specStore = (() => {
       if (state.status !== 'ready') {
         emit({
           message: {
-            'signed-out': 'Sign in to this Rancher to change the shared groups.',
-            offline:      'Set the Rancher at the top of the page to change the shared groups.',
-          }[state.status] || 'The shared groups can\'t be changed until this Rancher answers.'
+            'signed-out': 'Sign in to this Rancher to change the dedupe groups.',
+            offline:      'Set the Rancher at the top of the page to change the dedupe groups.',
+          }[state.status] || 'The dedupe groups can\'t be changed until this Rancher answers.'
         });
 
         return false;
@@ -601,23 +577,20 @@ export const specStore = (() => {
       frame?.remove();
       waiting.clear();
       clearInterval(poller);
-      if (state.base !== base) {
-        emit({
-          base, groups: null, version: '', updatedBy: '', updatedAt: ''
-        });
-      }
+      emit({
+        base, groups: [], missing: false, version: '', updatedBy: '', updatedAt: '', status: 'connecting', message: ''
+      });
       origin = new URL(url).origin;
       ready = new Promise((resolve, reject) => {
         markReady = resolve;
-        setTimeout(() => reject({ status: 0, message: 'This Rancher\'s dashboard has no shared groups: it needs a color tool build that serves color-tool-spec.html.' }), 30000);
+        setTimeout(() => reject({ status: 0, message: 'This Rancher\'s dashboard can\'t keep dedupe groups: it needs a color tool build that serves color-tool-spec.html.' }), 30000);
       });
       ready.catch(() => {});
       frame = document.createElement('iframe');
       frame.hidden = true;
-      frame.title = 'Shared color groups';
+      frame.title = 'Dedupe groups';
       frame.src = url;
       document.body.appendChild(frame);
-      emit({ status: 'connecting', message: '' });
       refresh(true);
       poller = setInterval(() => document.visibilityState === 'visible' && refresh(), 10000);
     },
@@ -627,17 +600,7 @@ export const specStore = (() => {
       frame = null;
       waiting.clear();
       clearInterval(poller);
-      emit({ status: 'offline', message: '' });
-    },
-    shareLocal: () => {
-      if (specStore.set(state.local)) {
-        storage.remove(LOCAL_GROUPS_KEY);
-        emit({ local: null });
-      }
-    },
-    discardLocal: () => {
-      storage.remove(LOCAL_GROUPS_KEY);
-      emit({ local: null });
+      emit({ status: 'offline', groups: [], message: '' });
     },
   };
 })();
@@ -688,8 +651,8 @@ export const useSpec = () => {
 };
 
 export const useGroups = () => {
-  const { groups } = useSpec();
-  const shown = groups || BUILT_IN_GROUPS;
+  const { groups, status } = useSpec();
+  const shown = status === 'ready' ? groups : [];
 
   return [shown, sameGroups(shown, BUILT_IN_GROUPS)];
 };
@@ -770,25 +733,42 @@ export const RancherSetting = () => {
 export const SpecStatus = () => {
   const spec = useSpec();
   const when = spec.updatedAt ? new Date(spec.updatedAt).toLocaleString() : '';
-  const shared = 'Dedupe groups are shared on this Rancher, so everyone using it sees the same ones.';
+  const shared = 'Dedupe groups are kept on this Rancher, so everyone using it sees the same ones.';
   const text = {
-    ready:        spec.saving ? 'Saving the dedupe groups on this Rancher.' : spec.version ? `${ shared } Last saved${ spec.updatedBy ? ` by ${ spec.updatedBy }` : '' }${ when ? `, ${ when }` : '' }.` : `${ shared } Nobody has changed the built-in groups yet.`,
-    connecting:   'Loading the shared dedupe groups from this Rancher.',
-    'signed-out': `Sign in to this Rancher to see and change the shared dedupe groups. Until then these are ${ spec.groups ? 'the groups as this browser last saw them' : 'the built-in groups' }.`,
-    error:        `The shared dedupe groups didn't load. ${ spec.message }`,
-    offline:      'Set the Rancher above to share the dedupe groups.',
+    ready:        spec.saving ? 'Saving the dedupe groups on this Rancher.' : spec.missing ? 'There are no dedupe groups on this Rancher yet.' : `${ shared } Last saved${ spec.updatedBy ? ` by ${ spec.updatedBy }` : '' }${ when ? `, ${ when }` : '' }.`,
+    connecting:   'Loading the dedupe groups from this Rancher.',
+    'signed-out': 'Sign in to this Rancher to see the dedupe groups.',
+    error:        `The dedupe groups didn't load. ${ spec.message }`,
+    offline:      'Set the Rancher above to see the dedupe groups.',
   }[spec.status];
 
   return (
     <div className="ds-dedupe ds-spec-status">
       <span className="ds-muted" aria-live="polite">{text}</span>
       {spec.message && spec.status !== 'error' && <p className="ds-usage-error" role="alert">{spec.message}</p>}
-      {spec.local && spec.status === 'ready' && (
-        <div className="ds-spec-local">
-          <span>This browser has {spec.local.length} dedupe {spec.local.length === 1 ? 'group' : 'groups'} saved before groups were shared.</span>
-          <button type="button" className="ds-copy" onClick={specStore.shareLocal}>Share them, replacing the shared groups</button>
-          <button type="button" className="ds-copy" onClick={specStore.discardLocal}>Discard them</button>
-        </div>
+    </div>
+  );
+};
+
+export const SpecGate = () => {
+  const spec = useSpec();
+  const { base } = useRancher();
+  const login = joinUrl(base, '/');
+
+  if (spec.status === 'signed-out') {
+    return (
+      <div className="ds-spec-gate">
+        <p>The dedupe groups are kept on this Rancher and shared with everyone who uses it. Sign in to see them.</p>
+        {login && <a className="ds-copy ds-spec-signin" href={login} target="_blank" rel="noreferrer">Sign in to Rancher</a>}
+        <p className="ds-muted">They load here by themselves once you are signed in.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="ds-spec-gate">
+      {spec.status === 'error' ? <p className="ds-usage-error">The dedupe groups didn't load. {spec.message}</p> : (
+        <p className="ds-muted">{spec.status === 'offline' ? 'Set the Rancher at the top of the page to see the dedupe groups.' : 'Loading the dedupe groups from this Rancher.'}</p>
       )}
     </div>
   );
@@ -1341,21 +1321,27 @@ export const choiceOf = (group, choice) => {
 
 export const escapeMarkdown = (text) => String(text).replace(/[\\`*_[\]<>|&#]/g, (c) => `\\${ c }`);
 
-export const reportMarkdown = (groups, choices) => {
+export const chosenColor = (group) => {
+  const picked = group.colors.find((c) => shortName(c.name) === group.chosen);
+
+  return picked ? { name: picked.name, value: picked.value } : group.chosen ? { name: null, value: group.chosen } : null;
+};
+
+export const reportMarkdown = (groups) => {
   const rows = groups.map((group) => {
-    const { candidate, value } = choiceOf(group, choices[groupKey(group)]);
+    const chosen = chosenColor(group);
     const options = group.colors.map((c) => `\`${ c.name }\``).join(', ');
     let choice = 'Not decided';
 
-    if (candidate === 'custom' && value) {
-      choice = `A new color, \`${ value.replace(/`/g, '') }\``;
-    } else if (candidate) {
-      choice = `\`${ candidate }\` (\`${ value }\`)`;
+    if (chosen?.name) {
+      choice = `\`${ chosen.name }\` (\`${ chosen.value }\`)`;
+    } else if (chosen) {
+      choice = `A new color, \`${ chosen.value.replace(/`/g, '') }\``;
     }
 
     return `| ${ escapeMarkdown(group.title) } | ${ options } | ${ choice } |`;
   });
-  const decided = groups.filter((group) => choiceOf(group, choices[groupKey(group)]).value).length;
+  const decided = groups.filter((group) => chosenColor(group)).length;
 
   return [
     '## Color dedupe choices',
@@ -1369,10 +1355,10 @@ export const reportMarkdown = (groups, choices) => {
   ].join('\n');
 };
 
-export const Report = ({ groups, choices }) => {
+export const Report = ({ groups }) => {
   const [shown, setShown] = useState(false);
   const [copied, setCopied] = useState(false);
-  const markdown = reportMarkdown(groups, choices);
+  const markdown = reportMarkdown(groups);
   const copy = async () => {
     await copyText(markdown);
     setCopied(true);
@@ -1406,6 +1392,21 @@ export const PencilIcon = () => (
   </svg>
 );
 
+export const ChooseButton = ({ chosen, label, onClick }) => (
+  <button
+    type="button"
+    className="ds-candidate-mark"
+    aria-pressed={chosen}
+    aria-label={`Choose ${ label }`}
+    title={chosen ? 'Chosen for this group, for everyone. Click to clear it' : 'Choose this color for the group, for everyone'}
+    onClick={onClick}
+  >
+    <svg viewBox="0 0 16 16" width="10" height="10" aria-hidden="true">
+      <path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  </button>
+);
+
 export const DedupeGroup = ({
   group, raw, index, open, onToggle, onEdit, choice, onChoose, onActivate, onDetails, base, rings, reload, command
 }) => {
@@ -1414,6 +1415,9 @@ export const DedupeGroup = ({
   const { candidate, custom, shown, value } = choiceOf(group, choice);
   const colors = useMemo(() => (value ? Object.fromEntries(group.colors.filter((c) => c.name !== candidate).map((c) => [c.name, value])) : {}), [group, candidate, value]);
   const pick = (name) => onChoose({ candidate: name, custom });
+  const chosen = group.chosen;
+  const chosenValue = chosenColor(group);
+  const choose = (next) => onEdit({ ...raw, chosen: next || undefined });
   const id = `ds-group-${ index }`;
   const key = groupKey(group);
   const pencil = useRef(null);
@@ -1482,14 +1486,15 @@ export const DedupeGroup = ({
           )}
           {raw.colors.map((name) => {
             const c = group.colors.find((x) => shortName(x.name) === name);
-            const remove = <button type="button" className="ds-candidate-remove" aria-label={`Remove ${ name }`} onClick={() => onEdit({ ...raw, colors: raw.colors.filter((x) => x !== name) })}>×</button>;
+            const remove = <button type="button" className="ds-candidate-remove" aria-label={`Remove ${ name }`} onClick={() => onEdit({ ...raw, colors: raw.colors.filter((x) => x !== name), chosen: chosen === name ? undefined : raw.chosen })}>×</button>;
 
             return c ? (
-              <span key={name} className="ds-candidate-badge">
+              <span key={name} className={`ds-candidate-badge${ chosen === name ? ' ds-candidate-badge-chosen' : '' }`}>
                 <button type="button" className="ds-copy ds-candidate" aria-pressed={candidate === c.name} onClick={() => pick(c.name)}>
                   <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: c.value }} /></span>
                   {name}
                 </button>
+                <ChooseButton chosen={chosen === name} label={`${ name } for ${ group.title }`} onClick={() => choose(chosen === name ? '' : name)} />
                 {remove}
               </span>
             ) : (
@@ -1506,13 +1511,22 @@ export const DedupeGroup = ({
           {group.colors.length > 1 && (
             <span className="ds-candidate-custom">
               <input value={custom} onChange={(e) => onChoose({ candidate, custom: e.target.value })} placeholder="Any color: #e0e2e9" aria-label="Try any color" />
-              <button type="button" className="ds-copy" aria-pressed={candidate === 'custom'} disabled={!custom.trim() || !CSS.supports('color', custom.trim())} onClick={() => pick('custom')}>Try</button>
+              <button type="button" className="ds-copy" aria-pressed={candidate === 'custom'} disabled={!isColorValue(custom.trim())} onClick={() => pick('custom')}>Try</button>
+              {isColorValue(custom.trim()) && (
+                <ChooseButton chosen={chosen === custom.trim()} label={`${ custom.trim() } for ${ group.title }`} onClick={() => choose(chosen === custom.trim() ? '' : custom.trim())} />
+              )}
             </span>
           )}
         </span>
-        <span className={`ds-group-choice${ value ? '' : ' ds-muted' }`}>
-          {value && <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: value }} /></span>}
-          Selected: {candidate === 'custom' ? value || 'Original' : candidate ? shortName(candidate) : 'Original'}
+        <span className="ds-group-choice">
+          <span className={value ? '' : 'ds-muted'}>
+            {value && <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: value }} /></span>}
+            Showing: {candidate === 'custom' ? value || 'Original' : candidate ? shortName(candidate) : 'Original'}
+          </span>
+          <span className={chosenValue ? 'ds-group-chosen' : 'ds-muted'}>
+            {chosenValue && <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: chosenValue.value }} /></span>}
+            Chosen: {chosenValue ? chosen : 'none yet'}
+          </span>
         </span>
       </div>
       {open && (
@@ -1553,7 +1567,7 @@ export const DedupeGroup = ({
 };
 
 export const GROUPS_HELP = `[
-  { "title": "Near-white grays", "colors": ["gray-46", "gray-47", "gray-48"] },
+  { "title": "Near-white grays", "colors": ["gray-46", "gray-47", "gray-48"], "chosen": "gray-47" },
   { "title": "Link blues", "colors": ["blue-521", "blue-523"] }
 ]`;
 
@@ -1581,7 +1595,8 @@ export const SpecPanel = ({ groups, builtIn }) => {
     <details className="ds-spec">
       <summary>Groups spec{builtIn ? '' : ', edited'}</summary>
       <p className="ds-muted">
-        Which colors each group compares, as JSON or YAML. It's shared on the Rancher at the top of the page, in the
+        Which colors each group compares and the one chosen for it (<code>chosen</code>: one of its colors, or a new
+        color value), as JSON or YAML. It's shared on the Rancher at the top of the page, in the
         config map <code>default/color-dedupe-spec</code>, so everyone using that Rancher sees the same groups, and
         changes made here or in the groups above reach them within seconds. The built-in groups are
         <code>color-groups.json</code> beside this page.
@@ -1590,7 +1605,7 @@ export const SpecPanel = ({ groups, builtIn }) => {
       {error && <p className="ds-usage-error" role="alert">{error}</p>}
       <div className="ds-spec-actions">
         <button type="button" className="ds-copy" onClick={apply}>Apply</button>
-        <button type="button" className="ds-copy" disabled={builtIn} onClick={() => specStore.set(null)}>Built-in groups</button>
+        <button type="button" className="ds-copy" disabled={builtIn} onClick={() => window.confirm('Replace the dedupe groups on this Rancher with the built-in ones, for everyone?') && specStore.set(BUILT_IN_GROUPS)}>Built-in groups</button>
         <button type="button" className="ds-copy" onClick={copy}>{copied ? 'Copied' : 'Copy'}</button>
         <span className="ds-sr-only" aria-live="polite">{copied ? 'Copied the groups spec' : ''}</span>
       </div>
@@ -1600,6 +1615,7 @@ export const SpecPanel = ({ groups, builtIn }) => {
 
 export const Dedupe = () => {
   const [groups, builtIn] = useGroups();
+  const { status } = useSpec();
   const [choices, setChoices] = useShared(choicesStore);
   const [opened, setOpened] = useShared(openStore);
   const { base } = useRancher();
@@ -1608,7 +1624,7 @@ export const Dedupe = () => {
   const [reload, setReload] = useState(0);
   const [command, setCommand] = useState({ type: 'focus', n: 0 });
   const [details, setDetails] = useState(null);
-  const resolved = useMemo(() => groups.map((g) => ({ title: groupTitle(g), colors: g.colors.filter((c) => !isClassicRemoved(c)).map(specOf) })), [groups]);
+  const resolved = useMemo(() => groups.map((g) => ({ title: groupTitle(g), colors: g.colors.filter((c) => !isClassicRemoved(c)).map(specOf), chosen: g.chosen || '' })), [groups]);
   const choose = (key, choice) => setChoices((current) => ({ ...current, [key]: choice }));
   const toggle = (key) => {
     setOpened((current) => (current.includes(key) ? current.filter((k) => k !== key) : [...current, key]));
@@ -1651,45 +1667,57 @@ export const Dedupe = () => {
         Compare primitives that could be one. Each group opens into cards, one for each place a color's spec says
         Rancher shows it: a {VIEWPORT[0]} x {VIEWPORT[1]} Rancher page with the color made visible and ringed, zoomed in
         on the ring. Drag to pan, <kbd>Ctrl</kbd> + scroll or pinch to zoom, and double-click to switch between the ring
-        and the whole page. Pick a color to show it in place of the group's others everywhere, and Original
-        (or <kbd>0</kbd>) to go back. <kbd>1</kbd>-<kbd>9</kbd> pick the colors of the group you last used, in order. Rename a
-        group or remove its colors from its heading, and tick swatches on the Primitives tab to add colors. A color's
-        name opens its details. Groups are shared on the Rancher at the top of the page; the colors you pick are saved
-        in this browser, and the report at the bottom lists them.
+        and the whole page. Click a color to preview it in place of the group's others everywhere, and Original
+        (or <kbd>0</kbd>) to go back. <kbd>1</kbd>-<kbd>9</kbd> preview the colors of the group you last used, in order.
+        Previews are yours alone. When you've decided, choose the color with its ✓: the choice is saved with the group and
+        shared on the Rancher at the top of the page, so everyone sees it, and the report at the bottom lists the choices.
+        Rename a group or remove its colors from its heading, and tick swatches on the Primitives tab to add colors. A
+        color's name opens its details.
       </p>
-      <SpecPanel groups={groups} builtIn={builtIn} />
-      <div className="ds-dedupe-settings" role="toolbar" aria-label="Every open card">
-        <label><input type="checkbox" checked={rings} onChange={(e) => setRings(e.target.checked)} /> Ring</label>
-        <button type="button" className="ds-copy" onClick={() => setCommand((c) => ({ type: 'focus', n: c.n + 1 }))}>Zoom all to rings</button>
-        <button type="button" className="ds-copy" onClick={() => setCommand((c) => ({ type: 'fit', n: c.n + 1 }))}>Whole pages</button>
-        <button type="button" className="ds-copy" onClick={() => setReload((n) => n + 1)}>Reload all</button>
-        <button type="button" className="ds-copy" disabled={!opened.length} onClick={() => setOpened([])}>Close all</button>
-        <button type="button" className="ds-copy" onClick={addGroup}>New group</button>
-      </div>
-      {resolved.map((group, i) => {
-        const key = groupKey(group);
+      {status !== 'ready' ? <SpecGate /> : (
+        <>
+          <SpecPanel groups={groups} builtIn={builtIn} />
+          <div className="ds-dedupe-settings" role="toolbar" aria-label="Every open card">
+            <label><input type="checkbox" checked={rings} onChange={(e) => setRings(e.target.checked)} /> Ring</label>
+            <button type="button" className="ds-copy" onClick={() => setCommand((c) => ({ type: 'focus', n: c.n + 1 }))}>Zoom all to rings</button>
+            <button type="button" className="ds-copy" onClick={() => setCommand((c) => ({ type: 'fit', n: c.n + 1 }))}>Whole pages</button>
+            <button type="button" className="ds-copy" onClick={() => setReload((n) => n + 1)}>Reload all</button>
+            <button type="button" className="ds-copy" disabled={!opened.length} onClick={() => setOpened([])}>Close all</button>
+            <button type="button" className="ds-copy" onClick={addGroup}>New group</button>
+          </div>
+          {!groups.length && (
+            <div className="ds-spec-gate">
+              <p>There are no dedupe groups on this Rancher yet.</p>
+              <button type="button" className="ds-copy ds-spec-signin" onClick={() => specStore.set(BUILT_IN_GROUPS)}>Start with the built-in groups</button>
+              <p className="ds-muted">Or make one with New group, or tick Group on swatches on the Primitives tab.</p>
+            </div>
+          )}
+          {resolved.map((group, i) => {
+            const key = groupKey(group);
 
-        return (
-          <DedupeGroup
-            key={i}
-            group={group}
-            raw={groups[i]}
-            index={i}
-            open={opened.includes(key)}
-            onToggle={() => toggle(key)}
-            onEdit={(next) => updateGroups(groups, i, next)}
-            choice={choices[key]}
-            onChoose={(choice) => choose(key, choice)}
-            onActivate={() => setActive(key)}
-            onDetails={(name) => setDetails({ name, names: group.colors.map((c) => c.name) })}
-            base={base}
-            rings={rings}
-            reload={reload}
-            command={command}
-          />
-        );
-      })}
-      <Report groups={resolved.filter((g) => g.colors.length > 1)} choices={choices} />
+            return (
+              <DedupeGroup
+                key={i}
+                group={group}
+                raw={groups[i]}
+                index={i}
+                open={opened.includes(key)}
+                onToggle={() => toggle(key)}
+                onEdit={(next) => updateGroups(groups, i, next)}
+                choice={choices[key]}
+                onChoose={(choice) => choose(key, choice)}
+                onActivate={() => setActive(key)}
+                onDetails={(name) => setDetails({ name, names: group.colors.map((c) => c.name) })}
+                base={base}
+                rings={rings}
+                reload={reload}
+                command={command}
+              />
+            );
+          })}
+          <Report groups={resolved.filter((g) => g.colors.length > 1)} />
+        </>
+      )}
       {details && <Details name={details.name} names={details.names} onOpen={(name) => setDetails({ ...details, name })} onClose={() => setDetails(null)} />}
     </div>
   );
@@ -2277,7 +2305,7 @@ export const Dedupe = () => {
   background: var(--color-white);
 }
 
-.ds-candidate-badge:has([aria-pressed="true"]) {
+.ds-candidate-badge:has(.ds-candidate[aria-pressed="true"]) {
   border-color: var(--color-blue-451);
   box-shadow: inset 0 0 0 1px var(--color-blue-451);
 }
@@ -2329,7 +2357,61 @@ export const Dedupe = () => {
 
 .ds-group-choice {
   margin-left: auto;
+  gap: 4px 14px;
   font-weight: 600;
+}
+
+.ds-group-choice > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ds-group-chosen {
+  color: var(--color-green-523);
+}
+
+.ds-candidate-mark {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  min-height: 0;
+  height: 16px;
+  margin: 0 2px;
+  padding: 0;
+  border: 1px solid var(--color-gray-221);
+  border-radius: 50%;
+  background: var(--color-white);
+  color: var(--color-gray-466);
+  cursor: pointer;
+  opacity: 0;
+}
+
+.ds-candidate-badge:hover .ds-candidate-mark, .ds-candidate-badge:focus-within .ds-candidate-mark, .ds-candidate-custom .ds-candidate-mark, .ds-candidate-mark[aria-pressed="true"] {
+  opacity: 1;
+}
+
+.ds-candidate-mark:hover {
+  border-color: var(--color-green-523);
+  color: var(--color-green-523);
+}
+
+.ds-candidate-mark[aria-pressed="true"], .ds-candidate-mark[aria-pressed="true"]:hover {
+  border-color: var(--color-green-523);
+  background: var(--color-green-523);
+  color: var(--color-white);
+}
+
+.ds-candidate-badge-chosen {
+  border-color: var(--color-green-523);
+}
+
+@media (hover: none) {
+  .ds-candidate-mark {
+    opacity: 1;
+  }
 }
 
 .ds-group-body {
@@ -2628,16 +2710,28 @@ export const Dedupe = () => {
   margin: 4px 0 0;
 }
 
-.ds-spec-local {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  margin: 4px 0 0;
+.ds-spec-gate {
+  margin: 16px 0;
+  padding: 24px;
+  border: 1px solid var(--color-gray-96);
+  border-radius: 6px;
+  text-align: center;
 }
 
-.ds-spec-local .ds-copy {
-  margin-left: 0;
+.ds-spec-gate p {
+  margin: 0 0 12px;
+}
+
+.ds-spec-gate p:last-child {
+  margin-bottom: 0;
+}
+
+.ds-dedupe .ds-spec-signin {
+  display: inline-block;
+  margin: 0 0 12px;
+  padding: 6px 16px;
+  font-size: 14px;
+  line-height: 20px;
 }
 
 .ds-label-switch {
