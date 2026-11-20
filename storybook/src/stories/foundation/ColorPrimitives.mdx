@@ -374,18 +374,6 @@ export const normalizeColor = (key, entry) => {
   };
 };
 
-export const normalizeColors = (raw) => {
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
-    throw new Error('Color specs are an object keyed by primitive, like { "gray-96": { "usages": [...] } }.');
-  }
-
-  return Object.fromEntries(Object.entries(raw).map(([key, entry]) => {
-    normalizeColor(key, entry);
-
-    return [shortName(primitiveName(key)), entry];
-  }));
-};
-
 export const normalizeGroups = (raw) => {
   const list = Array.isArray(raw) ? raw : raw?.groups || (raw?.colors ? [raw] : null);
 
@@ -438,8 +426,6 @@ export const tabs = shared('color-primitives-tab', 'primitives', false);
 
 export const groupsStore = (importDedupeSpec(), shared('color-dedupe-groups', null));
 
-export const editsStore = shared('color-usage-edits', {});
-
 export const marksStore = shared('color-usage-marks', {});
 
 export const choicesStore = shared('color-dedupe-choices', {});
@@ -486,37 +472,9 @@ export const showGroup = (group) => {
   tabs.set('dedupe');
 };
 
-export const BUILT_IN_SPECS = Object.fromEntries(Object.entries(builtInUsages).map(([key, entry]) => [primitiveName(key), entry]));
+export const SPECS = Object.fromEntries(PRIMITIVES.map(({ name }) => [name, normalizeColor(name, builtInUsages[shortName(name)])]));
 
-export const useColorSpecs = () => {
-  const [edits] = useShared(editsStore);
-
-  return useMemo(() => {
-    const edited = Object.fromEntries(Object.entries(edits).map(([key, entry]) => [primitiveName(key), entry]));
-    const cache = {};
-    const specOf = (name) => {
-      const full = primitiveName(name.name || name);
-
-      if (!cache[full]) {
-        try {
-          cache[full] = normalizeColor(full, full in edited ? edited[full] : BUILT_IN_SPECS[full]);
-        } catch (e) {
-          cache[full] = { ...normalizeColor(full), error: e.message };
-        }
-      }
-
-      return cache[full];
-    };
-
-    return { specOf, isEdited: (name) => primitiveName(name) in edited };
-  }, [edits]);
-};
-
-export const allSpecs = (edits) => {
-  const merged = { ...builtInUsages, ...edits };
-
-  return Object.fromEntries(PRIMITIVES.map((p) => shortName(p.name)).filter((name) => merged[name]).map((name) => [name, merged[name]]));
-};
+export const specOf = (name) => SPECS[primitiveName(name.name || name)];
 
 export const describedColors = (() => {
   let cache;
@@ -584,8 +542,24 @@ export const RancherSetting = () => {
   );
 };
 
+export const GroupLinks = ({ groups, onShow }) => groups.map((g, i) => (
+  <span key={i}>
+    {i ? ', ' : ''}
+    <button
+      type="button"
+      className="ds-link"
+      onClick={() => {
+        showGroup(g);
+        onShow?.();
+      }}
+    >
+      {groupTitle(g)}
+    </button>
+  </span>
+));
+
 export const Swatch = ({
-  color, background, onOpen, live, mark, selected, onSelect
+  color, background, onOpen, mark, groups, selected, onSelect
 }) => (
   <div className={`ds-card${ selected ? ' ds-card--selected' : '' }`}>
     <button type="button" className="ds-swatch" onClick={() => onOpen(color.name)} aria-haspopup="dialog" aria-label={`${ color.name }, ${ color.value }: show where it is used`}>
@@ -597,12 +571,15 @@ export const Swatch = ({
       <span>{color.uses === 1 ? '1 use' : `${ color.uses } uses`}</span>
       <ThemeBadge color={color} />
       {color.computed.length > 0 && <span className="ds-computed">Computed</span>}
-      {mark ? <span className={`ds-mark ds-mark--${ mark }`}>{mark === 'right' ? 'Checked' : 'Wrong'}</span> : live && <span className="ds-live">Live</span>}
+      {mark && <span className={`ds-mark ds-mark--${ mark }`}>{mark === 'right' ? 'Checked' : 'Wrong'}</span>}
+      <CopyButton name={color.name} />
+    </div>
+    <div className="ds-meta">
       <label className="ds-select">
         <input type="checkbox" checked={selected} onChange={() => onSelect(color.name)} aria-label={`Select ${ color.name } for a dedupe group`} />
         Group
       </label>
-      <CopyButton name={color.name} />
+      {groups.length > 0 && <span className="ds-in-groups">In <GroupLinks groups={groups} /></span>}
     </div>
   </div>
 );
@@ -623,96 +600,24 @@ export const NoUsage = ({ name, note }) => {
     ) : 'Nothing references it.';
   }
 
-  return 'Its spec does not say where Rancher shows it yet. Add a usage under Spec.';
-};
-
-export const USAGE_HELP = `{
-  "note": "Shown when it has no usages",            // optional
-  "usages": [{
-    "label": "Header bar",
-    "route": "/c/local/explorer",
-    "theme": "light",                             // dark, classic light, suse dark, ...
-    "steps": [{ "click": ".btn", "text": "Create" }, { "force": ".btn", "state": "hover" }],
-    "highlight": { "selector": ".bar", "color": true }  // or a selector; left out: what paints this color most
-  }]
-}`;
-
-export const SpecEditor = ({ name, onApplied }) => {
-  const [edits, setEdits] = useShared(editsStore);
-  const key = shortName(name);
-  const edited = key in edits;
-  const current = edited ? edits[key] : builtInUsages[key];
-  const text = current ? JSON.stringify(current, null, 2) : '';
-  const [draft, setDraft] = useState(text);
-  const [error, setError] = useState('');
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    setDraft(text);
-    setError('');
-  }, [name, text]);
-
-  const apply = () => {
-    try {
-      const entry = draft.trim() ? parseSpec(draft) : {};
-
-      normalizeColor(name, entry);
-      setEdits((all) => ({ ...all, [key]: entry }));
-      setError('');
-      onApplied();
-    } catch (e) {
-      setError(e.message);
-    }
-  };
-  const copy = async () => {
-    await copyText(JSON.stringify({ [key]: parseSpec(draft || '{}') }, null, 2));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
-
-  return (
-    <details className="ds-spec">
-      <summary>Spec{edited ? ', edited in this browser' : ''}</summary>
-      <p className="ds-muted">
-        Where Rancher shows this color, as JSON or YAML: each usage's route, theme, the steps that make the color show
-        (<code>click</code>, <code>hover</code>, <code>type</code>, <code>key</code>, <code>force</code> with <code>state</code>,
-        <code> scroll</code>, <code>waitFor</code>, <code>wait</code> and <code>eval</code>) and what to ring. Applying keeps the
-        change in this browser and clears your check of the color.
-      </p>
-      <textarea value={draft} onChange={(e) => setDraft(e.target.value)} spellCheck={false} rows={12} aria-label={`Spec of ${ name }`} placeholder={USAGE_HELP} />
-      {error && <p className="ds-usage-error" role="alert">{error}</p>}
-      <div className="ds-spec-actions">
-        <button type="button" className="ds-copy" onClick={apply}>Apply</button>
-        {edited && (
-          <button
-            type="button"
-            className="ds-copy"
-            onClick={() => {
-              setEdits((all) => without(all, key));
-              onApplied();
-            }}
-          >
-            Back to the built-in spec
-          </button>
-        )}
-        <button type="button" className="ds-copy" onClick={copy}>
-          {copied ? 'Copied' : 'Copy'}
-          <span className="ds-sr-only" aria-live="polite">{copied ? `Copied the spec of ${ key }` : ''}</span>
-        </button>
-      </div>
-    </details>
-  );
+  return <>Its entry in <code>color-usages.json</code> does not say where Rancher shows it yet.</>;
 };
 
 export const AddToGroup = ({ names }) => {
   const [groups] = useGroups();
   const [target, setTarget] = useState('new');
+  const [title, setTitle] = useState('');
   const [added, setAdded] = useState(null);
   const shorts = names.map((n) => shortName(primitiveName(n)));
+  const index = target === 'new' ? groups.length : Number(target);
+  const group = groups[index] || { title: '', colors: [] };
+  const colors = [...new Set([...group.colors, ...shorts])];
+  const choose = (value) => {
+    setTarget(value);
+    setTitle(value === 'new' ? '' : groups[Number(value)]?.title || '');
+  };
   const add = () => {
-    const index = target === 'new' ? groups.length : Number(target);
-    const group = groups[index] || { title: '', colors: [] };
-    const next = { ...group, colors: [...new Set([...group.colors, ...shorts])] };
+    const next = { ...group, title: title.trim(), colors };
 
     updateGroups(groups, index, next);
     setAdded(next);
@@ -724,10 +629,14 @@ export const AddToGroup = ({ names }) => {
     <span className="ds-add-to-group">
       <label>
         Add {shorts.length === 1 ? 'it' : 'them'} to
-        <select value={target} onChange={(e) => setTarget(e.target.value)}>
+        <select value={target} onChange={(e) => choose(e.target.value)}>
           <option value="new">a new group</option>
           {groups.map((g, i) => <option key={i} value={i}>{groupTitle(g)}</option>)}
         </select>
+      </label>
+      <label>
+        named
+        <input value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && shorts.length && add()} placeholder={groupTitle({ colors })} />
       </label>
       <button type="button" className="ds-copy" onClick={add} disabled={!shorts.length}>Add</button>
       {added && (
@@ -746,7 +655,6 @@ export const Details = ({
   const close = useRef(null);
   const { themes, colors } = describedColors();
   const color = colors.find((c) => c.name === name);
-  const { specOf } = useColorSpecs();
   const spec = specOf(name);
   const { base } = useRancher();
   const [marks, setMarks] = useShared(marksStore);
@@ -808,26 +716,9 @@ export const Details = ({
             </div>
           </>
         )}
-        <SpecEditor name={name} onApplied={() => setMark(null)} />
         <h3>Dedupe groups</h3>
         <p>
-          {inGroups.length ? (
-            <>In {inGroups.map((g, i) => (
-              <span key={i}>
-                {i ? ', ' : ''}
-                <button
-                  type="button"
-                  className="ds-link"
-                  onClick={() => {
-                    showGroup(g);
-                    dialog.current?.close();
-                  }}
-                >
-                  {groupTitle(g)}
-                </button>
-              </span>
-            ))}.</>
-          ) : 'In no group yet.'}
+          {inGroups.length ? <>In <GroupLinks groups={inGroups} onShow={() => dialog.current?.close()} />.</> : 'In no group yet.'}
         </p>
         <AddToGroup names={[name]} />
         {color.computed.length > 0 && (
@@ -860,11 +751,12 @@ export const SelectionBar = ({ names, onClear }) => (
 
 export const Primitives = () => {
   const { themes, colors } = describedColors();
-  const { specOf } = useColorSpecs();
   const [marks] = useShared(marksStore);
+  const [groups] = useGroups();
   const [open, setOpen] = useState(null);
   const [selected, setSelected] = useState([]);
   const names = useMemo(() => colors.map((c) => c.name), [colors]);
+  const groupsOf = (name) => groups.filter((g) => g.colors.includes(shortName(name)));
   const select = (name) => setSelected((current) => (current.includes(name) ? current.filter((n) => n !== name) : [...current, name]));
   const marked = (mark) => Object.values(marks).filter((m) => m === mark).length;
 
@@ -877,7 +769,6 @@ export const Primitives = () => {
           </span>
         ))}
         <span>{colors.filter((c) => c.computed.length).length} <span className="ds-computed">Computed</span></span>
-        <span>{colors.filter((c) => specOf(c.name).usages.length).length} <span className="ds-live">Live</span></span>
         <span>{marked('right')} <span className="ds-mark ds-mark--right">Checked</span></span>
         <span>{marked('wrong')} <span className="ds-mark ds-mark--wrong">Wrong</span></span>
       </p>
@@ -891,8 +782,8 @@ export const Primitives = () => {
                 color={c}
                 background={themes.background}
                 onOpen={setOpen}
-                live={specOf(c.name).usages.length > 0}
                 mark={marks[shortName(c.name)]}
+                groups={groupsOf(c.name)}
                 selected={selected.includes(c.name)}
                 onSelect={select}
               />
@@ -1410,56 +1301,41 @@ export const GROUPS_HELP = `[
 ]`;
 
 export const SpecPanel = ({ groups, builtIn }) => {
-  const [edits, setEdits] = useShared(editsStore);
-  const groupsText = JSON.stringify(groups, null, 2);
-  const editsText = Object.keys(edits).length ? JSON.stringify(edits, null, 2) : '';
-  const [groupsDraft, setGroupsDraft] = useState(groupsText);
-  const [editsDraft, setEditsDraft] = useState(editsText);
-  const [error, setError] = useState({});
-  const [copied, setCopied] = useState('');
-  const copy = async (what, text) => {
-    await copyText(text);
-    setCopied(what);
-    setTimeout(() => setCopied(''), 1500);
-  };
-  const attempt = (what, fn) => {
+  const text = JSON.stringify(groups, null, 2);
+  const [draft, setDraft] = useState(text);
+  const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
+  const apply = () => {
     try {
-      fn();
-      setError({});
+      groupsStore.set(normalizeGroups(parseSpec(draft || '[]')));
+      setError('');
     } catch (e) {
-      setError({ [what]: e.message });
+      setError(e.message);
     }
   };
+  const copy = async () => {
+    await copyText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
 
-  useEffect(() => setGroupsDraft(groupsText), [groupsText]);
-  useEffect(() => setEditsDraft(editsText), [editsText]);
+  useEffect(() => setDraft(text), [text]);
 
   return (
     <details className="ds-spec">
-      <summary>Specs</summary>
+      <summary>Groups spec{builtIn ? '' : ', edited in this browser'}</summary>
       <p className="ds-muted">
-        Two specs drive this page. The groups say which colors to compare, and each color's spec says where Rancher
-        shows it. The built-in ones are <code>color-groups.json</code> and <code>color-usages.json</code> beside this
-        page. Changes you make here, in the groups above or in a color's details are kept in this browser: copy them out
-        to keep them anywhere else.
+        Which colors each group compares, as JSON or YAML. The built-in groups are <code>color-groups.json</code> beside
+        this page. Changes you make here or in the groups above are kept in this browser: copy them out to keep them
+        anywhere else.
       </p>
-      <p className="ds-spec-heading">Groups{builtIn ? '' : ', edited in this browser'}</p>
-      <textarea value={groupsDraft} onChange={(e) => setGroupsDraft(e.target.value)} spellCheck={false} rows={10} aria-label="Groups" placeholder={GROUPS_HELP} />
-      {error.groups && <p className="ds-usage-error" role="alert">{error.groups}</p>}
+      <textarea value={draft} onChange={(e) => setDraft(e.target.value)} spellCheck={false} rows={10} aria-label="Groups spec" placeholder={GROUPS_HELP} />
+      {error && <p className="ds-usage-error" role="alert">{error}</p>}
       <div className="ds-spec-actions">
-        <button type="button" className="ds-copy" onClick={() => attempt('groups', () => groupsStore.set(normalizeGroups(parseSpec(groupsDraft || '[]'))))}>Apply</button>
+        <button type="button" className="ds-copy" onClick={apply}>Apply</button>
         <button type="button" className="ds-copy" disabled={builtIn} onClick={() => groupsStore.set(null)}>Built-in groups</button>
-        <button type="button" className="ds-copy" onClick={() => copy('groups', groupsText)}>{copied === 'groups' ? 'Copied' : 'Copy'}</button>
-      </div>
-      <p className="ds-spec-heading">Color specs edited in this browser</p>
-      <textarea value={editsDraft} onChange={(e) => setEditsDraft(e.target.value)} spellCheck={false} rows={8} aria-label="Color specs edited in this browser" placeholder={`{\n  "gray-96": ${ USAGE_HELP.replace(/\n/g, '\n  ') }\n}`} />
-      {error.edits && <p className="ds-usage-error" role="alert">{error.edits}</p>}
-      <div className="ds-spec-actions">
-        <button type="button" className="ds-copy" onClick={() => attempt('edits', () => setEdits(editsDraft.trim() ? normalizeColors(parseSpec(editsDraft)) : null))}>Apply</button>
-        <button type="button" className="ds-copy" disabled={!editsText} onClick={() => setEdits(null)}>Discard the edits</button>
-        <button type="button" className="ds-copy" disabled={!editsText} onClick={() => copy('edits', editsText)}>{copied === 'edits' ? 'Copied' : 'Copy the edits'}</button>
-        <button type="button" className="ds-copy" onClick={() => copy('all', `${ JSON.stringify(allSpecs(edits), null, 2) }\n`)}>{copied === 'all' ? 'Copied' : 'Copy every color spec'}</button>
-        <span className="ds-sr-only" aria-live="polite">{copied ? 'Copied' : ''}</span>
+        <button type="button" className="ds-copy" onClick={copy}>{copied ? 'Copied' : 'Copy'}</button>
+        <span className="ds-sr-only" aria-live="polite">{copied ? 'Copied the groups spec' : ''}</span>
       </div>
     </details>
   );
@@ -1467,7 +1343,6 @@ export const SpecPanel = ({ groups, builtIn }) => {
 
 export const Dedupe = () => {
   const [groups, builtIn] = useGroups();
-  const { specOf } = useColorSpecs();
   const [choices, setChoices] = useShared(choicesStore);
   const [opened, setOpened] = useShared(openStore);
   const { base } = useRancher();
@@ -1477,7 +1352,7 @@ export const Dedupe = () => {
   const [reload, setReload] = useState(0);
   const [command, setCommand] = useState({ type: 'focus', n: 0 });
   const [details, setDetails] = useState(null);
-  const resolved = useMemo(() => groups.map((g) => ({ title: groupTitle(g), colors: g.colors.map(specOf) })), [groups, specOf]);
+  const resolved = useMemo(() => groups.map((g) => ({ title: groupTitle(g), colors: g.colors.map(specOf) })), [groups]);
   const choose = (key, choice) => setChoices((current) => ({ ...current, [key]: choice }));
   const toggle = (key) => {
     setOpened((current) => (current.includes(key) ? current.filter((k) => k !== key) : [...current, key]));
@@ -1524,8 +1399,8 @@ export const Dedupe = () => {
         and the whole page. Pick a color to show it in place of the group's others everywhere, and Original
         (or <kbd>0</kbd>) to go back. <kbd>1</kbd>-<kbd>9</kbd> pick the colors of the group you last used. Rename a
         group, add or remove its colors and add the nearest ones from inside it, or tick swatches on the Primitives tab
-        and add them from there. A color's name opens its details, where its spec can be edited. Groups, edits and
-        choices are saved in this browser, and the report at the bottom lists the choices.
+        and add them from there. A color's name opens its details. Groups and choices are saved in this browser, and
+        the report at the bottom lists the choices.
       </p>
       <div className="ds-dedupe-settings">
         <label>
@@ -1883,7 +1758,7 @@ export const Dedupe = () => {
   width: 160px;
 }
 
-.ds-dedupe-settings, .ds-dedupe-toolbar, .ds-spec-actions, .ds-spec-from, .ds-candidate-custom {
+.ds-dedupe-settings, .ds-dedupe-toolbar, .ds-spec-actions, .ds-candidate-custom {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1921,11 +1796,6 @@ export const Dedupe = () => {
   width: 100%;
   font-family: ui-monospace, monospace;
   font-size: 12px;
-}
-
-.ds-spec-from {
-  gap: 6px;
-  margin-left: auto;
 }
 
 .ds-dedupe-toolbar {
@@ -2242,7 +2112,7 @@ export const Dedupe = () => {
   color: var(--color-red-488);
 }
 
-.ds-live, .ds-mark {
+.ds-mark {
   display: inline-flex;
   align-items: center;
   padding: 0 6px;
@@ -2386,17 +2256,17 @@ export const Dedupe = () => {
   width: 260px;
 }
 
+.ds-add-to-group input {
+  display: inline-block;
+  width: 200px;
+}
+
 .ds-group-add input {
   width: 180px;
 }
 
 .ds-group-delete {
   margin-left: auto !important;
-}
-
-.ds-spec-heading {
-  margin: 12px 0 4px;
-  font-weight: 600;
 }
 
 `}
@@ -2421,7 +2291,7 @@ Use these as `var(--color-...)` instead of writing colors out or computing them 
 - **Uses** counts the references in shell and @rancher/components.
 - **Light + dark**, **Light only** and **Dark only** say which themes paint the color, through a theme variable or a component style. A sun marks the light theme and a moon the dark theme, and a color only the dark theme paints gets a dark badge. A dashed badge means nothing paints it: only a theme variable nothing reads, or a Sass variable that never reaches the CSS, refers to it.
 - **Computed** marks a color that master computed from another color (`darken()`, `color-mix()` and the like) before it became a primitive. The details say how.
-- **Live** marks a color whose spec says where Rancher shows it. **Checked** and **Wrong** are your answers in its details to whether the ring sits on it, kept in this browser.
+- **Checked** and **Wrong** are your answers in a color's details to whether the ring sits on it, kept in this browser. Under **Group**, a swatch links to the dedupe groups the color is in.
 
 They are defined in `pkg/rancher-components/src/components/design-system/_color-variables.scss`, and `yarn generate:colors` writes their values to `colors.ts`. A color that isn't here yet gets a new primitive there first.
 

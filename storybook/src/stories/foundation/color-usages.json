@@ -13,17 +13,7 @@
     ]
   },
   "white-a4": {
-    "usages": [
-      {
-        "label": "Background of div.barn-extensions__studio",
-        "route": "/c/local/uiplugins",
-        "theme": "dark",
-        "highlight": {
-          "selector": "div.barn-extensions__studio",
-          "color": true
-        }
-      }
-    ]
+    "note": "Only RcCodeMirror reads it, for the active line in the dark theme, and an editor draws that line only when it is given highlightActiveLine() or the old styleActiveLine option. Nothing in shell does that, so only extensions can show it."
   },
   "white-a6": {
     "usages": [
@@ -190,7 +180,7 @@
   "white-a30": {
     "usages": [
       {
-        "label": "Border of button.rc-button.btn",
+        "label": "Left border of the Install split button's menu trigger, on the chart page of an installed extension",
         "route": "/c/local/apps/charts/chart?repo-type=cluster&repo=dev-extension&chart=dev-extension",
         "theme": "light",
         "steps": [
@@ -199,7 +189,7 @@
           }
         ],
         "highlight": {
-          "selector": "button.rc-button.btn",
+          "selector": "button.rc-button-split-trigger",
           "color": true
         }
       }
