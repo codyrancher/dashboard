@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<!--
+  The color tool's groups spec, shared through this Rancher: the Storybook Deduplicate tab frames this page and asks it
+  to read or write the ConfigMap default/color-dedupe-spec with the visitor's own session. It answers only pages on a
+  sibling host (the other shares on this node) or localhost, the same rule the color tool plugin uses for steps.
+
+  Messages, { source: 'rancher-color-tool', type, id, ... }:
+  - `spec-get` answers `spec` with `{ groups, version, updatedBy, updatedAt }`, or `{ missing: true }`.
+  - `spec-set` with `{ groups, version }` answers `spec` for what was saved. `version` is the one the groups were read
+    at; a spec someone else saved since is not overwritten (status 409).
+  Either answers `spec-error` with `{ status, message }` instead, 401 when nobody is signed in.
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Color tool spec</title>
+</head>
+<body>
+<script>
+  (function() {
+    var SOURCE = 'rancher-color-tool';
+    var NAMESPACE = 'default';
+    var NAME = 'color-dedupe-spec';
+    var KEY = 'groups.json';
+    var BY = 'color-tool.rancher.io/updated-by';
+    var AT = 'color-tool.rancher.io/updated-at';
+
+    function trusted(origin) {
+      try {
+        var url = new URL(origin);
+        var parentDomain = function(host) {
+          return host.split('.').slice(1).join('.');
+        };
+
+        if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+          return true;
+        }
+
+        return url.protocol === 'https:' && parentDomain(url.hostname).includes('.') && parentDomain(url.hostname) === parentDomain(window.location.hostname);
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function csrf() {
+      var match = document.cookie.match(/(?:^|;\s*)CSRF=([^;]+)/);
+
+      return match ? decodeURIComponent(match[1]) : '';
+    }
+
+    async function api(method, path, body) {
+      var res = await fetch(path, {
+        method:      method,
+        credentials: 'same-origin',
+        headers:     {
+          Accept: 'application/json', 'Content-Type': 'application/json', 'X-Api-Csrf': csrf()
+        },
+        body: body ? JSON.stringify(body) : undefined,
+      });
+      var json = null;
+
+      try {
+        json = await res.json();
+      } catch (e) {}
+      if (!res.ok) {
+        var error = new Error((json && (json.message || json.code)) || res.statusText || ('HTTP ' + res.status));
+
+        error.status = res.status;
+        throw error;
+      }
+
+      return json;
+    }
+
+    function toSpec(configMap) {
+      var annotations = (configMap.metadata && configMap.metadata.annotations) || {};
+
+      return {
+        groups:    JSON.parse((configMap.data && configMap.data[KEY]) || '[]'),
+        version:   configMap.metadata.resourceVersion,
+        updatedBy: annotations[BY] || '',
+        updatedAt: annotations[AT] || '',
+      };
+    }
+
+    async function read() {
+      try {
+        return toSpec(await api('GET', '/v1/configmaps/' + NAMESPACE + '/' + NAME));
+      } catch (e) {
+        if (e.status === 404) {
+          return { missing: true };
+        }
+        throw e;
+      }
+    }
+
+    async function me() {
+      try {
+        var user = (await api('GET', '/v3/users?me=true')).data[0];
+
+        return user.displayName || user.username || user.id;
+      } catch (e) {
+        return '';
+      }
+    }
+
+    async function write(groups, version) {
+      var annotations = {};
+
+      annotations[BY] = await me();
+      annotations[AT] = new Date().toISOString();
+      var data = {};
+
+      data[KEY] = JSON.stringify(groups, null, 2);
+      if (!version) {
+        return toSpec(await api('POST', '/v1/configmaps', {
+          type: 'configmap', metadata: { namespace: NAMESPACE, name: NAME, annotations: annotations }, data: data
+        }));
+      }
+      var current = await api('GET', '/v1/configmaps/' + NAMESPACE + '/' + NAME);
+
+      current.metadata.annotations = Object.assign({}, current.metadata.annotations, annotations);
+      current.metadata.resourceVersion = version;
+      current.data = data;
+
+      return toSpec(await api('PUT', '/v1/configmaps/' + NAMESPACE + '/' + NAME, current));
+    }
+
+    window.addEventListener('message', async function(event) {
+      var message = event.data;
+
+      if (event.source !== window.parent || !message || message.source !== SOURCE || !trusted(event.origin)) {
+        return;
+      }
+      var answer = function(reply) {
+        event.source.postMessage(Object.assign({ source: SOURCE, id: message.id }, reply), event.origin);
+      };
+
+      try {
+        if (message.type === 'spec-get') {
+          answer(Object.assign({ type: 'spec' }, await read()));
+        } else if (message.type === 'spec-set') {
+          answer(Object.assign({ type: 'spec' }, await write(message.groups, message.version)));
+        }
+      } catch (e) {
+        answer({ type: 'spec-error', status: e.status || 0, message: e.message });
+      }
+    });
+
+    if (window.parent !== window) {
+      window.parent.postMessage({ source: SOURCE, type: 'spec-ready' }, '*');
+    }
+  })();
+</script>
+</body>
+</html>

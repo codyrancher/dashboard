@@ -21,8 +21,6 @@
     "title": "Dark surfaces",
     "colors": [
       "gray-703",
-      "gray-705",
-      "gray-707",
       "gray-719",
       "gray-723"
     ]
@@ -33,7 +31,6 @@
       "blue-609",
       "blue-616",
       "blue-619",
-      "blue-625",
       "blue-628",
       "blue-631"
     ]
@@ -59,13 +56,6 @@
       "blue-231",
       "blue-244",
       "blue-282"
-    ]
-  },
-  {
-    "title": "Classic blue tints",
-    "colors": [
-      "blue-349-a14",
-      "blue-349-a15"
     ]
   },
   {

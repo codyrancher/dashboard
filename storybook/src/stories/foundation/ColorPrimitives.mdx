@@ -14,8 +14,8 @@ export const USAGE = typeof __COLOR_USAGE__ === 'undefined' ? {} : __COLOR_USAGE
 export const UNPAINTED = new Set(typeof __UNPAINTED_VARIABLES__ === 'undefined' ? [] : __UNPAINTED_VARIABLES__);
 
 export const THEMES = {
-  light: ['theme-light', 'classic theme-light', 'suse theme-light'],
-  dark:  ['theme-dark', 'classic theme-dark', 'suse theme-dark', 'theme-dark suse-prime-surface'],
+  light: ['theme-light', 'suse theme-light'],
+  dark:  ['theme-dark', 'suse theme-dark', 'theme-dark suse-prime-surface'],
 };
 
 export const PRIMITIVES = Object.entries(COLOR_TOKENS).map(([name, value]) => ({ name, value }));
@@ -26,7 +26,7 @@ export const themeVariableNames = () => {
     for (const rule of rules) {
       if (rule.cssRules && !rule.selectorText) {
         walk(rule.cssRules);
-      } else if (rule.style && /theme-(light|dark)|\.classic|\.suse/.test(rule.selectorText || '')) {
+      } else if (rule.style && /theme-(light|dark)|\.suse/.test(rule.selectorText || '')) {
         for (const name of rule.style) {
           if (name.startsWith('--') && !name.startsWith('--color-')) {
             names.add(name);
@@ -373,7 +373,7 @@ export const normalizeColor = (key, entry) => {
   };
 };
 
-export const normalizeGroups = (raw) => {
+export const normalizeGroups = (raw, { dropUnknown = false } = {}) => {
   const list = Array.isArray(raw) ? raw : raw?.groups || (raw?.colors ? [raw] : null);
 
   if (!list) {
@@ -386,11 +386,14 @@ export const normalizeGroups = (raw) => {
       const name = primitiveName(typeof entry === 'string' ? entry : entry?.name || '');
 
       if (!COLOR_TOKENS[name]) {
+        if (dropUnknown) {
+          return null;
+        }
         throw new Error(`${ name } in ${ group?.title || `group ${ g + 1 }` } is not a color primitive.`);
       }
 
       return shortName(name);
-    });
+    }).filter(Boolean);
 
     return { title: String(group?.title || ''), colors: [...new Set(colors)] };
   });
@@ -423,7 +426,218 @@ export const importDedupeSpec = () => {
 
 export const tabs = shared('color-primitives-tab', 'primitives', false);
 
-export const groupsStore = (importDedupeSpec(), shared('color-dedupe-groups', null));
+export const sameGroups = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+export const LOCAL_GROUPS_KEY = 'color-dedupe-groups';
+
+export const localGroups = (() => {
+  importDedupeSpec();
+  try {
+    const groups = normalizeGroups(JSON.parse(storage.get(LOCAL_GROUPS_KEY, 'null')), { dropUnknown: true });
+
+    return sameGroups(groups, BUILT_IN_GROUPS) ? null : groups;
+  } catch (e) {
+    return null;
+  }
+})();
+
+export const SPEC_CACHE_KEY = 'color-dedupe-spec-cache';
+
+export const specStore = (() => {
+  const cached = (() => {
+    try {
+      return JSON.parse(storage.get(SPEC_CACHE_KEY, 'null')) || {};
+    } catch (e) {
+      return {};
+    }
+  })();
+  let state = {
+    base:      cached.base || '',
+    groups:    cached.groups ? normalizeGroups(cached.groups, { dropUnknown: true }) : null,
+    version:   cached.version || '',
+    updatedBy: cached.updatedBy || '',
+    updatedAt: cached.updatedAt || '',
+    status:    'connecting',
+    message:   '',
+    saving:    false,
+    local:     localGroups,
+  };
+  const listeners = new Set();
+  const waiting = new Map();
+  let frame = null;
+  let origin = '';
+  let ready = null;
+  let markReady = null;
+  let connected = null;
+  let poller = null;
+  let timer = null;
+  let dirty = false;
+  let seq = 0;
+  const emit = (patch) => {
+    state = { ...state, ...patch };
+    storage.set(SPEC_CACHE_KEY, JSON.stringify({
+      base: state.base, groups: state.groups, version: state.version, updatedBy: state.updatedBy, updatedAt: state.updatedAt
+    }));
+    listeners.forEach((listener) => listener());
+  };
+  const request = async(type, body = {}) => {
+    await ready;
+    const id = ++seq;
+
+    return new Promise((resolve, reject) => {
+      waiting.set(id, { resolve, reject });
+      frame.contentWindow.postMessage({
+        source: SOURCE, type, id, ...body
+      }, origin);
+      setTimeout(() => waiting.delete(id) && reject({ status: 0, message: 'The Rancher did not answer.' }), 20000);
+    });
+  };
+  const fail = (e) => emit({
+    status:  e.status === 401 ? 'signed-out' : 'error',
+    saving:  false,
+    message: e.status === 401 ? '' : e.status === 403 ? 'You can\'t read config maps in the default namespace on this Rancher, where the shared groups are kept.' : e.message || 'The Rancher did not answer.',
+  });
+  const apply = (spec) => {
+    if (spec.missing) {
+      emit({
+        groups: null, version: '', updatedBy: '', updatedAt: '', status: 'ready'
+      });
+    } else if (spec.version !== state.version || state.status !== 'ready') {
+      emit({
+        groups: normalizeGroups(spec.groups, { dropUnknown: true }), version: spec.version, updatedBy: spec.updatedBy, updatedAt: spec.updatedAt, status: 'ready'
+      });
+    }
+  };
+  const refresh = async(force = false) => {
+    if (!force && (dirty || state.saving)) {
+      return;
+    }
+    try {
+      apply(await request('spec-get'));
+    } catch (e) {
+      fail(e);
+    }
+  };
+  const save = async() => {
+    dirty = false;
+    emit({ saving: true });
+    try {
+      const spec = await request('spec-set', { groups: state.groups || BUILT_IN_GROUPS, version: state.version });
+
+      emit({
+        version: spec.version, updatedBy: spec.updatedBy, updatedAt: spec.updatedAt, saving: false
+      });
+      if (dirty) {
+        clearTimeout(timer);
+        timer = setTimeout(save, 0);
+      }
+    } catch (e) {
+      if (e.status === 409) {
+        emit({ saving: false });
+        await refresh(true);
+        emit({ message: 'Someone else changed the groups just now, so this shows theirs. Your last change was not saved.' });
+      } else {
+        fail(e);
+      }
+    }
+  };
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('message', (event) => {
+      const message = event.data;
+
+      if (!frame || event.source !== frame.contentWindow || message?.source !== SOURCE) {
+        return;
+      }
+      if (message.type === 'spec-ready') {
+        markReady?.();
+      } else if (waiting.has(message.id)) {
+        const { resolve, reject } = waiting.get(message.id);
+
+        waiting.delete(message.id);
+        (message.type === 'spec-error' ? reject : resolve)(message);
+      }
+    });
+  }
+
+  return {
+    getState:  () => state,
+    subscribe: (listener) => {
+      listeners.add(listener);
+
+      return () => listeners.delete(listener);
+    },
+    get: () => state.groups,
+    set: (next) => {
+      const groups = typeof next === 'function' ? next(state.groups) : next;
+
+      if (state.status !== 'ready') {
+        emit({
+          message: {
+            'signed-out': 'Sign in to this Rancher to change the shared groups.',
+            offline:      'Set the Rancher at the top of the page to change the shared groups.',
+          }[state.status] || 'The shared groups can\'t be changed until this Rancher answers.'
+        });
+
+        return false;
+      }
+      dirty = true;
+      emit({ groups, message: '' });
+      clearTimeout(timer);
+      timer = setTimeout(save, 400);
+
+      return true;
+    },
+    connect: (base) => {
+      const url = joinUrl(base || '', '/color-tool-spec.html');
+
+      if (!url || url === connected) {
+        return;
+      }
+      connected = url;
+      frame?.remove();
+      waiting.clear();
+      clearInterval(poller);
+      if (state.base !== base) {
+        emit({
+          base, groups: null, version: '', updatedBy: '', updatedAt: ''
+        });
+      }
+      origin = new URL(url).origin;
+      ready = new Promise((resolve, reject) => {
+        markReady = resolve;
+        setTimeout(() => reject({ status: 0, message: 'This Rancher\'s dashboard has no shared groups: it needs a color tool build that serves color-tool-spec.html.' }), 30000);
+      });
+      ready.catch(() => {});
+      frame = document.createElement('iframe');
+      frame.hidden = true;
+      frame.title = 'Shared color groups';
+      frame.src = url;
+      document.body.appendChild(frame);
+      emit({ status: 'connecting', message: '' });
+      refresh(true);
+      poller = setInterval(() => document.visibilityState === 'visible' && refresh(), 10000);
+    },
+    disconnect: () => {
+      connected = null;
+      frame?.remove();
+      frame = null;
+      waiting.clear();
+      clearInterval(poller);
+      emit({ status: 'offline', message: '' });
+    },
+    shareLocal: () => {
+      if (specStore.set(state.local)) {
+        storage.remove(LOCAL_GROUPS_KEY);
+        emit({ local: null });
+      }
+    },
+    discardLocal: () => {
+      storage.remove(LOCAL_GROUPS_KEY);
+      emit({ local: null });
+    },
+  };
+})();
 
 export const choicesStore = shared('color-dedupe-choices', {});
 
@@ -435,16 +649,38 @@ export const labelStore = shared('color-primitives-label', 'name', false);
 
 export const revealStore = shared(null, null);
 
-export const useGroups = () => {
-  const [stored] = useShared(groupsStore);
+export const useSpec = () => {
+  const spec = useSyncExternalStore(specStore.subscribe, specStore.getState);
+  const { base } = useRancher();
 
-  return [stored || BUILT_IN_GROUPS, !stored];
+  useEffect(() => {
+    if (base) {
+      specStore.connect(base);
+
+      return undefined;
+    }
+    const timer = setTimeout(specStore.disconnect, 3000);
+
+    return () => clearTimeout(timer);
+  }, [base]);
+
+  return spec;
+};
+
+export const useGroups = () => {
+  const { groups } = useSpec();
+  const shown = groups || BUILT_IN_GROUPS;
+
+  return [shown, sameGroups(shown, BUILT_IN_GROUPS)];
 };
 
 export const updateGroups = (groups, index, next) => {
   const before = groups[index];
   const list = !next ? groups.filter((g, i) => i !== index) : index < groups.length ? groups.map((g, i) => (i === index ? next : g)) : [...groups, next];
 
+  if (!specStore.set(list)) {
+    return;
+  }
   if (before && next && groupKey(before) !== groupKey(next)) {
     const [from, to] = [groupKey(before), groupKey(next)];
 
@@ -460,7 +696,6 @@ export const updateGroups = (groups, index, next) => {
     });
     openStore.set((open) => open.map((k) => (k === from ? to : k)));
   }
-  groupsStore.set(list);
 };
 
 export const showGroup = (group) => {
@@ -508,6 +743,33 @@ export const RancherSetting = () => {
       </label>
       {joinUrl(base, '/') && <a className="ds-copy" href={joinUrl(base, '/')} target="_blank" rel="noreferrer">Sign in</a>}
       <span className="ds-muted">Swatches and dedupe groups show each color live here: a dashboard built with the color tool, in front of a Rancher you are signed in to.</span>
+    </div>
+  );
+};
+
+export const SpecStatus = () => {
+  const spec = useSpec();
+  const when = spec.updatedAt ? new Date(spec.updatedAt).toLocaleString() : '';
+  const shared = 'Dedupe groups are shared on this Rancher, so everyone using it sees the same ones.';
+  const text = {
+    ready:        spec.saving ? 'Saving the dedupe groups on this Rancher.' : spec.version ? `${ shared } Last saved${ spec.updatedBy ? ` by ${ spec.updatedBy }` : '' }${ when ? `, ${ when }` : '' }.` : `${ shared } Nobody has changed the built-in groups yet.`,
+    connecting:   'Loading the shared dedupe groups from this Rancher.',
+    'signed-out': `Sign in to this Rancher to see and change the shared dedupe groups. Until then these are ${ spec.groups ? 'the groups as this browser last saw them' : 'the built-in groups' }.`,
+    error:        `The shared dedupe groups didn't load. ${ spec.message }`,
+    offline:      'Set the Rancher above to share the dedupe groups.',
+  }[spec.status];
+
+  return (
+    <div className="ds-dedupe ds-spec-status">
+      <span className="ds-muted" aria-live="polite">{text}</span>
+      {spec.message && spec.status !== 'error' && <p className="ds-usage-error" role="alert">{spec.message}</p>}
+      {spec.local && spec.status === 'ready' && (
+        <div className="ds-spec-local">
+          <span>This browser has {spec.local.length} dedupe {spec.local.length === 1 ? 'group' : 'groups'} saved before groups were shared.</span>
+          <button type="button" className="ds-copy" onClick={specStore.shareLocal}>Share them, replacing the shared groups</button>
+          <button type="button" className="ds-copy" onClick={specStore.discardLocal}>Discard them</button>
+        </div>
+      )}
     </div>
   );
 };
@@ -1268,8 +1530,7 @@ export const SpecPanel = ({ groups, builtIn }) => {
   const [copied, setCopied] = useState(false);
   const apply = () => {
     try {
-      groupsStore.set(normalizeGroups(parseSpec(draft || '[]')));
-      setError('');
+      setError(specStore.set(normalizeGroups(parseSpec(draft || '[]'))) ? '' : specStore.getState().message);
     } catch (e) {
       setError(e.message);
     }
@@ -1284,17 +1545,18 @@ export const SpecPanel = ({ groups, builtIn }) => {
 
   return (
     <details className="ds-spec">
-      <summary>Groups spec{builtIn ? '' : ', edited in this browser'}</summary>
+      <summary>Groups spec{builtIn ? '' : ', edited'}</summary>
       <p className="ds-muted">
-        Which colors each group compares, as JSON or YAML. The built-in groups are <code>color-groups.json</code> beside
-        this page. Changes you make here or in the groups above are kept in this browser: copy them out to keep them
-        anywhere else.
+        Which colors each group compares, as JSON or YAML. It's shared on the Rancher at the top of the page, in the
+        config map <code>default/color-dedupe-spec</code>, so everyone using that Rancher sees the same groups, and
+        changes made here or in the groups above reach them within seconds. The built-in groups are
+        <code>color-groups.json</code> beside this page.
       </p>
       <textarea value={draft} onChange={(e) => setDraft(e.target.value)} spellCheck={false} rows={10} aria-label="Groups spec" placeholder={GROUPS_HELP} />
       {error && <p className="ds-usage-error" role="alert">{error}</p>}
       <div className="ds-spec-actions">
         <button type="button" className="ds-copy" onClick={apply}>Apply</button>
-        <button type="button" className="ds-copy" disabled={builtIn} onClick={() => groupsStore.set(null)}>Built-in groups</button>
+        <button type="button" className="ds-copy" disabled={builtIn} onClick={() => specStore.set(null)}>Built-in groups</button>
         <button type="button" className="ds-copy" onClick={copy}>{copied ? 'Copied' : 'Copy'}</button>
         <span className="ds-sr-only" aria-live="polite">{copied ? 'Copied the groups spec' : ''}</span>
       </div>
@@ -1358,8 +1620,8 @@ export const Dedupe = () => {
         and the whole page. Pick a color to show it in place of the group's others everywhere, and Original
         (or <kbd>0</kbd>) to go back. <kbd>1</kbd>-<kbd>9</kbd> pick the colors of the group you last used, in order. Rename a
         group or remove its colors from its heading, and tick swatches on the Primitives tab to add colors. A color's
-        name opens its details. Groups and choices are saved in this browser, and the report at the bottom lists the
-        choices.
+        name opens its details. Groups are shared on the Rancher at the top of the page; the colors you pick are saved
+        in this browser, and the report at the bottom lists them.
       </p>
       <SpecPanel groups={groups} builtIn={builtIn} />
       <div className="ds-dedupe-settings" role="toolbar" aria-label="Every open card">
@@ -2310,6 +2572,26 @@ export const Dedupe = () => {
   margin: 8px 0 0;
 }
 
+.ds-spec-status {
+  margin: 4px 0 0;
+}
+
+.ds-spec-status .ds-usage-error {
+  margin: 4px 0 0;
+}
+
+.ds-spec-local {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 4px 0 0;
+}
+
+.ds-spec-local .ds-copy {
+  margin-left: 0;
+}
+
 .ds-label-switch {
   margin: 8px 0 0;
 }
@@ -2353,6 +2635,8 @@ export const Dedupe = () => {
 # Color Primitives
 
 <RancherSetting />
+
+<SpecStatus />
 
 <ColorLabelSwitch />
 

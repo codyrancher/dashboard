@@ -53,7 +53,7 @@
     --checkbox-tick              : var(--on-active);
     --checkbox-border            : var(--body-border);
     --checkbox-tick-disabled     : var(--color-blue-458);
-    --checkbox-disabled-bg       : #{$disabled};
+    --checkbox-disabled-bg       : var(--color-gray-99);
     --checkbox-ticked-bg         : var(--active);
   }
 

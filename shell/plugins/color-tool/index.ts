@@ -216,7 +216,7 @@ function mountPanel() {
  *
  * Query parameters, for any visitor:
  * - `colors`: overrides, as JSON (`{"--color-gray-96":"#e0e0e0"}`) or `--color-gray-96:#e0e0e0,--color-blue-451:red`.
- * - `theme`: `light`, `dark`, `classic light`, `classic dark`, `suse light` or `suse dark`, in this tab only.
+ * - `theme`: `light`, `dark`, `suse light` or `suse dark`, in this tab only.
  * - `highlight` (a selector), `highlightText`, `highlightIndex` and `highlightColor` (a primitive): ring an element and
  *   scroll it into view. With `highlightColor` alone the ring goes on the element that paints that color most.
  *

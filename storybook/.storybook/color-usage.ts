@@ -12,7 +12,7 @@ export type ColorUsage = Record<string, { uses: number, files: Record<string, nu
 const SOURCES = ['shell', 'pkg/rancher-components/src'];
 const SKIP = /(^|\/)(node_modules|dist|__tests__|__mocks__)(\/|$)|\.(test|spec)\.[jt]s$|\/design-system\//;
 const EXTENSIONS = /\.(vue|scss|css|ts|js|mjs)$/;
-const THEME_FILES = /^shell\/assets\/styles\/(themes\/|base\/_variables-classic\.scss$|base\/_color-classic\.scss$)/;
+const THEME_FILES = /^shell\/assets\/styles\/themes\//;
 const REFERENCE = /(?:--|\$)(color-(?:white|black|[a-z]+-\d+)(?:-a\d+)?)(?![\w-])/g;
 
 type Theme = 'light' | 'dark' | 'both';

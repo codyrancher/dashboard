@@ -4,14 +4,12 @@ import { PRIMITIVES, enableForcedState, render, withOriginalColors } from './col
 
 /** The theme names the color screenshots use, and the body classes each one needs. */
 export const THEMES: Record<string, string> = {
-  light:           'theme-light',
-  dark:            'theme-dark',
-  'classic light': 'classic theme-light',
-  'classic dark':  'classic theme-dark',
-  'suse light':    'suse theme-light',
-  'suse dark':     'suse theme-dark',
+  light:        'theme-light',
+  dark:         'theme-dark',
+  'suse light': 'suse theme-light',
+  'suse dark':  'suse theme-dark',
 };
-const THEME_CLASSES = ['theme-light', 'theme-dark', 'classic', 'suse'];
+const THEME_CLASSES = ['theme-light', 'theme-dark', 'suse'];
 
 let themeObserver: MutationObserver | null = null;
 

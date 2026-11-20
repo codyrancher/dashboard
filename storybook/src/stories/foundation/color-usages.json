@@ -39,181 +39,31 @@
       }
     ]
   },
-  "white-a6": {
-    "usages": [
-      {
-        "label": "Background of li.cluster-switcher-row.active, with the cluster switcher open, its cluster list loading and the local row highlighted",
-        "route": "/c/local/explorer",
-        "theme": "classic dark",
-        "steps": [
-          {
-            "click": "[data-testid=cluster-switcher-trigger]"
-          },
-          {
-            "waitFor": ".cluster-switcher-flyout .switcher-local .cluster-switcher-row"
-          },
-          {
-            "wait": 1500
-          },
-          {
-            "eval": "(() => { let c = colorTool.componentOf(document.querySelector('.cluster-switcher-flyout')); while (c && !(c.data && 'listLoading' in c.data)) { c = c.parent; } if (c) { c.data.listLoading = true; } })()"
-          },
-          {
-            "wait": 1500
-          },
-          {
-            "eval": "document.querySelectorAll('.cluster-switcher-flyout .shimmer').forEach((e) => { e.style.backgroundPosition = '33% 0'; })"
-          },
-          {
-            "hover": ".switcher-local .cluster-switcher-row .row-main"
-          },
-          {
-            "wait": 1000
-          }
-        ],
-        "highlight": {
-          "selector": "li.cluster-switcher-row.active",
-          "color": true
-        }
-      }
-    ]
-  },
-  "white-a7": {
-    "usages": [
-      {
-        "label": "Gradient of div.skeleton-badge.shimmer, with the cluster switcher open, its cluster list loading and the local row highlighted",
-        "route": "/c/local/explorer",
-        "theme": "classic dark",
-        "steps": [
-          {
-            "click": "[data-testid=cluster-switcher-trigger]"
-          },
-          {
-            "waitFor": ".cluster-switcher-flyout .switcher-local .cluster-switcher-row"
-          },
-          {
-            "wait": 1500
-          },
-          {
-            "eval": "(() => { let c = colorTool.componentOf(document.querySelector('.cluster-switcher-flyout')); while (c && !(c.data && 'listLoading' in c.data)) { c = c.parent; } if (c) { c.data.listLoading = true; } })()"
-          },
-          {
-            "wait": 1500
-          },
-          {
-            "eval": "document.querySelectorAll('.cluster-switcher-flyout .shimmer').forEach((e) => { e.style.backgroundPosition = '33% 0'; })"
-          },
-          {
-            "hover": ".switcher-local .cluster-switcher-row .row-main"
-          },
-          {
-            "wait": 1000
-          }
-        ],
-        "highlight": {
-          "selector": "div.skeleton-badge.shimmer",
-          "color": true
-        }
-      }
-    ]
-  },
-  "white-a8": {
-    "usages": [
-      {
-        "label": "Scroll shadow of the Add View tab, with the tab strip narrowed in this frame so tabs pass under it",
-        "route": "/c/local/explorer/configmap",
-        "theme": "classic dark",
-        "steps": [
-          {
-            "waitFor": ".view-tab.new-view-tab"
-          },
-          {
-            "eval": "const s = document.querySelector(\".view-tabs\"); s.style.flex = \"none\"; s.style.width = \"70px\"; s.style.maxWidth = \"70px\"; true"
-          },
-          {
-            "wait": 1000
-          }
-        ],
-        "highlight": {
-          "selector": ".view-tab.new-view-tab",
-          "color": true
-        }
-      }
-    ]
-  },
-  "white-a10": {
-    "usages": [
-      {
-        "label": "Background of span.switcher-group-count, with the cluster switcher open, its cluster list loading and the local row highlighted",
-        "route": "/c/local/explorer",
-        "theme": "classic dark",
-        "steps": [
-          {
-            "click": "[data-testid=cluster-switcher-trigger]"
-          },
-          {
-            "waitFor": ".cluster-switcher-flyout .switcher-local .cluster-switcher-row"
-          },
-          {
-            "wait": 1500
-          },
-          {
-            "eval": "(() => { let c = colorTool.componentOf(document.querySelector('.cluster-switcher-flyout')); while (c && !(c.data && 'listLoading' in c.data)) { c = c.parent; } if (c) { c.data.listLoading = true; } })()"
-          },
-          {
-            "wait": 1500
-          },
-          {
-            "eval": "document.querySelectorAll('.cluster-switcher-flyout .shimmer').forEach((e) => { e.style.backgroundPosition = '33% 0'; })"
-          },
-          {
-            "hover": ".switcher-local .cluster-switcher-row .row-main"
-          },
-          {
-            "wait": 1000
-          }
-        ],
-        "highlight": {
-          "selector": "span.switcher-group-count",
-          "color": true
-        }
-      }
-    ]
-  },
   "white-a15": {
     "usages": [
       {
-        "label": "Gradient of span.skeleton-bar.shimmer, with the cluster switcher open, its cluster list loading and the local row highlighted",
-        "route": "/c/local/explorer",
-        "theme": "classic dark",
+        "label": "Staged: background of a chosen item in a select in the header. The header's namespace filter has no chosen items, so this frame adds one",
+        "route": "/c/local/explorer/configmap",
+        "theme": "dark",
         "steps": [
           {
-            "click": "[data-testid=cluster-switcher-trigger]"
-          },
-          {
-            "waitFor": ".cluster-switcher-flyout .switcher-local .cluster-switcher-row"
-          },
-          {
-            "wait": 1500
-          },
-          {
-            "eval": "(() => { let c = colorTool.componentOf(document.querySelector('.cluster-switcher-flyout')); while (c && !(c.data && 'listLoading' in c.data)) { c = c.parent; } if (c) { c.data.listLoading = true; } })()"
-          },
-          {
-            "wait": 1500
-          },
-          {
-            "eval": "document.querySelectorAll('.cluster-switcher-flyout .shimmer').forEach((e) => { e.style.backgroundPosition = '33% 0'; })"
-          },
-          {
-            "hover": ".switcher-local .cluster-switcher-row .row-main"
+            "waitFor": ".rd-header-right > .top"
           },
           {
             "wait": 1000
+          },
+          {
+            "eval": "(() => { const scope = [...document.styleSheets].flatMap((s) => { try { return [...s.cssRules]; } catch (e) { return []; } }).map((r) => r.selectorText || \"\").find((t) => t.includes(\".rd-header-right > .top .vs__selected\"))?.match(/data-v-\\w+/)?.[0]; const add = () => { const top = document.querySelector(\".rd-header-right > .top\"); if (top && !top.querySelector(\".vs__selected\")) { top.insertAdjacentHTML(\"afterbegin\", '<span class=\"vs__selected\" ' + scope + ' style=\"border-width: 1px; border-style: solid; padding: 2px 6px; margin-right: 8px\">Chosen</span>'); } }; add(); setInterval(add, 200); return true; })()"
+          },
+          {
+            "waitFor": "header .rd-header-right > .top .vs__selected"
+          },
+          {
+            "wait": 500
           }
         ],
         "highlight": {
-          "selector": "span.skeleton-bar.shimmer",
+          "selector": "header .rd-header-right > .top .vs__selected",
           "color": true
         }
       }
@@ -577,11 +427,19 @@
   "gray-29": {
     "usages": [
       {
-        "label": "Background of tr.top-aligned",
-        "route": "/home",
-        "theme": "classic light",
+        "label": "Background of the side tabs, creating a config map",
+        "route": "/c/local/explorer/configmap/create",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "div.tabbed-container.side-tabs"
+          },
+          {
+            "wait": 500
+          }
+        ],
         "highlight": {
-          "selector": "tr.top-aligned",
+          "selector": "div.tabbed-container.side-tabs",
           "color": true
         }
       }
@@ -984,11 +842,22 @@
   "gray-99": {
     "usages": [
       {
-        "label": "Background of button.btn.btn-sm",
-        "route": "/c/local/explorer",
-        "theme": "classic light",
+        "label": "Background of a disabled checkbox, in the read-only config view of a deployment, on its Storage tab",
+        "route": "/c/local/explorer/apps.deployment/demo/hello-web?mode=view&as=config",
+        "theme": "suse light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=btn-storage]"
+          },
+          {
+            "click": "[data-testid=btn-storage]"
+          },
+          {
+            "wait": 2000
+          }
+        ],
         "highlight": {
-          "selector": "button.btn.btn-sm",
+          "selector": "span.checkbox-custom",
           "color": true
         }
       }
@@ -1032,51 +901,6 @@
         ],
         "highlight": {
           "selector": "div.tabs.tab-bar-highlight",
-          "color": true
-        }
-      }
-    ]
-  },
-  "gray-99-a15": {
-    "usages": [
-      {
-        "label": "Staged: background of a Workload Dashboard state card for workloads in a disabled state. No workload here is in one, so this frame recolors a card",
-        "route": "/c/local/explorer/workload-dashboard",
-        "theme": "classic light",
-        "steps": [
-          {
-            "waitFor": ".bento-grid .state-card"
-          },
-          {
-            "wait": 1000
-          },
-          {
-            "eval": "setInterval(() => { const c = document.querySelector(\".bento-grid .state-card\"); if (c) { c.className = c.className.replace(/state-card--\\w+/, \"state-card--disabled\"); } }, 200); true"
-          },
-          {
-            "wait": 500
-          }
-        ],
-        "highlight": {
-          "selector": ".bento-grid .state-card--disabled",
-          "color": true
-        }
-      }
-    ]
-  },
-  "gray-99-a85": {
-    "usages": [
-      {
-        "label": "Shadow of div.side-menu.menu-open, with the side menu open",
-        "route": "/home",
-        "theme": "classic light",
-        "steps": [
-          {
-            "click": ".menu-icon, [data-testid=\"top-level-menu\"] button"
-          }
-        ],
-        "highlight": {
-          "selector": "div.side-menu.menu-open",
           "color": true
         }
       }
@@ -1148,7 +972,7 @@
       {
         "label": "Border of blockquote, in the chart README",
         "route": "/c/local/apps/charts/chart?repo-type=cluster&repo=rancher-charts&chart=prometheus-federator",
-        "theme": "classic light",
+        "theme": "light",
         "steps": [
           {
             "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".markdown table\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
@@ -1585,11 +1409,19 @@
   "gray-586": {
     "usages": [
       {
-        "label": "Background of div.bar",
-        "route": "/c/local/explorer/node",
-        "theme": "classic dark",
+        "label": "Background of a provider's protocol tag on the Authentication page",
+        "route": "/c/_/auth/config",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": "div.rc-tag.inactive.auth-provider-row__chip"
+          },
+          {
+            "wait": 500
+          }
+        ],
         "highlight": {
-          "selector": "div.bar",
+          "selector": "div.rc-tag.inactive.auth-provider-row__chip",
           "color": true
         }
       }
@@ -1682,22 +1514,28 @@
   "gray-680": {
     "usages": [
       {
-        "label": "Staged: background of the side nav's active group. A section variable every theme sets normally covers it, so this frame unsets that",
+        "label": "Staged: background of a hovered item in the side nav. --nav-hover normally covers this fallback, so this frame unsets it",
         "route": "/c/local/explorer/configmap",
-        "theme": "classic dark",
+        "theme": "dark",
         "steps": [
           {
-            "waitFor": ".accordion.depth-0.group-highlight"
+            "waitFor": ".accordion.depth-0 .child"
           },
           {
-            "eval": "setInterval(() => { document.querySelectorAll(\".accordion.depth-0.group-highlight\").forEach((g) => g.style.setProperty(\"--rc-section-background-secondary\", \"initial\")); }, 200); true"
+            "wait": 500
+          },
+          {
+            "eval": "setInterval(() => document.querySelectorAll(\".accordion.depth-0 .child\").forEach((c) => c.style.setProperty(\"--nav-hover\", \"initial\")), 200); true"
+          },
+          {
+            "hover": ".accordion.depth-0 .child:not(.active)"
           },
           {
             "wait": 500
           }
         ],
         "highlight": {
-          "selector": ".accordion.depth-0.group-highlight",
+          "selector": ".accordion.depth-0 .child",
           "color": true
         }
       }
@@ -1824,49 +1662,6 @@
       }
     ]
   },
-  "gray-705": {
-    "usages": [
-      {
-        "label": "Background of div.jump-to-dropdown, with \"config\" typed into Jump to",
-        "route": "/c/local/explorer",
-        "theme": "classic dark",
-        "steps": [
-          {
-            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\"[data-testid=\\\"nav-jump-to-input\\\"]\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
-          },
-          {
-            "wait": 1000
-          },
-          {
-            "click": "[data-testid=\"nav-jump-to-input\"]"
-          },
-          {
-            "type": "config"
-          },
-          {
-            "wait": 2000
-          }
-        ],
-        "highlight": {
-          "selector": "div.jump-to-dropdown",
-          "color": true
-        }
-      }
-    ]
-  },
-  "gray-707": {
-    "usages": [
-      {
-        "label": "Background of table.sortable-table.top-divider",
-        "route": "/c/local/explorer/pod",
-        "theme": "classic dark",
-        "highlight": {
-          "selector": "table.sortable-table.top-divider",
-          "color": true
-        }
-      }
-    ]
-  },
   "gray-719": {
     "usages": [
       {
@@ -1933,11 +1728,19 @@
   "gray-772": {
     "usages": [
       {
-        "label": "Background of div.menu-spacer",
-        "route": "/home",
-        "theme": "classic dark",
+        "label": "Background of a label tag on a namespace's page",
+        "route": "/c/local/explorer/namespace/cattle-system",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": "div.rc-tag.active"
+          },
+          {
+            "wait": 500
+          }
+        ],
         "highlight": {
-          "selector": "div.menu-spacer",
+          "selector": "div.rc-tag.active",
           "color": true
         }
       }
@@ -2104,11 +1907,19 @@
   "gray-806": {
     "usages": [
       {
-        "label": "Background of div.side-menu.menu-close",
-        "route": "/home",
-        "theme": "classic dark",
+        "label": "Text of the cluster name above the side nav",
+        "route": "/c/local/explorer/configmap",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "div.cluster-name"
+          },
+          {
+            "wait": 500
+          }
+        ],
         "highlight": {
-          "selector": "div.side-menu.menu-close",
+          "selector": "div.cluster-name",
           "color": true
         }
       }
@@ -2329,55 +2140,6 @@
         ],
         "highlight": {
           "selector": "div.d2h-code-line",
-          "color": true
-        }
-      }
-    ]
-  },
-  "gray-806-a75": {
-    "usages": [
-      {
-        "label": "Background of button.rc-button.btn, with the Emacs key map set in this tab only",
-        "route": "/c/local/explorer/configmap/create?as=yaml",
-        "theme": "classic dark",
-        "steps": [
-          {
-            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
-          },
-          {
-            "wait": 1000
-          },
-          {
-            "eval": "[...document.querySelectorAll('body *')].find((e) => e.__vue_app__).__vue_app__.config.globalProperties.$store.commit('prefs/load', { key: 'keymap', value: 'emacs' })"
-          },
-          {
-            "wait": 1500
-          },
-          {
-            "click": ".rc-code-mirror--editor .cm-content > .cm-line:nth-child(2)"
-          },
-          {
-            "wait": 300
-          },
-          {
-            "key": "ArrowRight"
-          }
-        ],
-        "highlight": {
-          "selector": "button.rc-button.btn",
-          "color": true
-        }
-      }
-    ]
-  },
-  "gray-806-a90": {
-    "usages": [
-      {
-        "label": "Shadow of div.tabbed-container.side-tabs",
-        "route": "/c/local/explorer/configmap/create",
-        "theme": "classic dark",
-        "highlight": {
-          "selector": "div.tabbed-container.side-tabs",
           "color": true
         }
       }
@@ -2828,112 +2590,31 @@
   "red-348": {
     "usages": [
       {
-        "label": "The required marker on the Namespace field, creating a config map",
-        "route": "/c/local/explorer/configmap/create",
-        "theme": "classic light",
+        "label": "Error icon on a Git repo card on the Fleet dashboard, with the Git repo shown as error in this frame only",
+        "route": "/c/_/fleet",
+        "theme": "light",
         "steps": [
           {
-            "waitFor": "span.required"
+            "waitFor": ".panel .states .badge"
           },
           {
-            "wait": 500
-          }
-        ],
-        "highlight": {
-          "selector": "span.required",
-          "color": true
-        }
-      }
-    ]
-  },
-  "red-348-a15": {
-    "usages": [
-      {
-        "label": "Background of div.banner__content",
-        "route": "/c/local/explorer/members",
-        "theme": "classic light",
-        "highlight": {
-          "selector": "div.banner__content",
-          "color": true
-        }
-      }
-    ]
-  },
-  "red-348-a30": {
-    "usages": [
-      {
-        "label": "Background of td.d2h-code-linenumber.d2h-del, with unsaved YAML edits in Show Diff",
-        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
-        "theme": "classic light",
-        "steps": [
-          {
-            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const hold = () => { $store.getters[\"management/all\"](\"fleet.cattle.io.gitrepo\").forEach((r) => { if (r.metadata.state?.name !== \"error\") { r.metadata.state = { ...r.metadata.state, ...{\"name\":\"error\",\"error\":true,\"transitioning\":false} }; } }); }; hold(); setInterval(hold, 250); true"
           },
           {
             "wait": 1000
           },
           {
-            "click": ".rc-code-mirror--editor .cm-content"
+            "eval": "(() => { const b = [...document.querySelectorAll(\"main button\")].find((e) => e.textContent.trim() === \"Expand All\"); if (b) { b.click(); } return true; })()"
           },
           {
-            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
-          },
-          {
-            "wait": 500
-          },
-          {
-            "click": ".footer .right > button.role-secondary",
-            "text": "Show Diff"
-          },
-          {
-            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
-          },
-          {
-            "wait": 1500
-          }
-        ],
-        "highlight": {
-          "selector": "td.d2h-code-linenumber.d2h-del",
-          "color": true
-        }
-      }
-    ]
-  },
-  "red-348-a75": {
-    "usages": [
-      {
-        "label": "Background of del.d2h-change, with unsaved YAML edits in Show Diff",
-        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
-        "theme": "classic light",
-        "steps": [
-          {
-            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+            "waitFor": "[data-testid=item-card-header-statuses-status] i.icon-error"
           },
           {
             "wait": 1000
-          },
-          {
-            "click": ".rc-code-mirror--editor .cm-content"
-          },
-          {
-            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
-          },
-          {
-            "wait": 500
-          },
-          {
-            "click": ".footer .right > button.role-secondary",
-            "text": "Show Diff"
-          },
-          {
-            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
-          },
-          {
-            "wait": 1500
           }
         ],
         "highlight": {
-          "selector": "del.d2h-change",
+          "selector": "[data-testid=item-card-header-statuses-status] i.icon-error",
           "color": true
         }
       }
@@ -2961,44 +2642,6 @@
         ],
         "highlight": {
           "selector": ".logs-container li.error",
-          "color": true
-        }
-      }
-    ]
-  },
-  "red-387": {
-    "usages": [
-      {
-        "label": "Background of button.btn.role-primary, in the Delete dialog, with :hover forced on Delete",
-        "route": "/c/local/explorer/configmap",
-        "theme": "classic light",
-        "steps": [
-          {
-            "wait": 3000
-          },
-          {
-            "click": "[data-testid=sortable-table-0-action-button]"
-          },
-          {
-            "wait": 800
-          },
-          {
-            "click": "[role=menuitem]",
-            "text": "Delete"
-          },
-          {
-            "wait": 1500
-          },
-          {
-            "force": "[data-testid=prompt-remove-confirm-button]",
-            "state": "hover"
-          },
-          {
-            "wait": 1500
-          }
-        ],
-        "highlight": {
-          "selector": "button.btn.role-primary",
           "color": true
         }
       }
@@ -3238,44 +2881,6 @@
         ],
         "highlight": {
           "selector": "del.d2h-change",
-          "color": true
-        }
-      }
-    ]
-  },
-  "red-512": {
-    "usages": [
-      {
-        "label": "Background of button.btn.role-primary, in the Delete dialog, with :active forced on Delete",
-        "route": "/c/local/explorer/configmap",
-        "theme": "classic light",
-        "steps": [
-          {
-            "wait": 3000
-          },
-          {
-            "click": "[data-testid=sortable-table-0-action-button]"
-          },
-          {
-            "wait": 800
-          },
-          {
-            "click": "[role=menuitem]",
-            "text": "Delete"
-          },
-          {
-            "wait": 1500
-          },
-          {
-            "force": "[data-testid=prompt-remove-confirm-button]",
-            "state": "active"
-          },
-          {
-            "wait": 1500
-          }
-        ],
-        "highlight": {
-          "selector": "button.btn.role-primary",
           "color": true
         }
       }
@@ -4266,159 +3871,31 @@
   "yellow-186": {
     "usages": [
       {
-        "label": "Border of div.banner__content",
-        "route": "/c/_/manager/hostedprovider",
-        "theme": "classic light",
-        "highlight": {
-          "selector": "div.banner__content",
-          "color": true
-        }
-      }
-    ]
-  },
-  "yellow-186-a15": {
-    "usages": [
-      {
-        "label": "Background of div.banner__content",
-        "route": "/c/_/manager/hostedprovider",
-        "theme": "classic light",
-        "highlight": {
-          "selector": "div.banner__content",
-          "color": true
-        }
-      }
-    ]
-  },
-  "yellow-186-a50": {
-    "usages": [
-      {
-        "label": "Background of td.d2h-code-linenumber.d2h-del, with unsaved YAML edits in Show Diff",
-        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
-        "theme": "classic light",
+        "label": "Warning icon on a Git repo card on the Fleet dashboard, with the Git repo shown as warning in this frame only",
+        "route": "/c/_/fleet",
+        "theme": "light",
         "steps": [
           {
-            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+            "waitFor": ".panel .states .badge"
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const hold = () => { $store.getters[\"management/all\"](\"fleet.cattle.io.gitrepo\").forEach((r) => { if (r.metadata.state?.name !== \"waitcheckin\") { r.metadata.state = { ...r.metadata.state, ...{\"name\":\"waitcheckin\",\"error\":false,\"transitioning\":false} }; } }); }; hold(); setInterval(hold, 250); true"
           },
           {
             "wait": 1000
           },
           {
-            "click": ".rc-code-mirror--editor .cm-content"
+            "eval": "(() => { const b = [...document.querySelectorAll(\"main button\")].find((e) => e.textContent.trim() === \"Expand All\"); if (b) { b.click(); } return true; })()"
           },
           {
-            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+            "waitFor": "[data-testid=item-card-header-statuses-status] i.icon-warning"
           },
           {
-            "wait": 500
-          },
-          {
-            "click": ".footer .right > button.role-secondary",
-            "text": "Show Diff"
-          },
-          {
-            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
-          },
-          {
-            "wait": 1500
+            "wait": 1000
           }
         ],
         "highlight": {
-          "selector": "td.d2h-code-linenumber.d2h-del",
-          "color": true
-        }
-      }
-    ]
-  },
-  "yellow-186-a80": {
-    "usages": [
-      {
-        "label": "Staged: background of a warning tooltip. Nothing applies the tooltip-warning class, so this frame adds it to a real tooltip",
-        "route": "/c/local/apps/charts",
-        "theme": "classic light",
-        "steps": [
-          {
-            "waitFor": ".item-card-pill.has-clean-tooltip"
-          },
-          {
-            "wait": 1500
-          },
-          {
-            "hover": ".item-card-pill.has-clean-tooltip"
-          },
-          {
-            "waitFor": ".v-popper__popper"
-          },
-          {
-            "eval": "setInterval(() => document.querySelectorAll(\".v-popper__popper\").forEach((p) => p.classList.add(\"tooltip-warning\")), 100); true"
-          },
-          {
-            "wait": 500
-          }
-        ],
-        "highlight": {
-          "selector": ".v-popper__popper.tooltip-warning .v-popper__inner",
-          "color": true
-        }
-      }
-    ]
-  },
-  "yellow-259": {
-    "usages": [
-      {
-        "label": "Staged: hover background of a .bg-warning button. No button has that class, so this frame adds it to the Create button",
-        "route": "/c/local/explorer/configmap",
-        "theme": "classic light",
-        "steps": [
-          {
-            "waitFor": "[data-testid=masthead-create]"
-          },
-          {
-            "eval": "setInterval(() => { const b = document.querySelector(\"[data-testid=masthead-create]\"); b?.classList.remove(\"role-primary\"); b?.classList.add(\"bg-warning\"); }, 200); true"
-          },
-          {
-            "wait": 500
-          },
-          {
-            "force": "[data-testid=masthead-create]",
-            "state": "hover"
-          },
-          {
-            "wait": 300
-          }
-        ],
-        "highlight": {
-          "selector": "[data-testid=masthead-create]",
-          "color": true
-        }
-      }
-    ]
-  },
-  "yellow-445": {
-    "usages": [
-      {
-        "label": "Staged: pressed background of a .bg-warning button. No button has that class, so this frame adds it to the Create button",
-        "route": "/c/local/explorer/configmap",
-        "theme": "classic light",
-        "steps": [
-          {
-            "waitFor": "[data-testid=masthead-create]"
-          },
-          {
-            "eval": "setInterval(() => { const b = document.querySelector(\"[data-testid=masthead-create]\"); b?.classList.remove(\"role-primary\"); b?.classList.add(\"bg-warning\"); }, 200); true"
-          },
-          {
-            "wait": 500
-          },
-          {
-            "force": "[data-testid=masthead-create]",
-            "state": "active"
-          },
-          {
-            "wait": 300
-          }
-        ],
-        "highlight": {
-          "selector": "[data-testid=masthead-create]",
+          "selector": "[data-testid=item-card-header-statuses-status] i.icon-warning",
           "color": true
         }
       }
@@ -4828,161 +4305,7 @@
     ]
   },
   "green-374": {
-    "usages": [
-      {
-        "label": "Background of span.badge-state.bg-success",
-        "route": "/home",
-        "theme": "classic light",
-        "highlight": {
-          "selector": "span.badge-state.bg-success",
-          "color": true
-        }
-      }
-    ]
-  },
-  "green-374-a15": {
-    "usages": [
-      {
-        "label": "Background of div.banner__content, on the Selectors tab of the create form",
-        "route": "/c/local/explorer/networking.k8s.io.networkpolicy/create",
-        "theme": "classic light",
-        "steps": [
-          {
-            "click": "[data-testid=btn-selectors]"
-          },
-          {
-            "waitFor": ".banner.success"
-          },
-          {
-            "wait": 1500
-          }
-        ],
-        "highlight": {
-          "selector": "div.banner__content",
-          "color": true
-        }
-      }
-    ]
-  },
-  "green-374-a25": {
-    "usages": [
-      {
-        "label": "Background of td.d2h-code-linenumber.d2h-ins, with unsaved YAML edits in Show Diff",
-        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
-        "theme": "classic light",
-        "steps": [
-          {
-            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
-          },
-          {
-            "wait": 1000
-          },
-          {
-            "click": ".rc-code-mirror--editor .cm-content"
-          },
-          {
-            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
-          },
-          {
-            "wait": 500
-          },
-          {
-            "click": ".footer .right > button.role-secondary",
-            "text": "Show Diff"
-          },
-          {
-            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
-          },
-          {
-            "wait": 1500
-          }
-        ],
-        "highlight": {
-          "selector": "td.d2h-code-linenumber.d2h-ins",
-          "color": true
-        }
-      }
-    ]
-  },
-  "green-374-a30": {
-    "usages": [
-      {
-        "label": "Background of td.d2h-code-linenumber.d2h-ins, with unsaved YAML edits in Show Diff",
-        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
-        "theme": "classic light",
-        "steps": [
-          {
-            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
-          },
-          {
-            "wait": 1000
-          },
-          {
-            "click": ".rc-code-mirror--editor .cm-content"
-          },
-          {
-            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
-          },
-          {
-            "wait": 500
-          },
-          {
-            "click": ".footer .right > button.role-secondary",
-            "text": "Show Diff"
-          },
-          {
-            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
-          },
-          {
-            "wait": 1500
-          }
-        ],
-        "highlight": {
-          "selector": "td.d2h-code-linenumber.d2h-ins",
-          "color": true
-        }
-      }
-    ]
-  },
-  "green-374-a50": {
-    "usages": [
-      {
-        "label": "Border of td.d2h-code-linenumber.d2h-ins, with unsaved YAML edits in Show Diff",
-        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
-        "theme": "classic light",
-        "steps": [
-          {
-            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
-          },
-          {
-            "wait": 1000
-          },
-          {
-            "click": ".rc-code-mirror--editor .cm-content"
-          },
-          {
-            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
-          },
-          {
-            "wait": 500
-          },
-          {
-            "click": ".footer .right > button.role-secondary",
-            "text": "Show Diff"
-          },
-          {
-            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
-          },
-          {
-            "wait": 1500
-          }
-        ],
-        "highlight": {
-          "selector": "td.d2h-code-linenumber.d2h-ins",
-          "color": true
-        }
-      }
-    ]
+    "note": "Only the Fleet dashboard uses it, as the Active slice of each workspace's doughnut chart (dashboardStates in shell/utils/fleet.ts, drawn by ResourcePanel.vue). Chart.js paints that chart on a canvas, so no element's style carries the color, and the Active state shows no icon on cards or state headings."
   },
   "green-432-a10": {
     "usages": [
@@ -5194,37 +4517,6 @@
         ],
         "highlight": {
           "selector": ".view-tab-wrap.flash",
-          "color": true
-        }
-      }
-    ]
-  },
-  "green-471": {
-    "usages": [
-      {
-        "label": "Background of button.btn.bg-success, after Generate Response Times, with :hover forced on it",
-        "route": "/diagnostic",
-        "theme": "classic light",
-        "steps": [
-          {
-            "wait": 6000
-          },
-          {
-            "click": "[data-testid=diagnostics-generate-response-times]"
-          },
-          {
-            "eval": "new Promise((res) => { const t0 = Date.now(); const iv = setInterval(() => { const b = document.querySelector('[data-testid=diagnostics-generate-response-times]'); if (/bg-success|bg-error/.test(b.className) || Date.now() - t0 > 45000) { clearInterval(iv); const p = colorTool.componentOf(b)?.proxy; if (p?.timer) clearTimeout(p.timer); res(b.className); } }, 100); })"
-          },
-          {
-            "force": "[data-testid=diagnostics-generate-response-times]",
-            "state": "hover"
-          },
-          {
-            "wait": 1500
-          }
-        ],
-        "highlight": {
-          "selector": "button.btn.bg-success",
           "color": true
         }
       }
@@ -5594,37 +4886,6 @@
       }
     ]
   },
-  "green-623": {
-    "usages": [
-      {
-        "label": "Background of button.btn.bg-success, after Generate Response Times, with :active forced on it",
-        "route": "/diagnostic",
-        "theme": "classic light",
-        "steps": [
-          {
-            "wait": 6000
-          },
-          {
-            "click": "[data-testid=diagnostics-generate-response-times]"
-          },
-          {
-            "eval": "new Promise((res) => { const t0 = Date.now(); const iv = setInterval(() => { const b = document.querySelector('[data-testid=diagnostics-generate-response-times]'); if (/bg-success|bg-error/.test(b.className) || Date.now() - t0 > 45000) { clearInterval(iv); const p = colorTool.componentOf(b)?.proxy; if (p?.timer) clearTimeout(p.timer); res(b.className); } }, 100); })"
-          },
-          {
-            "force": "[data-testid=diagnostics-generate-response-times]",
-            "state": "active"
-          },
-          {
-            "wait": 1500
-          }
-        ],
-        "highlight": {
-          "selector": "button.btn.bg-success",
-          "color": true
-        }
-      }
-    ]
-  },
   "green-674": {
     "usages": [
       {
@@ -5904,26 +5165,6 @@
       }
     ]
   },
-  "blue-186": {
-    "usages": [
-      {
-        "label": "Background of button.btn.bg-disabled, with :hover forced on button.btn.bg-disabled",
-        "route": "/c/_/fleet",
-        "theme": "classic light",
-        "steps": [
-          {
-            "force": "button.btn.bg-disabled",
-            "state": "hover",
-            "all": true
-          }
-        ],
-        "highlight": {
-          "selector": "button.btn.bg-disabled",
-          "color": true
-        }
-      }
-    ]
-  },
   "blue-196": {
     "usages": [
       {
@@ -6022,30 +5263,6 @@
         "label": "Text of input::placeholder, in the read-only config view of a deployment, on its Storage tab",
         "route": "/c/local/explorer/apps.deployment/demo/hello-web?mode=view&as=config",
         "theme": "light",
-        "steps": [
-          {
-            "waitFor": "[data-testid=btn-storage]"
-          },
-          {
-            "click": "[data-testid=btn-storage]"
-          },
-          {
-            "wait": 2000
-          }
-        ],
-        "highlight": {
-          "selector": "input",
-          "color": true
-        }
-      }
-    ]
-  },
-  "blue-230": {
-    "usages": [
-      {
-        "label": "Text of input::placeholder, in the read-only config view of a deployment, on its Storage tab",
-        "route": "/c/local/explorer/apps.deployment/demo/hello-web?mode=view&as=config",
-        "theme": "classic light",
         "steps": [
           {
             "waitFor": "[data-testid=btn-storage]"
@@ -6195,186 +5412,41 @@
       }
     ]
   },
-  "blue-320": {
-    "usages": [
-      {
-        "label": "Background of button.btn.bg-disabled, with :active forced on button.btn.bg-disabled",
-        "route": "/c/_/fleet",
-        "theme": "classic light",
-        "steps": [
-          {
-            "force": "button.btn.bg-disabled",
-            "state": "active",
-            "all": true
-          }
-        ],
-        "highlight": {
-          "selector": "button.btn.bg-disabled",
-          "color": true
-        }
-      }
-    ]
-  },
   "blue-349": {
     "usages": [
       {
-        "label": "Background of a.router-link-active.router-link-exact-active",
-        "route": "/home",
-        "theme": "classic light",
-        "highlight": {
-          "selector": "a.router-link-active.router-link-exact-active",
-          "color": true
-        }
-      }
-    ]
-  },
-  "blue-349-a5": {
-    "usages": [
-      {
-        "label": "Background of tr.main-row.row-selected, with a row selected",
-        "route": "/c/local/explorer/pod",
-        "theme": "classic light",
+        "label": "Pending icon on a Git repo card on the Fleet dashboard, with the Git repo shown as pending in this frame only",
+        "route": "/c/_/fleet",
+        "theme": "light",
         "steps": [
           {
-            "waitFor": "[data-testid=sortable-table-0-checkbox] .checkbox-custom"
+            "waitFor": ".panel .states .badge"
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const hold = () => { $store.getters[\"management/all\"](\"fleet.cattle.io.gitrepo\").forEach((r) => { if (r.metadata.state?.name !== \"pending\") { r.metadata.state = { ...r.metadata.state, ...{\"name\":\"pending\",\"error\":false,\"transitioning\":true} }; } }); }; hold(); setInterval(hold, 250); true"
           },
           {
             "wait": 1000
           },
           {
-            "click": "[data-testid=sortable-table-0-checkbox] .checkbox-custom"
+            "eval": "(() => { const b = [...document.querySelectorAll(\"main button\")].find((e) => e.textContent.trim() === \"Expand All\"); if (b) { b.click(); } return true; })()"
           },
           {
-            "waitFor": "tr.main-row.row-selected"
-          }
-        ],
-        "highlight": {
-          "selector": "tr.main-row.row-selected",
-          "color": true
-        }
-      }
-    ]
-  },
-  "blue-349-a12": {
-    "usages": [
-      {
-        "label": "Background of span.segment-value, with a query typed",
-        "route": "/c/local/explorer/pod",
-        "theme": "classic light",
-        "steps": [
-          {
-            "waitFor": "[data-testid=table-views-query]"
-          },
-          {
-            "wait": 1000
-          },
-          {
-            "click": "[data-testid=table-views-query]"
-          },
-          {
-            "type": "state:Running"
-          },
-          {
-            "waitFor": "span.segment-value"
-          },
-          {
-            "wait": 500
-          }
-        ],
-        "highlight": {
-          "selector": "span.segment-value",
-          "color": true
-        }
-      }
-    ]
-  },
-  "blue-349-a14": {
-    "usages": [
-      {
-        "label": "A column picked up in the View > Columns menu of the pod list",
-        "route": "/c/local/explorer/pod",
-        "steps": [
-          {
-            "waitFor": "[data-testid=table-views-view-menu]"
-          },
-          {
-            "wait": 1000
-          },
-          {
-            "click": "[data-testid=table-views-view-menu]"
-          },
-          {
-            "click": "[data-testid=table-views-view-columns]"
-          },
-          {
-            "waitFor": ".columns-panel .column-handle.grip"
-          },
-          {
-            "wait": 500
-          },
-          {
-            "eval": "const h = document.querySelector('.columns-panel .column-handle.grip'); const r = h.getBoundingClientRect(); const x = r.x + r.width / 2; const y = r.y + r.height / 2; h.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 0 })); window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: x, clientY: y + 6 })); true"
-          },
-          {
-            "waitFor": "div.column-row.held"
+            "waitFor": "[data-testid=item-card-header-statuses-status] i.icon-warning"
           },
           {
             "wait": 1000
           }
         ],
         "highlight": {
-          "selector": "div.column-row.held",
-          "color": true
-        },
-        "theme": "classic light"
-      }
-    ]
-  },
-  "blue-349-a15": {
-    "usages": [
-      {
-        "label": "Background of button.rc-button.btn",
-        "route": "/home",
-        "theme": "classic light",
-        "highlight": {
-          "selector": "button.rc-button.btn",
+          "selector": "[data-testid=item-card-header-statuses-status] i.icon-warning",
           "color": true
         }
       }
     ]
   },
   "blue-349-a50": {
-    "usages": [
-      {
-        "label": "Text of div.column-row.locked, with the View > Columns menu open",
-        "route": "/c/local/explorer/configmap",
-        "theme": "classic light",
-        "steps": [
-          {
-            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\"[data-testid=\\\"table-views-view-menu\\\"]\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
-          },
-          {
-            "wait": 1000
-          },
-          {
-            "click": "[data-testid=\"table-views-view-menu\"]"
-          },
-          {
-            "wait": 1000
-          },
-          {
-            "click": "[data-testid=\"table-views-view-columns\"]"
-          },
-          {
-            "wait": 1000
-          }
-        ],
-        "highlight": {
-          "selector": "div.column-row.locked",
-          "color": true
-        }
-      }
-    ]
+    "note": "The light and dark themes set it as --terminal-selection, which ContainerShell.vue hands to xterm as the selection background of a container's shell. xterm draws the terminal and its selection with WebGL or a canvas, so no element's style carries the color."
   },
   "blue-361": {
     "usages": [
@@ -6444,24 +5516,7 @@
     ]
   },
   "blue-434": {
-    "usages": [
-      {
-        "label": "Background of a.router-link-active.router-link-exact-active, with :hover forced on a.router-link-active.router-link-exact-active",
-        "route": "/home",
-        "theme": "classic light",
-        "steps": [
-          {
-            "force": "a.router-link-active.router-link-exact-active",
-            "state": "hover",
-            "all": true
-          }
-        ],
-        "highlight": {
-          "selector": "a.router-link-active.router-link-exact-active",
-          "color": true
-        }
-      }
-    ]
+    "note": "Nothing paints it. Its only reference is the $blue003 alias in shell/assets/styles/base/_color.scss, which no stylesheet or component uses, so no page in the light, dark or SUSE themes shows it."
   },
   "blue-438": {
     "usages": [
@@ -6614,7 +5669,7 @@
       {
         "label": "Border of span.checkbox-custom::after, in the read-only config view of a deployment, on its Storage tab",
         "route": "/c/local/explorer/apps.deployment/demo/hello-web?mode=view&as=config",
-        "theme": "classic light",
+        "theme": "suse light",
         "steps": [
           {
             "waitFor": "[data-testid=btn-storage]"
@@ -7143,26 +6198,6 @@
       }
     ]
   },
-  "blue-579": {
-    "usages": [
-      {
-        "label": "Background of button.btn.bg-primary, with :active forced on button.btn.bg-primary",
-        "route": "/c/_/fleet",
-        "theme": "classic light",
-        "steps": [
-          {
-            "force": "button.btn.bg-primary",
-            "state": "active",
-            "all": true
-          }
-        ],
-        "highlight": {
-          "selector": "button.btn.bg-primary",
-          "color": true
-        }
-      }
-    ]
-  },
   "blue-609": {
     "usages": [
       {
@@ -7272,19 +6307,6 @@
         ],
         "highlight": {
           "selector": ".grid .item.color7 .side-label",
-          "color": true
-        }
-      }
-    ]
-  },
-  "blue-625": {
-    "usages": [
-      {
-        "label": "Disabled input text, in the read-only config view of a config map",
-        "route": "/c/local/explorer/configmap/kube-system/kube-root-ca.crt?mode=view&as=config",
-        "theme": "classic light",
-        "highlight": {
-          "selector": "input:disabled",
           "color": true
         }
       }
