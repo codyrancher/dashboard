@@ -6,6 +6,7 @@ import { COLOR_TOKENS } from '@components/design-system/colors';
 import computedColors from './color-primitives-computed.json';
 import builtInUsages from './color-usages.json';
 import builtInGroups from './color-groups.json';
+import classicRemoved from './color-classic-removed.json';
 
 <Meta title="Foundation/Color Primitives" />
 
@@ -373,6 +374,8 @@ export const normalizeColor = (key, entry) => {
   };
 };
 
+export const isClassicRemoved = (name) => !!classicRemoved[shortName(primitiveName(name))];
+
 export const normalizeGroups = (raw, { dropUnknown = false } = {}) => {
   const list = Array.isArray(raw) ? raw : raw?.groups || (raw?.colors ? [raw] : null);
 
@@ -386,8 +389,8 @@ export const normalizeGroups = (raw, { dropUnknown = false } = {}) => {
       const name = primitiveName(typeof entry === 'string' ? entry : entry?.name || '');
 
       if (!COLOR_TOKENS[name]) {
-        if (dropUnknown) {
-          return null;
+        if (dropUnknown || isClassicRemoved(name)) {
+          return isClassicRemoved(name) ? shortName(name) : null;
         }
         throw new Error(`${ name } in ${ group?.title || `group ${ g + 1 }` } is not a color primitive.`);
       }
@@ -401,7 +404,7 @@ export const normalizeGroups = (raw, { dropUnknown = false } = {}) => {
 
 export const BUILT_IN_GROUPS = normalizeGroups(builtInGroups);
 
-export const groupKey = (group) => group.colors.map((c) => shortName(primitiveName(c.name || c))).join(',');
+export const groupKey = (group) => group.colors.map((c) => shortName(primitiveName(c.name || c))).filter((c) => !isClassicRemoved(c)).join(',');
 
 export const groupTitle = (group) => group.title?.trim() || group.colors.map((c) => shortName(primitiveName(c.name || c))).join(', ') || 'New group';
 
@@ -642,6 +645,23 @@ export const specStore = (() => {
 export const choicesStore = shared('color-dedupe-choices', {});
 
 export const openStore = shared('color-dedupe-open', []);
+
+export const withoutClassic = (key) => key.split(',').filter((c) => c && !isClassicRemoved(c)).join(',');
+
+export const migratedKeys = (() => {
+  const choices = Object.entries(choicesStore.get());
+
+  if (choices.some(([key, choice]) => key !== withoutClassic(key) || isClassicRemoved(choice?.candidate || 'none'))) {
+    choicesStore.set(Object.fromEntries(choices.reverse().map(([key, choice]) => [
+      withoutClassic(key), isClassicRemoved(choice?.candidate || 'none') ? { ...choice, candidate: null } : choice
+    ])));
+  }
+  if (openStore.get().some((key) => key !== withoutClassic(key))) {
+    openStore.set([...new Set(openStore.get().map(withoutClassic))]);
+  }
+
+  return true;
+})();
 
 export const rancherStore = shared('color-dedupe-rancher', '', false);
 
@@ -1460,15 +1480,29 @@ export const DedupeGroup = ({
               </button>
             </span>
           )}
-          {group.colors.map((c, i) => (
-            <span key={c.name} className="ds-candidate-badge">
-              <button type="button" className="ds-copy ds-candidate" aria-pressed={candidate === c.name} onClick={() => pick(c.name)}>
-                <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: c.value }} /></span>
-                {shortName(c.name)}
-              </button>
-              <button type="button" className="ds-candidate-remove" aria-label={`Remove ${ shortName(c.name) }`} onClick={() => onEdit({ ...raw, colors: raw.colors.filter((x) => x !== shortName(c.name)) })}>×</button>
-            </span>
-          ))}
+          {raw.colors.map((name) => {
+            const c = group.colors.find((x) => shortName(x.name) === name);
+            const remove = <button type="button" className="ds-candidate-remove" aria-label={`Remove ${ name }`} onClick={() => onEdit({ ...raw, colors: raw.colors.filter((x) => x !== name) })}>×</button>;
+
+            return c ? (
+              <span key={name} className="ds-candidate-badge">
+                <button type="button" className="ds-copy ds-candidate" aria-pressed={candidate === c.name} onClick={() => pick(c.name)}>
+                  <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: c.value }} /></span>
+                  {name}
+                </button>
+                {remove}
+              </span>
+            ) : (
+              <span key={name} className="ds-candidate-badge ds-candidate-badge-removed" title="Removed with the classic theme">
+                <span className="ds-copy ds-candidate">
+                  <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: classicRemoved[name] }} /></span>
+                  <s>{name}</s>
+                  <span className="ds-sr-only"> (removed with the classic theme)</span>
+                </span>
+                {remove}
+              </span>
+            );
+          })}
           {group.colors.length > 1 && (
             <span className="ds-candidate-custom">
               <input value={custom} onChange={(e) => onChoose({ candidate, custom: e.target.value })} placeholder="Any color: #e0e2e9" aria-label="Try any color" />
@@ -1574,7 +1608,7 @@ export const Dedupe = () => {
   const [reload, setReload] = useState(0);
   const [command, setCommand] = useState({ type: 'focus', n: 0 });
   const [details, setDetails] = useState(null);
-  const resolved = useMemo(() => groups.map((g) => ({ title: groupTitle(g), colors: g.colors.map(specOf) })), [groups]);
+  const resolved = useMemo(() => groups.map((g) => ({ title: groupTitle(g), colors: g.colors.filter((c) => !isClassicRemoved(c)).map(specOf) })), [groups]);
   const choose = (key, choice) => setChoices((current) => ({ ...current, [key]: choice }));
   const toggle = (key) => {
     setOpened((current) => (current.includes(key) ? current.filter((k) => k !== key) : [...current, key]));
@@ -2252,6 +2286,15 @@ export const Dedupe = () => {
   border: 0;
   background: none;
   box-shadow: none;
+}
+
+.ds-candidate-badge-removed {
+  cursor: help;
+}
+
+.ds-candidate-badge-removed .ds-candidate {
+  cursor: help;
+  color: var(--color-gray-466);
 }
 
 .ds-group-caret {
