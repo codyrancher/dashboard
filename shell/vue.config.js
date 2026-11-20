@@ -577,6 +577,7 @@ module.exports = function(dir, appConfig = {}) {
   printLogs(dev, dashboardVersion, resourceBase, routerBasePath, pl, rancherEnv);
 
   const proxy = getProxyConfig(appConfig.proxy);
+  const colorToolRelink = require('./plugins/color-tool/postcss-relink.js')(dir);
   const config = {
     // Vue server
     devServer:  getDevServerConfig(proxy),
@@ -584,7 +585,8 @@ module.exports = function(dir, appConfig = {}) {
     css:        {
       extract:       false, // inline css styles instead of including with `<links`
       loaderOptions: {
-        sass: {
+        postcss: { postcssOptions: (loader) => ({ plugins: [require('autoprefixer'), colorToolRelink(loader.resourcePath)].filter(Boolean) }) },
+        sass:    {
           // This is effectively added to the beginning of each style that's imported or included in a vue file. We may want to look into including these in app.scss
           additionalData: `
             @use 'sass:math';

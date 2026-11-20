@@ -27,6 +27,7 @@ import 'floating-vue/dist/style.css';
 import { floatingVueOptions } from '@shell/plugins/floating-vue';
 
 import dynamicContent from '@shell/plugins/dynamic-content';
+import colorTool from '@shell/plugins/color-tool';
 import { initAriaAnnouncer } from '@shell/utils/aria-announce';
 
 export async function installPlugins(vueApp) {
@@ -62,6 +63,7 @@ export async function installInjectedPlugins(app, vueApp) {
     plugin,
     steveCreateWorker,
     dynamicContent,
+    colorTool,
   ];
 
   const installations = pluginDefinitions.map(async(pluginDefinition) => {

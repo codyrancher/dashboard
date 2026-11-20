@@ -1,5 +1,6 @@
 import { Meta } from "@storybook/addon-docs";
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import jsyaml from 'js-yaml';
 import { COLOR_TOKENS } from '@components/design-system/colors';
 import computedColors from './color-primitives-computed.json';
 
@@ -151,18 +152,20 @@ export const copyText = async (text) => {
   }
 };
 
-export const useScreenshots = () => {
-  const [index, setIndex] = useState({});
+export const useJson = (url, fallback) => {
+  const [data, setData] = useState(fallback);
 
   useEffect(() => {
-    fetch('color-usage/index.json')
-      .then((response) => (response.ok ? response.json() : {}))
-      .then(setIndex)
-      .catch(() => setIndex({}));
-  }, []);
+    fetch(url)
+      .then((response) => (response.ok ? response.json() : fallback))
+      .then(setData)
+      .catch(() => setData(fallback));
+  }, [url]);
 
-  return index;
+  return data;
 };
+
+export const useScreenshots = () => useJson('color-usage/index.json', {});
 
 export const CopyButton = ({ name, children }) => {
   const [copied, setCopied] = useState(false);
@@ -409,6 +412,535 @@ export const Primitives = () => {
       ))}
       {openColor && (
         <Details color={openColor} background={themes.background} screenshot={screenshots[openColor.name]} screenshots={Object.keys(screenshots).length > 0} onClose={() => setOpen(null)} />
+      )}
+    </div>
+  );
+};
+
+export const storage = {
+  get: (key, fallback) => {
+    try {
+      const value = localStorage.getItem(key);
+
+      return value === null ? fallback : value;
+    } catch (e) {
+      return fallback;
+    }
+  },
+  set: (key, value) => {
+    try {
+      localStorage.setItem(key, value);
+    } catch (e) {}
+  },
+};
+
+export const tabs = (() => {
+  let tab = storage.get('color-primitives-tab', 'primitives');
+  const listeners = new Set();
+
+  return {
+    get:       () => tab,
+    set:       (next) => {
+      tab = next;
+      storage.set('color-primitives-tab', next);
+      listeners.forEach((listener) => listener());
+    },
+    subscribe: (listener) => {
+      listeners.add(listener);
+
+      return () => listeners.delete(listener);
+    },
+  };
+})();
+
+export const useTab = () => {
+  const [tab, setTab] = useState(tabs.get());
+
+  useEffect(() => tabs.subscribe(() => setTab(tabs.get())), []);
+
+  return tab;
+};
+
+export const TABS = [['primitives', 'Primitives'], ['dedupe', 'Deduplicate']];
+
+export const TabStrip = () => {
+  const tab = useTab();
+  const move = (event) => {
+    const step = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
+
+    if (step) {
+      const next = TABS[(TABS.findIndex(([id]) => id === tab) + step + TABS.length) % TABS.length][0];
+
+      tabs.set(next);
+      document.getElementById(`ds-tab-${ next }`)?.focus();
+    }
+  };
+
+  return (
+    <div className="ds-tabs" role="tablist" aria-label="Color primitives">
+      {TABS.map(([id, label]) => (
+        <button key={id} id={`ds-tab-${ id }`} type="button" role="tab" aria-selected={tab === id} aria-controls={`ds-panel-${ id }`} tabIndex={tab === id ? 0 : -1} onClick={() => tabs.set(id)} onKeyDown={move}>
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+};
+
+export const TabPanel = ({ tab: id, children }) => (useTab() === id ? <div role="tabpanel" id={`ds-panel-${ id }`} aria-labelledby={`ds-tab-${ id }`}>{children}</div> : null);
+
+export const SOURCE = 'rancher-color-tool';
+
+export const primitiveName = (name) => `--${ String(name).trim().replace(/^-*/, '').replace(/^(color-)?/, 'color-') }`;
+
+export const shortName = (name) => name.replace(/^--color-/, '');
+
+export const parseSpec = (text) => {
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    return jsyaml.load(text);
+  }
+};
+
+export const normalizeSpec = (raw) => {
+  if (!raw || typeof raw !== 'object') {
+    throw new Error('The spec is empty.');
+  }
+  const groups = (raw.groups || [raw]).map((group, g) => {
+    const listed = Array.isArray(group.colors) ? group.colors : Object.entries(group.colors || {}).map(([name, usages]) => ({ name, usages }));
+
+    if (listed.length < 2) {
+      throw new Error(`${ group.title || `Group ${ g + 1 }` } needs at least two colors.`);
+    }
+    const colors = listed.map((entry) => {
+      const color = typeof entry === 'string' ? { name: entry } : entry;
+      const name = primitiveName(color.name);
+      const value = COLOR_TOKENS[name];
+
+      if (!value) {
+        throw new Error(`${ name } is not a color primitive.`);
+      }
+      const usages = (color.usages || []).map((entry, u) => {
+        const usage = typeof entry === 'string' ? { route: entry } : entry;
+
+        if (!usage?.route) {
+          throw new Error(`Usage ${ u + 1 } of ${ name } has no route.`);
+        }
+        let highlight = usage.highlight;
+
+        if (highlight === undefined) {
+          highlight = { color: name };
+        } else if (typeof highlight === 'string') {
+          highlight = { selector: highlight };
+        } else if (highlight) {
+          highlight = { ...highlight, color: highlight.color === true ? name : highlight.color ? primitiveName(highlight.color) : undefined };
+        }
+
+        return {
+          label: usage.label || '',
+          route: usage.route.startsWith('/') ? usage.route : `/${ usage.route }`,
+          theme: usage.theme || group.theme || raw.theme || 'light',
+          steps: usage.steps || [],
+          highlight,
+        };
+      });
+
+      return { name, value, usages };
+    });
+
+    return { title: group.title || colors.map((c) => shortName(c.name)).join(', '), colors };
+  });
+  const viewport = raw.viewport || [1440, 900];
+
+  return { rancher: raw.rancher, viewport: Array.isArray(viewport) ? viewport : [viewport.width, viewport.height], groups };
+};
+
+export const BUILT_IN_SCENARIOS = [
+  { route: '/home', how: 'with the side menu open', steps: [{ click: '.menu-icon, [data-testid="top-level-menu"] button' }] },
+  { route: '/home', how: 'with the user menu open', steps: [{ click: '[data-testid="nav_header_showUserMenu"]' }] },
+];
+
+export const usageFromScreenshot = (name, shot, scenarios) => {
+  if (!shot?.page) {
+    return null;
+  }
+  const scenario = [...scenarios, ...BUILT_IN_SCENARIOS].find((s) => s.route === shot.page && s.how === shot.how);
+  const forced = !scenario && shot.how?.match(/^with :([\w-]+) forced on (.+)$/);
+  const selector = shot.element.replace(/::?[\w-]+$/, '');
+
+  return {
+    label:     `${ shot.property } of ${ shot.element }${ shot.how ? `, ${ shot.how }` : '' }`,
+    route:     shot.page,
+    theme:     shot.theme.toLowerCase(),
+    steps:     scenario ? scenario.steps : forced ? [{ force: forced[2], state: forced[1] }] : [],
+    highlight: { selector, color: true },
+  };
+};
+
+export const specFromScreenshots = (names, screenshots, scenarios) => ({
+  title:  names.map((n) => shortName(primitiveName(n))).join(', '),
+  colors: names.map((n) => {
+    const name = primitiveName(n);
+    const usage = usageFromScreenshot(name, screenshots[name], scenarios);
+
+    return { name, usages: usage ? [usage] : [] };
+  }),
+});
+
+export const EXAMPLE_COLORS = ['gray-46', 'gray-47', 'gray-48', 'gray-49'];
+
+export const SPEC_HELP = `{
+  "rancher": "https://<rancher share>/dashboard",   // optional, else the URL above
+  "viewport": [1440, 900],                          // optional
+  "groups": [{                                      // or one group's fields at the top
+    "title": "Near-white grays",
+    "colors": [{
+      "name": "--color-gray-96",
+      "usages": [{
+        "label": "Header bar",
+        "route": "/c/local/explorer",
+        "theme": "light",                           // dark, classic light, suse dark, ...
+        "steps": [{ "click": ".btn", "text": "Create" }, { "force": ".btn", "state": "hover" }],
+        "highlight": { "selector": ".bar", "color": true }  // or a selector; left out: what paints this color most
+      }]
+    }]
+  }]
+}`;
+
+export const joinUrl = (base, route, params = {}) => {
+  try {
+    const url = new URL(`${ base.replace(/\/+$/, '') }${ route }`);
+
+    Object.entries(params).forEach(([key, value]) => value !== undefined && value !== '' && url.searchParams.set(key, value));
+
+    return url.toString();
+  } catch (e) {
+    return '';
+  }
+};
+
+export const STATUS = {
+  waiting: 'Loading Rancher',
+  loading: 'Waiting for the page',
+  running: 'Making it visible',
+};
+
+export const UsageFrame = ({ base, usage, color, viewport, width, colors, rings, reload }) => {
+  const frame = useRef(null);
+  const latest = useRef({ colors, rings });
+  const [status, setStatus] = useState({ state: 'waiting' });
+  const [nonce, setNonce] = useState(0);
+  const scale = width / viewport[0];
+  const src = joinUrl(base, usage.route);
+  const colorsKey = JSON.stringify(colors);
+
+  latest.current = { colors, rings };
+  const send = (message) => frame.current?.contentWindow?.postMessage({ source: SOURCE, ...message }, '*');
+  const show = () => send({
+    type: 'show', theme: usage.theme, steps: usage.steps, highlight: usage.highlight, ringWidth: Math.max(3, 2.5 / scale), colors: latest.current.colors
+  });
+
+  useEffect(() => {
+    const onMessage = (event) => {
+      if (!frame.current || event.source !== frame.current.contentWindow || event.data?.source !== SOURCE) {
+        return;
+      }
+      if (event.data.type === 'hello') {
+        show();
+        send({ type: 'rings', shown: latest.current.rings });
+      } else if (event.data.type === 'status') {
+        setStatus(event.data);
+      }
+    };
+
+    setStatus({ state: 'waiting' });
+    window.addEventListener('message', onMessage);
+    const timeout = setTimeout(() => setStatus((s) => (s.state === 'waiting' ? { state: 'error', message: 'The page never answered. Is the URL a Rancher share built with the color tool, and does it allow framing?' } : s)), 90000);
+
+    return () => {
+      window.removeEventListener('message', onMessage);
+      clearTimeout(timeout);
+    };
+  }, [src, nonce, reload, JSON.stringify(usage)]);
+
+  useEffect(() => send({ type: 'colors', colors }), [colorsKey]);
+  useEffect(() => send({ type: 'rings', shown: rings }), [rings]);
+
+  const open = joinUrl(base, usage.route, {
+    theme:          usage.theme,
+    highlight:      usage.highlight?.selector,
+    highlightText:  usage.highlight?.text,
+    highlightColor: usage.highlight?.color,
+    colors:         Object.keys(colors).length ? JSON.stringify(colors) : undefined,
+  });
+  const busy = STATUS[status.state];
+
+  return (
+    <figure className="ds-usage">
+      <div className="ds-frame" style={{ width, height: viewport[1] * scale }}>
+        <iframe
+          key={`${ src }|${ nonce }|${ reload }`}
+          ref={frame}
+          src={src}
+          title={`${ shortName(color) }: ${ usage.label || usage.route }`}
+          loading="lazy"
+          style={{ width: viewport[0], height: viewport[1], transform: `scale(${ scale })` }}
+          onLoad={() => send({ type: 'ping' })}
+        />
+        {busy && <div className="ds-frame-status" role="status">{busy}...</div>}
+        {status.state === 'login' && (
+          <div className="ds-frame-status ds-frame-status--problem" role="status">
+            <span>Sign in to <a href={joinUrl(base, '/')} target="_blank" rel="noreferrer">this Rancher</a> in another tab, then reload.</span>
+          </div>
+        )}
+      </div>
+      <figcaption>
+        <div className="ds-usage-label">{usage.label || usage.route}</div>
+        <div className="ds-muted">
+          <code>{usage.route}</code>, {usage.theme}
+          {status.state === 'done' && status.element && <>, {status.property ? <code>{status.property}</code> : 'the element'} of <code>{status.element}</code></>}
+        </div>
+        {status.state === 'error' && <div className="ds-usage-error">{status.message}</div>}
+        <div className="ds-usage-actions">
+          <button type="button" className="ds-copy" onClick={() => setNonce((n) => n + 1)}>Reload</button>
+          <a className="ds-copy" href={open} target="_blank" rel="noreferrer" title="Opens the page with the highlight and the colors, without the steps">Open</a>
+        </div>
+      </figcaption>
+    </figure>
+  );
+};
+
+export const ColorColumn = ({ color, candidate, width, onPick, children }) => {
+  const usage = USAGE[color.name] || { uses: 0, files: {} };
+  const files = Object.keys(usage.files).length;
+  const shownAs = candidate && candidate !== color.name ? (COLOR_TOKENS[candidate] || candidate) : null;
+
+  return (
+    <section className={`ds-column${ candidate === color.name ? ' ds-column--picked' : '' }`} style={{ width }} aria-label={color.name}>
+      <header className="ds-column-header">
+        <span className="ds-column-chips">
+          <span className="ds-column-chip ds-checker" title={`${ color.name }: ${ color.value }`}><span className="ds-fill" style={{ background: color.value }} /></span>
+          <span className="ds-column-chip ds-checker" title={shownAs ? `Now shown as ${ shownAs }` : undefined} style={shownAs ? undefined : { visibility: 'hidden' }}><span className="ds-fill" style={{ background: shownAs || 'none' }} /></span>
+        </span>
+        <span className="ds-column-name">
+          <code>{color.name}</code>
+          <span className="ds-muted" title={Object.keys(usage.files).join('\n')}><code>{color.value}</code>, {usage.uses} {usage.uses === 1 ? 'use' : 'uses'} in {files} {files === 1 ? 'file' : 'files'}</span>
+          <span className="ds-muted" style={shownAs ? undefined : { visibility: 'hidden' }}>Shown as <code>{shownAs || color.value}</code></span>
+        </span>
+        <button type="button" className="ds-copy" aria-pressed={candidate === color.name} onClick={() => onPick(candidate === color.name ? null : color.name)}>
+          {candidate === color.name ? 'Picked' : 'Use this'}
+        </button>
+      </header>
+      {color.usages.length ? children : <p className="ds-muted">No usages in the spec for this color.</p>}
+    </section>
+  );
+};
+
+export const SpecEditor = ({ text, onApply, error, screenshots, scenarios }) => {
+  const [draft, setDraft] = useState(text);
+  const [names, setNames] = useState(EXAMPLE_COLORS.join(', '));
+
+  useEffect(() => setDraft(text), [text]);
+  const fromScreenshots = () => setDraft(JSON.stringify(specFromScreenshots(names.split(/[\s,]+/).filter(Boolean), screenshots, scenarios), null, 2));
+
+  return (
+    <details className="ds-spec" open={!text || !!error}>
+      <summary>Spec</summary>
+      <p className="ds-muted">
+        Paste JSON or YAML naming the primitives to compare, where each one is used, the steps that make it show (the
+        format of <code>storybook/scripts/color-screenshots.mjs</code> scenarios: <code>click</code>, <code>hover</code>,
+        <code> type</code>, <code>key</code>, <code>force</code> with <code>state</code>, <code>scroll</code>, <code>waitFor</code>,
+        <code> wait</code> and <code>eval</code>) and what to highlight.
+      </p>
+      <textarea value={draft} onChange={(e) => setDraft(e.target.value)} spellCheck={false} rows={16} aria-label="Spec" placeholder={SPEC_HELP} />
+      {error && <p className="ds-usage-error" role="alert">{error}</p>}
+      <div className="ds-spec-actions">
+        <button type="button" className="ds-copy" onClick={() => onApply(draft)}>Apply</button>
+        <span className="ds-spec-from">
+          <label htmlFor="ds-spec-names">Start from the screenshots of</label>
+          <input id="ds-spec-names" value={names} onChange={(e) => setNames(e.target.value)} placeholder="gray-96, gray-98" />
+          <button type="button" className="ds-copy" onClick={fromScreenshots} disabled={!Object.keys(screenshots).length} title={Object.keys(screenshots).length ? '' : 'This build has no screenshots'}>Fill in</button>
+        </span>
+      </div>
+    </details>
+  );
+};
+
+export const Dedupe = () => {
+  const screenshots = useScreenshots();
+  const scenarios = useJson('color-usage/scenarios.json', []);
+  const [text, setText] = useState(() => storage.get('color-dedupe-spec', ''));
+  const config = useJson('color-tool.json', {});
+  const [rancherInput, setRancherInput] = useState(() => storage.get('color-dedupe-rancher', ''));
+  const [groupIndex, setGroupIndex] = useState(0);
+  const [candidate, setCandidate] = useState(null);
+  const [custom, setCustom] = useState('');
+  const [rings, setRings] = useState(true);
+  const [width, setWidth] = useState(() => Number(storage.get('color-dedupe-width', '') || 420));
+  const [reload, setReload] = useState(0);
+  const [error, setError] = useState('');
+  const [spec, setSpec] = useState(null);
+  const columns = useRef(null);
+
+  useEffect(() => {
+    if (!text && Object.keys(screenshots).length) {
+      setText(JSON.stringify(specFromScreenshots(EXAMPLE_COLORS, screenshots, scenarios), null, 2));
+    }
+  }, [screenshots, scenarios]);
+
+  useEffect(() => {
+    if (!text) {
+      setSpec(null);
+
+      return;
+    }
+    try {
+      setSpec(normalizeSpec(parseSpec(text)));
+      setError('');
+    } catch (e) {
+      setError(e.message);
+    }
+  }, [text]);
+
+  const apply = (draft) => {
+    try {
+      normalizeSpec(parseSpec(draft));
+      storage.set('color-dedupe-spec', draft);
+      setText(draft);
+      setGroupIndex(0);
+      setCandidate(null);
+      setError('');
+    } catch (e) {
+      setError(e.message);
+    }
+  };
+
+  const group = spec?.groups[Math.min(groupIndex, spec.groups.length - 1)];
+  const base = (spec?.rancher || rancherInput || config.rancher || '').trim();
+  const pickedValue = candidate === 'custom' ? custom.trim() : candidate ? COLOR_TOKENS[candidate] : null;
+  const colors = useMemo(() => (group && pickedValue ? Object.fromEntries(group.colors.filter((c) => c.name !== candidate).map((c) => [c.name, pickedValue])) : {}), [group, candidate, pickedValue]);
+  const pick = useCallback((name) => setCandidate(name), []);
+  const fit = () => {
+    if (columns.current && group) {
+      const count = group.colors.length;
+
+      setWidth(Math.min(1000, Math.max(200, Math.floor((columns.current.clientWidth - 16 * (count - 1)) / count) - 18)));
+    }
+  };
+
+  useEffect(() => {
+    if (!storage.get('color-dedupe-width', '')) {
+      fit();
+    }
+  }, [group?.title, group?.colors.length, base]);
+
+  useEffect(() => {
+    const onKey = (event) => {
+      if (!group || event.target.closest?.('input, textarea, select') || event.metaKey || event.ctrlKey || event.altKey) {
+        return;
+      }
+      if (event.key === '0' || event.key === 'Escape') {
+        setCandidate(null);
+      } else if (/^[1-9]$/.test(event.key) && group.colors[Number(event.key) - 1]) {
+        setCandidate(group.colors[Number(event.key) - 1].name);
+      }
+    };
+
+    window.addEventListener('keydown', onKey);
+
+    return () => window.removeEventListener('keydown', onKey);
+  }, [group]);
+
+  return (
+    <div className="ds-dedupe">
+      <style>{'.sbdocs-content { max-width: none !important; min-width: 0; } .sbdocs-toc--custom { display: none !important; }'}</style>
+      <p>
+        Compare primitives that could be one. Each column is a color and each frame a place the spec says it is used,
+        a {spec?.viewport[0] || 1440} x {spec?.viewport[1] || 900} Rancher page scaled down, with the color made visible,
+        ringed and scrolled into view. Pick a color to show it in place of all the others everywhere, and Original
+        (or <kbd>0</kbd>) to go back. <kbd>1</kbd>-<kbd>9</kbd> pick the columns.
+      </p>
+      <div className="ds-dedupe-settings">
+        <label>
+          Rancher share
+          <input
+            value={spec?.rancher || rancherInput || config.rancher || ''}
+            disabled={!!spec?.rancher}
+            onChange={(e) => {
+              setRancherInput(e.target.value);
+              storage.set('color-dedupe-rancher', e.target.value);
+            }}
+            placeholder="https://<workspace>-colors.dev-extension.<ip>.sslip.io/dashboard"
+            title={spec?.rancher ? 'Set by the spec' : ''}
+          />
+        </label>
+        {joinUrl(base, '/') && <a className="ds-copy" href={joinUrl(base, '/')} target="_blank" rel="noreferrer">Sign in</a>}
+        <label>
+          Frame width
+          <input
+            type="range"
+            min="200"
+            max="1000"
+            step="20"
+            value={width}
+            onChange={(e) => {
+              setWidth(Number(e.target.value));
+              storage.set('color-dedupe-width', e.target.value);
+            }}
+          />
+          <span className="ds-muted">{width}px</span>
+        </label>
+        <button type="button" className="ds-copy" onClick={() => {
+          storage.set('color-dedupe-width', '');
+          fit();
+        }}>Fit</button>
+      </div>
+      <SpecEditor text={text} onApply={apply} error={error} screenshots={screenshots} scenarios={scenarios} />
+      {group && (
+        <>
+          <div className="ds-dedupe-toolbar" role="toolbar" aria-label="Show the colors as">
+            {spec.groups.length > 1 && (
+              <select value={groupIndex} onChange={(e) => {
+                setGroupIndex(Number(e.target.value));
+                setCandidate(null);
+              }} aria-label="Group">
+                {spec.groups.map((g, i) => <option key={i} value={i}>{g.title}</option>)}
+              </select>
+            )}
+            <button type="button" className="ds-copy ds-candidate" aria-pressed={!candidate} onClick={() => setCandidate(null)}>
+              <kbd>0</kbd> Original
+            </button>
+            {group.colors.map((c, i) => (
+              <button key={c.name} type="button" className="ds-copy ds-candidate" aria-pressed={candidate === c.name} onClick={() => setCandidate(c.name)}>
+                <kbd>{i + 1}</kbd>
+                <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: c.value }} /></span>
+                {shortName(c.name)}
+              </button>
+            ))}
+            <span className="ds-candidate-custom">
+              <input value={custom} onChange={(e) => setCustom(e.target.value)} placeholder="Any color: #e0e2e9" aria-label="Try any color" />
+              <button type="button" className="ds-copy" aria-pressed={candidate === 'custom'} disabled={!custom.trim() || !CSS.supports('color', custom.trim())} onClick={() => setCandidate('custom')}>Try</button>
+            </span>
+            <span className="ds-dedupe-toolbar-end">
+              <label><input type="checkbox" checked={rings} onChange={(e) => setRings(e.target.checked)} /> Highlight</label>
+              <button type="button" className="ds-copy" onClick={() => setReload((n) => n + 1)}>Reload all</button>
+            </span>
+          </div>
+          {!joinUrl(base, '/') ? (
+            <p className="ds-usage-error">Set the Rancher share these pages come from: the URL of a dashboard built with the color tool, in front of a Rancher you are signed in to.</p>
+          ) : (
+            <div className="ds-columns" ref={columns} style={{ '--ds-rows': 1 + Math.max(1, ...group.colors.map((c) => c.usages.length)) }}>
+              {group.colors.map((c) => (
+                <ColorColumn key={c.name} color={c} candidate={candidate === 'custom' ? custom.trim() : candidate} width={width} onPick={pick}>
+                  {c.usages.map((usage, i) => (
+                    <UsageFrame key={i} base={base} usage={usage} color={c.name} viewport={spec.viewport} width={width} colors={colors} rings={rings} reload={reload} />
+                  ))}
+                </ColorColumn>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -672,10 +1204,287 @@ export const Primitives = () => {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+.ds-tabs {
+  display: flex;
+  gap: 4px;
+  margin: 16px 0 24px;
+  border-bottom: 1px solid var(--color-gray-96);
+}
+
+.ds-tabs button {
+  margin-bottom: -1px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
+  background: none;
+  color: var(--color-gray-466);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.ds-tabs button[aria-selected="true"] {
+  border-color: var(--color-gray-96);
+  border-bottom-color: var(--color-white);
+  background: var(--color-white);
+  color: var(--color-gray-806);
+  font-weight: 600;
+}
+
+.ds-tabs button:focus-visible, .ds-dedupe button:focus-visible, .ds-dedupe a:focus-visible, .ds-dedupe input:focus-visible, .ds-dedupe textarea:focus-visible, .ds-dedupe select:focus-visible {
+  outline: 2px solid var(--color-blue-451);
+  outline-offset: 2px;
+}
+
+.ds-dedupe {
+  min-width: 0;
+  max-width: 100%;
+  color: var(--color-gray-806);
+  font-size: 13px;
+}
+
+.ds-dedupe kbd {
+  padding: 0 4px;
+  border: 1px solid var(--color-gray-96);
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: 11px;
+}
+
+.ds-dedupe input, .ds-dedupe select, .ds-dedupe textarea {
+  padding: 2px 6px;
+  border: 1px solid var(--color-gray-96);
+  border-radius: 4px;
+  background: var(--color-white);
+  color: var(--color-gray-806);
+  font: inherit;
+}
+
+.ds-candidate-custom input {
+  width: 160px;
+}
+
+.ds-dedupe-settings, .ds-dedupe-toolbar, .ds-spec-actions, .ds-spec-from, .ds-dedupe-toolbar-end, .ds-candidate-custom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.ds-dedupe-settings {
+  margin-bottom: 12px;
+}
+
+.ds-dedupe-settings label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ds-dedupe-settings input:not([type]) {
+  width: min(560px, 60vw);
+}
+
+.ds-spec {
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-gray-96);
+  border-radius: 6px;
+}
+
+.ds-spec summary {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ds-spec textarea {
+  box-sizing: border-box;
+  width: 100%;
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+}
+
+.ds-spec-from {
+  gap: 6px;
+  margin-left: auto;
+}
+
+.ds-dedupe-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin-bottom: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-gray-96);
+  background: var(--color-white);
+}
+
+.ds-dedupe-toolbar .ds-copy, .ds-dedupe .ds-usage-actions .ds-copy, .ds-dedupe-settings .ds-copy {
+  margin-left: 0;
+}
+
+.ds-candidate {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 24px;
+}
+
+.ds-candidate[aria-pressed="true"], .ds-dedupe .ds-copy[aria-pressed="true"] {
+  border-color: var(--color-blue-451);
+  box-shadow: inset 0 0 0 1px var(--color-blue-451);
+  font-weight: 600;
+}
+
+.ds-candidate-chip {
+  position: relative;
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--color-gray-96);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.ds-dedupe-toolbar-end {
+  margin-left: auto;
+}
+
+.ds-columns {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(var(--ds-rows), auto);
+  justify-content: start;
+  column-gap: 16px;
+  padding-bottom: 16px;
+  overflow-x: auto;
+}
+
+.ds-column {
+  display: grid;
+  grid-row: span var(--ds-rows);
+  grid-template-rows: subgrid;
+  row-gap: 12px;
+  align-content: start;
+  box-sizing: content-box;
+  padding: 8px;
+  border: 1px solid var(--color-gray-96);
+  border-radius: 6px;
+}
+
+.ds-column--picked {
+  border-color: var(--color-blue-451);
+  box-shadow: inset 0 0 0 1px var(--color-blue-451);
+}
+
+.ds-column-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.ds-column-chips {
+  display: flex;
+  flex: none;
+  gap: 2px;
+}
+
+.ds-column-chip {
+  position: relative;
+  display: flex;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--color-gray-96);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ds-column-name {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ds-column-name > * {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-usage {
+  margin: 0;
+}
+
+.ds-frame {
+  position: relative;
+  border: 1px solid var(--color-gray-96);
+  border-radius: 4px;
+  background: var(--color-gray-25);
+  overflow: hidden;
+}
+
+.ds-frame iframe {
+  display: block;
+  border: 0;
+  transform-origin: 0 0;
+}
+
+.ds-frame-status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: var(--color-white-a65);
+  text-align: center;
+}
+
+.ds-frame-status--problem {
+  background: var(--color-white);
+}
+
+.ds-usage figcaption {
+  overflow-wrap: anywhere;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.ds-usage-label {
+  font-weight: 600;
+}
+
+.ds-usage-error {
+  color: var(--color-red-488);
+}
+
+.ds-usage-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.ds-usage-actions a {
+  color: inherit;
+  text-decoration: none;
+}
 `}
 </style>
 
 # Color Primitives
+
+<TabStrip />
+
+<TabPanel tab="dedupe">
+  <Dedupe />
+</TabPanel>
+
+<TabPanel tab="primitives">
 
 Use these as `var(--color-...)` instead of writing colors out or computing them from other colors. Click a swatch to see where the app paints the color: the eyedropper in the screenshot sits on a pixel of it.
 
@@ -688,3 +1497,5 @@ Use these as `var(--color-...)` instead of writing colors out or computing them 
 They are defined in `pkg/rancher-components/src/components/design-system/_color-variables.scss`, and `yarn generate:colors` writes their values to `colors.ts`. A color that isn't here yet gets a new primitive there first.
 
 <Primitives />
+
+</TabPanel>
