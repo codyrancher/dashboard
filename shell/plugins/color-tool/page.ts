@@ -89,15 +89,17 @@ export function centerInView(el: Element) {
     const box = node.getBoundingClientRect();
 
     if (/auto|scroll|overlay/.test(style.overflowY) && node.scrollHeight > node.clientHeight) {
-      node.scrollTop += rect.top + rect.height / 2 - (box.top + box.height / 2);
+      node.scrollBy({ top: rect.top + rect.height / 2 - (box.top + box.height / 2), behavior: 'instant' });
     }
     if (/auto|scroll|overlay/.test(style.overflowX) && node.scrollWidth > node.clientWidth) {
-      node.scrollLeft += rect.left + rect.width / 2 - (box.left + box.width / 2);
+      node.scrollBy({ left: rect.left + rect.width / 2 - (box.left + box.width / 2), behavior: 'instant' });
     }
   }
   const rect = el.getBoundingClientRect();
 
-  window.scrollBy(rect.left + rect.width / 2 - innerWidth / 2, rect.top + rect.height / 2 - innerHeight / 2);
+  window.scrollBy({
+    left: rect.left + rect.width / 2 - innerWidth / 2, top: rect.top + rect.height / 2 - innerHeight / 2, behavior: 'instant'
+  });
 }
 
 function pointer(el: Element, types: string[]) {

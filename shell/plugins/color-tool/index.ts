@@ -81,6 +81,15 @@ async function highlightFromQuery(query: URLSearchParams, path: string) {
 }
 
 let showing: Promise<void> = Promise.resolve();
+let lastShow = '';
+let lastStatus: Record<string, unknown> = {};
+let ringed: Element | null = null;
+let touched = false;
+
+function status(message: Record<string, unknown>) {
+  lastStatus = message;
+  post({ type: 'status', ...message });
+}
 
 const box = (rect: DOMRect) => ({
   x: Math.round(rect.left), y: Math.round(rect.top), width: Math.round(rect.width), height: Math.round(rect.height)
@@ -90,12 +99,12 @@ async function show(message: { theme?: string, steps?: Step[], highlight?: Highl
   clearRings();
   clearForced();
   setExternalOverrides(message.colors || {});
-  post({ type: 'status', state: 'loading' });
+  status({ state: 'loading' });
   try {
     lockTheme(message.theme || null);
     await pageReady();
     if (onLoginPage()) {
-      post({ type: 'status', state: 'login' });
+      status({ state: 'login' });
 
       return;
     }
@@ -103,7 +112,7 @@ async function show(message: { theme?: string, steps?: Step[], highlight?: Highl
       if (!isTrusted) {
         throw new Error('steps only run for a parent on a sibling host or localhost');
       }
-      post({ type: 'status', state: 'running' });
+      status({ state: 'running' });
       await runSteps(message.steps, { trusted: isTrusted });
     }
     if (message.highlight) {
@@ -111,17 +120,39 @@ async function show(message: { theme?: string, steps?: Step[], highlight?: Highl
 
       centerInView(el);
       ring([el], { width: message.ringWidth || 3 });
-      post({
-        type: 'status', state: 'done', element: describe(el), property, rect: box(el.getBoundingClientRect())
+      ringed = el;
+      touched = false;
+      status({
+        state: 'done', element: describe(el), property, rect: box(el.getBoundingClientRect())
       });
     } else {
-      post({ type: 'status', state: 'done' });
+      status({ state: 'done' });
     }
   } catch (e) {
-    post({
-      type: 'status', state: 'error', message: (e as Error).message
-    });
+    status({ state: 'error', message: (e as Error).message });
   }
+}
+
+function keepFocus() {
+  const replays = new WeakSet<Event>();
+  const hold = (event: Event) => {
+    const { target, type, bubbles } = event;
+
+    if ((event as FocusEvent).relatedTarget || replays.has(event)) {
+      return;
+    }
+    event.stopImmediatePropagation();
+    setTimeout(() => {
+      if (document.hasFocus() && target !== window && document.activeElement !== target) {
+        const replay = new FocusEvent(type, { bubbles });
+
+        replays.add(replay);
+        target?.dispatchEvent(replay);
+      }
+    });
+  };
+
+  ['blur', 'focusout'].forEach((type) => window.addEventListener(type, hold, true));
 }
 
 function listen() {
@@ -132,7 +163,15 @@ function listen() {
       return;
     }
     if (message.type === 'show') {
-      showing = showing.then(() => show(message, trusted(event.origin)));
+      const key = JSON.stringify([message.theme, message.steps, message.highlight]);
+
+      if (key === lastShow) {
+        setExternalOverrides(message.colors || {});
+        post({ type: 'status', ...lastStatus });
+      } else {
+        lastShow = key;
+        showing = showing.then(() => show(message, trusted(event.origin)));
+      }
     } else if (message.type === 'colors') {
       setExternalOverrides(message.colors || {});
     } else if (message.type === 'rings') {
@@ -141,7 +180,18 @@ function listen() {
       post({ type: 'hello', path: window.location.pathname });
     }
   });
-  onRingMove((rect) => post({ type: 'rect', rect: box(rect) }));
+  ['wheel', 'pointerdown', 'keydown'].forEach((type) => window.addEventListener(type, (event) => {
+    touched ||= event.isTrusted;
+  }, true));
+  onRingMove((rect) => {
+    const fits = rect.width <= innerWidth && rect.height <= innerHeight;
+    const outside = rect.left < 0 || rect.top < 0 || rect.right > innerWidth || rect.bottom > innerHeight;
+
+    post({ type: 'rect', rect: box(rect) });
+    if (ringed?.isConnected && !touched && fits && outside) {
+      centerInView(ringed);
+    }
+  });
   post({ type: 'hello', path: window.location.pathname });
 }
 
@@ -167,8 +217,14 @@ function mountPanel() {
  *   shares on this node) or localhost, because they click and type as the signed-in user.
  * - `colors`: `{ colors }` replaces the overrides. `rings`: `{ shown, width }` shows or hides the ring and sets its
  *   thickness. `ping` asks for `hello`.
+ * A `show` with the same theme, steps and highlight as the last one only updates the colors, so a step that toggles
+ * something (a checkbox, a menu) never runs twice when the parent answers both `hello`s.
+ * A framed page ignores the blur it gets when another frame takes the focus, so menus that close on blur stay open
+ * while a review tool runs steps in several frames at once.
  * The page answers `hello` when it starts and `status` (`loading`, `login`, `running`, `done` or `error`) as it works.
  * `done` and `rect` carry the ringed element's `rect` (`{ x, y, width, height }` in the page's viewport) when it moves.
+ * Until someone scrolls, clicks or types in the page, it brings the ringed element back into view when the page moves it
+ * out (a table that loads late, say).
  */
 export default function colorTool(context: any) {
   const query = new URLSearchParams(window.location.search);
@@ -183,6 +239,7 @@ export default function colorTool(context: any) {
     console.warn(`color tool: ${ (e as Error).message }`); // eslint-disable-line no-console
   }
   if (framed) {
+    keepFocus();
     listen();
   } else {
     mountPanel();

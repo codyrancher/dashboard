@@ -1,6 +1,7 @@
 import { Meta } from "@storybook/addon-docs";
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import jsyaml from 'js-yaml';
+import { marked } from 'marked';
 import { COLOR_TOKENS } from '@components/design-system/colors';
 import computedColors from './color-primitives-computed.json';
 
@@ -578,17 +579,68 @@ export const usageFromScreenshot = (name, shot, scenarios) => {
   };
 };
 
-export const specFromScreenshots = (names, screenshots, scenarios) => ({
-  title:  names.map((n) => shortName(primitiveName(n))).join(', '),
+export const EXAMPLE_GROUPS = [
+  { title: 'Near-white grays', colors: ['gray-46', 'gray-47', 'gray-48', 'gray-49'] },
+  { title: 'Light borders', colors: ['gray-96', 'gray-98', 'gray-99', 'gray-100'] },
+  { title: 'Dark surfaces', colors: ['gray-703', 'gray-705', 'gray-707', 'gray-719', 'gray-723'] },
+  { title: 'Dark slate blues', colors: ['blue-609', 'blue-616', 'blue-619', 'blue-625', 'blue-628', 'blue-631'] },
+  { title: 'Link blues', colors: ['blue-521', 'blue-523'] },
+  { title: 'Pale greens', colors: ['green-80', 'green-82'] },
+];
+
+export const EXAMPLE_COLORS = EXAMPLE_GROUPS[0].colors;
+
+export const READ_ONLY_FORM = '/c/local/explorer/configmap/kube-system/kube-root-ca.crt?mode=view&as=config';
+
+export const EXAMPLE_USAGES = {
+  '--color-gray-98': {
+    label:     "Key combo badge on the local cluster's icon, while Alt is held in another cluster",
+    route:     '/c/local/explorer',
+    theme:     'light',
+    steps:     [
+      { waitFor: '.side-menu' },
+      {
+        eval: [
+          "const { $store, $router } = document.querySelector('#app').__vue_app__.config.globalProperties;",
+          "$store.dispatch('management/findAll', { type: 'management.cattle.io.cluster' }).then((clusters) => {",
+          "  const other = clusters.find((c) => c.id !== 'local' && c.isReady);",
+          "  if (!other) { throw new Error('The badge needs another ready cluster to switch to, and this Rancher has none.'); }",
+          '  return $router.push(`/c/${ other.id }/explorer`);',
+          '});',
+        ].join(' '),
+        wait: 4000,
+      },
+      { eval: "document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Alt', code: 'AltLeft', altKey: true, bubbles: true })); true" },
+      { wait: 800 },
+    ],
+    highlight: { selector: 'i.key-combo-icon', color: true },
+  },
+  '--color-blue-616': {
+    label:     'A selected row in the pod list',
+    route:     '/c/local/explorer/pod',
+    theme:     'dark',
+    steps:     [{ waitFor: '[data-testid=sortable-table-0-checkbox] .checkbox-custom' }, { wait: 1000 }, { click: '[data-testid=sortable-table-0-checkbox] .checkbox-custom' }, { waitFor: 'tr.main-row.row-selected' }],
+    highlight: { selector: 'tr.main-row.row-selected', color: true },
+  },
+  '--color-blue-619': {
+    label: 'Disabled input text, in the read-only config view of a config map', route: READ_ONLY_FORM, theme: 'light', highlight: { selector: 'input:disabled', color: true }
+  },
+  '--color-blue-625': {
+    label: 'Disabled input text, in the read-only config view of a config map', route: READ_ONLY_FORM, theme: 'classic light', highlight: { selector: 'input:disabled', color: true }
+  },
+};
+
+export const specFromScreenshots = (names, screenshots, scenarios, title) => ({
+  title:  title || names.map((n) => shortName(primitiveName(n))).join(', '),
   colors: names.map((n) => {
     const name = primitiveName(n);
-    const usage = usageFromScreenshot(name, screenshots[name], scenarios);
+    const usage = EXAMPLE_USAGES[name] || usageFromScreenshot(name, screenshots[name], scenarios);
 
     return { name, usages: usage ? [usage] : [] };
   }),
 });
 
-export const EXAMPLE_COLORS = ['gray-46', 'gray-47', 'gray-48', 'gray-49'];
+export const builtInSpec = (screenshots, scenarios) => ({ groups: EXAMPLE_GROUPS.map((g) => specFromScreenshots(g.colors, screenshots, scenarios, g.title)) });
 
 export const SPEC_HELP = `{
   "rancher": "https://<rancher share>/dashboard",   // optional, else the URL above
@@ -731,6 +783,9 @@ export const UsageCard = ({ base, usage, color, candidate, onPick, viewport, col
         if (event.data.rect) {
           setRect(event.data.rect);
         }
+        if (['done', 'error'].includes(event.data.state) && document.activeElement === frame.current) {
+          frame.current.blur();
+        }
       } else if (event.data.type === 'rect') {
         setRect(event.data.rect);
       }
@@ -856,7 +911,9 @@ export const UsageCard = ({ base, usage, color, candidate, onPick, viewport, col
   );
 };
 
-export const SpecEditor = ({ text, onApply, error, screenshots, scenarios }) => {
+export const SpecEditor = ({
+  text, onApply, onBuiltIn, error, screenshots, scenarios
+}) => {
   const [draft, setDraft] = useState(text);
   const [names, setNames] = useState(EXAMPLE_COLORS.join(', '));
 
@@ -876,6 +933,7 @@ export const SpecEditor = ({ text, onApply, error, screenshots, scenarios }) => 
       {error && <p className="ds-usage-error" role="alert">{error}</p>}
       <div className="ds-spec-actions">
         <button type="button" className="ds-copy" onClick={() => onApply(draft)}>Apply</button>
+        <button type="button" className="ds-copy" onClick={onBuiltIn} disabled={!Object.keys(screenshots).length} title={Object.keys(screenshots).length ? `Replaces the spec with ${ EXAMPLE_GROUPS.map((g) => g.title).join(', ') }` : 'This build has no screenshots'}>Built-in groups</button>
         <span className="ds-spec-from">
           <label htmlFor="ds-spec-names">Start from the screenshots of</label>
           <input id="ds-spec-names" value={names} onChange={(e) => setNames(e.target.value)} placeholder="gray-96, gray-98" />
@@ -886,25 +944,187 @@ export const SpecEditor = ({ text, onApply, error, screenshots, scenarios }) => 
   );
 };
 
+export const useStored = (key, fallback) => {
+  const [value, setValue] = useState(() => {
+    try {
+      return JSON.parse(storage.get(key, '')) ?? fallback;
+    } catch (e) {
+      return fallback;
+    }
+  });
+  const update = useCallback((next) => setValue((current) => {
+    const value = typeof next === 'function' ? next(current) : next;
+
+    storage.set(key, JSON.stringify(value));
+
+    return value;
+  }), [key]);
+
+  return [value, update];
+};
+
+export const groupKey = (group) => group.colors.map((c) => shortName(c.name)).join(',');
+
+export const choiceOf = (group, choice) => {
+  const custom = choice?.custom || '';
+
+  if (choice?.candidate === 'custom') {
+    return { candidate: 'custom', custom, shown: custom.trim(), value: custom.trim() };
+  }
+  const picked = group.colors.find((c) => c.name === choice?.candidate);
+
+  return {
+    candidate: picked?.name || null, custom, shown: picked?.name || null, value: picked?.value || null
+  };
+};
+
+export const escapeMarkdown = (text) => String(text).replace(/[\\`*_[\]<>|&#]/g, (c) => `\\${ c }`);
+
+export const reportMarkdown = (groups, choices) => {
+  const rows = groups.map((group) => {
+    const { candidate, value } = choiceOf(group, choices[groupKey(group)]);
+    const options = group.colors.map((c) => `\`${ c.name }\``).join(', ');
+    let choice = 'Not decided';
+
+    if (candidate === 'custom' && value) {
+      choice = `A new color, \`${ value.replace(/`/g, '') }\``;
+    } else if (candidate) {
+      choice = `\`${ candidate }\` (\`${ value }\`)`;
+    }
+
+    return `| ${ escapeMarkdown(group.title) } | ${ options } | ${ choice } |`;
+  });
+  const decided = groups.filter((group) => choiceOf(group, choices[groupKey(group)]).value).length;
+
+  return [
+    '## Color dedupe choices',
+    '',
+    `${ decided } of ${ groups.length } ${ groups.length === 1 ? 'group' : 'groups' } decided. A group's choice replaces all of its options.`,
+    '',
+    '| Group | Options | Choice |',
+    '| --- | --- | --- |',
+    ...rows,
+    '',
+  ].join('\n');
+};
+
+export const Report = ({ groups, choices }) => {
+  const [shown, setShown] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const markdown = reportMarkdown(groups, choices);
+  const copy = async () => {
+    await copyText(markdown);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
+  return (
+    <section className="ds-report">
+      <button type="button" className="ds-copy" aria-expanded={shown} aria-controls="ds-report-body" onClick={() => setShown(!shown)}>
+        {shown ? 'Hide the report' : 'Report'}
+      </button>
+      {shown && (
+        <div id="ds-report-body" className="ds-report-body">
+          <div className="ds-report-actions">
+            <span className="ds-muted">Markdown, rendered. It follows the choices as they change.</span>
+            <button type="button" className="ds-copy" onClick={copy}>
+              {copied ? 'Copied' : 'Copy markdown'}
+              <span className="ds-sr-only" aria-live="polite">{copied ? 'Copied the report' : ''}</span>
+            </button>
+          </div>
+          <div className="ds-report-rendered" dangerouslySetInnerHTML={{ __html: marked.parse(markdown) }} />
+        </div>
+      )}
+    </section>
+  );
+};
+
+export const DedupeGroup = ({
+  group, index, open, onToggle, choice, onChoose, onActivate, base, viewport, size, rings, reload, command
+}) => {
+  const { candidate, custom, shown, value } = choiceOf(group, choice);
+  const colors = useMemo(() => (value ? Object.fromEntries(group.colors.filter((c) => c.name !== candidate).map((c) => [c.name, value])) : {}), [group, candidate, value]);
+  const pick = (name) => onChoose({ candidate: name, custom });
+  const id = `ds-group-${ index }`;
+
+  return (
+    <section className="ds-group" onFocusCapture={onActivate} onPointerDownCapture={onActivate}>
+      <div className="ds-group-heading" role="heading" aria-level={3}>
+        <button type="button" className="ds-group-toggle" aria-expanded={open} aria-controls={id} onClick={onToggle}>
+          <span className="ds-group-caret" aria-hidden="true" />
+          <span className="ds-group-title">{group.title}</span>
+          <span className="ds-group-options">
+            {group.colors.map((c) => (
+              <span key={c.name} className={`ds-group-option${ candidate === c.name ? ' ds-group-option--picked' : '' }`}>
+                <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: c.value }} /></span>
+                {shortName(c.name)}
+              </span>
+            ))}
+          </span>
+          <span className={`ds-group-choice${ value ? '' : ' ds-muted' }`}>
+            {value && <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: value }} /></span>}
+            Selected: {candidate === 'custom' ? value || 'Original' : candidate ? shortName(candidate) : 'Original'}
+          </span>
+        </button>
+      </div>
+      {open && (
+        <div id={id} className="ds-group-body">
+          <div className="ds-dedupe-toolbar" role="toolbar" aria-label={`Show ${ group.title } as`}>
+            <button type="button" className="ds-copy ds-candidate" aria-pressed={!candidate} onClick={() => pick(null)}>
+              <kbd>0</kbd> Original
+            </button>
+            {group.colors.map((c, i) => (
+              <button key={c.name} type="button" className="ds-copy ds-candidate" aria-pressed={candidate === c.name} onClick={() => pick(c.name)}>
+                {i < 9 && <kbd>{i + 1}</kbd>}
+                <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: c.value }} /></span>
+                {shortName(c.name)}
+              </button>
+            ))}
+            <span className="ds-candidate-custom">
+              <input value={custom} onChange={(e) => onChoose({ candidate, custom: e.target.value })} placeholder="Any color: #e0e2e9" aria-label="Try any color" />
+              <button type="button" className="ds-copy" aria-pressed={candidate === 'custom'} disabled={!custom.trim() || !CSS.supports('color', custom.trim())} onClick={() => pick('custom')}>Try</button>
+            </span>
+          </div>
+          {!joinUrl(base, '/') ? (
+            <p className="ds-usage-error">Set the Rancher share these pages come from: the URL of a dashboard built with the color tool, in front of a Rancher you are signed in to.</p>
+          ) : (
+            <div className="ds-ucards" style={{ '--ds-card': `${ size }px` }}>
+              {group.colors.flatMap((c) => (c.usages.length ? c.usages.map((usage, i) => (
+                <UsageCard key={`${ c.name }-${ i }`} base={base} usage={usage} color={c} candidate={shown} onPick={pick} viewport={viewport} colors={colors} rings={rings} reload={reload} command={command} />
+              )) : [
+                <div key={c.name} className="ds-ucard">
+                  <ColorHeader color={c} candidate={shown} onPick={pick} />
+                  <p className="ds-muted">No usages in the spec for this color.</p>
+                </div>
+              ]))}
+            </div>
+          )}
+        </div>
+      )}
+    </section>
+  );
+};
+
 export const Dedupe = () => {
   const screenshots = useScreenshots();
   const scenarios = useJson('color-usage/scenarios.json', []);
   const [text, setText] = useState(() => storage.get('color-dedupe-spec', ''));
   const config = useJson('color-tool.json', {});
   const [rancherInput, setRancherInput] = useState(() => storage.get('color-dedupe-rancher', ''));
-  const [groupIndex, setGroupIndex] = useState(0);
-  const [candidate, setCandidate] = useState(null);
-  const [custom, setCustom] = useState('');
+  const [choices, setChoices] = useStored('color-dedupe-choices', {});
+  const [opened, setOpened] = useStored('color-dedupe-open', []);
+  const [active, setActive] = useState(null);
   const [rings, setRings] = useState(true);
   const [size, setSize] = useState(() => Number(storage.get('color-dedupe-size', '') || 560));
   const [reload, setReload] = useState(0);
   const [command, setCommand] = useState({ type: 'focus', n: 0 });
   const [error, setError] = useState('');
   const [spec, setSpec] = useState(null);
+  const builtIn = () => JSON.stringify(builtInSpec(screenshots, scenarios), null, 2);
 
   useEffect(() => {
     if (!text && Object.keys(screenshots).length) {
-      setText(JSON.stringify(specFromScreenshots(EXAMPLE_COLORS, screenshots, scenarios), null, 2));
+      setText(builtIn());
     }
   }, [screenshots, scenarios]);
 
@@ -927,46 +1147,55 @@ export const Dedupe = () => {
       normalizeSpec(parseSpec(draft));
       storage.set('color-dedupe-spec', draft);
       setText(draft);
-      setGroupIndex(0);
-      setCandidate(null);
       setError('');
     } catch (e) {
       setError(e.message);
     }
   };
 
-  const group = spec?.groups[Math.min(groupIndex, spec.groups.length - 1)];
+  const groups = spec?.groups || [];
   const base = (spec?.rancher || rancherInput || config.rancher || '').trim();
-  const pickedValue = candidate === 'custom' ? custom.trim() : candidate ? COLOR_TOKENS[candidate] : null;
-  const colors = useMemo(() => (group && pickedValue ? Object.fromEntries(group.colors.filter((c) => c.name !== candidate).map((c) => [c.name, pickedValue])) : {}), [group, candidate, pickedValue]);
-  const pick = useCallback((name) => setCandidate(name), []);
+  const choose = (key, choice) => setChoices((current) => ({ ...current, [key]: choice }));
+  const toggle = (key) => {
+    setOpened((current) => (current.includes(key) ? current.filter((k) => k !== key) : [...current, key]));
+    setActive(key);
+  };
 
   useEffect(() => {
     const onKey = (event) => {
-      if (!group || event.target.closest?.('input, textarea, select') || event.metaKey || event.ctrlKey || event.altKey) {
+      if (event.target.closest?.('input, textarea, select') || event.metaKey || event.ctrlKey || event.altKey) {
         return;
       }
+      const open = groups.filter((g) => opened.includes(groupKey(g)));
+      const group = open.find((g) => groupKey(g) === active) || open[0];
+
+      if (!group) {
+        return;
+      }
+      const key = groupKey(group);
+
       if (event.key === '0' || event.key === 'Escape') {
-        setCandidate(null);
+        choose(key, { ...choices[key], candidate: null });
       } else if (/^[1-9]$/.test(event.key) && group.colors[Number(event.key) - 1]) {
-        setCandidate(group.colors[Number(event.key) - 1].name);
+        choose(key, { ...choices[key], candidate: group.colors[Number(event.key) - 1].name });
       }
     };
 
     window.addEventListener('keydown', onKey);
 
     return () => window.removeEventListener('keydown', onKey);
-  }, [group]);
+  }, [groups, opened, active, choices]);
 
   return (
     <div className="ds-dedupe">
       <style>{'.sbdocs-content { max-width: none !important; min-width: 0; } .sbdocs-toc--custom { display: none !important; }'}</style>
       <p>
-        Compare primitives that could be one. Each card is a place the spec says a color is used: a
-        {' '}{spec?.viewport[0] || 1440} x {spec?.viewport[1] || 900} Rancher page with the color made visible and ringed,
-        zoomed in on the ring. Drag to pan, <kbd>Ctrl</kbd> + scroll or pinch to zoom, and double-click to switch between
-        the ring and the whole page. Pick a color to show it in place of all the others everywhere, and Original
-        (or <kbd>0</kbd>) to go back. <kbd>1</kbd>-<kbd>9</kbd> pick the colors.
+        Compare primitives that could be one. Each group opens into cards, one for each place the spec says a color is
+        used: a {spec?.viewport[0] || 1440} x {spec?.viewport[1] || 900} Rancher page with the color made visible and
+        ringed, zoomed in on the ring. Drag to pan, <kbd>Ctrl</kbd> + scroll or pinch to zoom, and double-click to switch
+        between the ring and the whole page. Pick a color to show it in place of the group's others everywhere, and
+        Original (or <kbd>0</kbd>) to go back. <kbd>1</kbd>-<kbd>9</kbd> pick the colors of the group you last used.
+        Choices are saved in this browser, and the report at the bottom lists them.
       </p>
       <div className="ds-dedupe-settings">
         <label>
@@ -999,53 +1228,39 @@ export const Dedupe = () => {
           <span className="ds-muted">{size}px</span>
         </label>
       </div>
-      <SpecEditor text={text} onApply={apply} error={error} screenshots={screenshots} scenarios={scenarios} />
-      {group && (
+      <SpecEditor text={text} onApply={apply} onBuiltIn={() => apply(builtIn())} error={error} screenshots={screenshots} scenarios={scenarios} />
+      {!!groups.length && (
         <>
-          <div className="ds-dedupe-toolbar" role="toolbar" aria-label="Show the colors as">
-            {spec.groups.length > 1 && (
-              <select value={groupIndex} onChange={(e) => {
-                setGroupIndex(Number(e.target.value));
-                setCandidate(null);
-              }} aria-label="Group">
-                {spec.groups.map((g, i) => <option key={i} value={i}>{g.title}</option>)}
-              </select>
-            )}
-            <button type="button" className="ds-copy ds-candidate" aria-pressed={!candidate} onClick={() => setCandidate(null)}>
-              <kbd>0</kbd> Original
-            </button>
-            {group.colors.map((c, i) => (
-              <button key={c.name} type="button" className="ds-copy ds-candidate" aria-pressed={candidate === c.name} onClick={() => setCandidate(c.name)}>
-                <kbd>{i + 1}</kbd>
-                <span className="ds-candidate-chip ds-checker"><span className="ds-fill" style={{ background: c.value }} /></span>
-                {shortName(c.name)}
-              </button>
-            ))}
-            <span className="ds-candidate-custom">
-              <input value={custom} onChange={(e) => setCustom(e.target.value)} placeholder="Any color: #e0e2e9" aria-label="Try any color" />
-              <button type="button" className="ds-copy" aria-pressed={candidate === 'custom'} disabled={!custom.trim() || !CSS.supports('color', custom.trim())} onClick={() => setCandidate('custom')}>Try</button>
-            </span>
-            <span className="ds-dedupe-toolbar-end">
-              <label><input type="checkbox" checked={rings} onChange={(e) => setRings(e.target.checked)} /> Ring</label>
-              <button type="button" className="ds-copy" onClick={() => setCommand((c) => ({ type: 'focus', n: c.n + 1 }))}>Zoom all to rings</button>
-              <button type="button" className="ds-copy" onClick={() => setCommand((c) => ({ type: 'fit', n: c.n + 1 }))}>Whole pages</button>
-              <button type="button" className="ds-copy" onClick={() => setReload((n) => n + 1)}>Reload all</button>
-            </span>
+          <div className="ds-dedupe-settings" role="toolbar" aria-label="Every open card">
+            <label><input type="checkbox" checked={rings} onChange={(e) => setRings(e.target.checked)} /> Ring</label>
+            <button type="button" className="ds-copy" onClick={() => setCommand((c) => ({ type: 'focus', n: c.n + 1 }))}>Zoom all to rings</button>
+            <button type="button" className="ds-copy" onClick={() => setCommand((c) => ({ type: 'fit', n: c.n + 1 }))}>Whole pages</button>
+            <button type="button" className="ds-copy" onClick={() => setReload((n) => n + 1)}>Reload all</button>
+            <button type="button" className="ds-copy" disabled={!opened.length} onClick={() => setOpened([])}>Close all</button>
           </div>
-          {!joinUrl(base, '/') ? (
-            <p className="ds-usage-error">Set the Rancher share these pages come from: the URL of a dashboard built with the color tool, in front of a Rancher you are signed in to.</p>
-          ) : (
-            <div className="ds-ucards" style={{ '--ds-card': `${ size }px` }}>
-              {group.colors.flatMap((c) => (c.usages.length ? c.usages.map((usage, i) => (
-                <UsageCard key={`${ c.name }-${ i }`} base={base} usage={usage} color={c} candidate={candidate === 'custom' ? custom.trim() : candidate} onPick={pick} viewport={spec.viewport} colors={colors} rings={rings} reload={reload} command={command} />
-              )) : [
-                <div key={c.name} className="ds-ucard">
-                  <ColorHeader color={c} candidate={candidate === 'custom' ? custom.trim() : candidate} onPick={pick} />
-                  <p className="ds-muted">No usages in the spec for this color.</p>
-                </div>
-              ]))}
-            </div>
-          )}
+          {groups.map((group, i) => {
+            const key = groupKey(group);
+
+            return (
+              <DedupeGroup
+                key={`${ i }-${ key }`}
+                group={group}
+                index={i}
+                open={opened.includes(key)}
+                onToggle={() => toggle(key)}
+                choice={choices[key]}
+                onChoose={(choice) => choose(key, choice)}
+                onActivate={() => setActive(key)}
+                base={base}
+                viewport={spec.viewport}
+                size={size}
+                rings={rings}
+                reload={reload}
+                command={command}
+              />
+            );
+          })}
+          <Report groups={groups} choices={choices} />
         </>
       )}
     </div>
@@ -1371,7 +1586,7 @@ export const Dedupe = () => {
   width: 160px;
 }
 
-.ds-dedupe-settings, .ds-dedupe-toolbar, .ds-spec-actions, .ds-spec-from, .ds-dedupe-toolbar-end, .ds-candidate-custom {
+.ds-dedupe-settings, .ds-dedupe-toolbar, .ds-spec-actions, .ds-spec-from, .ds-candidate-custom {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1453,8 +1668,126 @@ export const Dedupe = () => {
   overflow: hidden;
 }
 
-.ds-dedupe-toolbar-end {
+.ds-group {
+  margin-bottom: 8px;
+  border: 1px solid var(--color-gray-96);
+  border-radius: 6px;
+}
+
+.ds-group-heading {
+  margin: 0;
+  border: 0;
+  font-size: inherit;
+}
+
+.ds-group-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ds-group-toggle:hover {
+  background: var(--color-gray-25);
+}
+
+.ds-group-caret {
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 6px solid currentColor;
+  transition: transform 0.15s;
+}
+
+.ds-group-toggle[aria-expanded="true"] .ds-group-caret {
+  transform: rotate(90deg);
+}
+
+.ds-group-title {
+  min-width: 140px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ds-group-options, .ds-group-option, .ds-group-choice {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+}
+
+.ds-group-option, .ds-group-choice {
+  gap: 4px;
+}
+
+.ds-group-option--picked {
+  font-weight: 600;
+}
+
+.ds-group-option--picked .ds-candidate-chip {
+  border-color: var(--color-blue-451);
+  box-shadow: 0 0 0 1px var(--color-blue-451);
+}
+
+.ds-group-choice {
   margin-left: auto;
+  font-weight: 600;
+}
+
+.ds-group-body {
+  padding: 0 12px;
+}
+
+.ds-group-body .ds-dedupe-toolbar {
+  padding-top: 0;
+}
+
+.ds-report {
+  margin: 16px 0 24px;
+}
+
+.ds-report-body {
+  margin-top: 8px;
+  padding: 8px 16px;
+  border: 1px solid var(--color-gray-96);
+  border-radius: 6px;
+}
+
+.ds-report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.ds-report-rendered table {
+  border-collapse: collapse;
+}
+
+.ds-report-rendered code {
+  padding: 1px 4px;
+  border: 1px solid var(--color-gray-96);
+  border-radius: 3px;
+  background: var(--color-gray-25);
+  color: var(--color-gray-806);
+  font-size: 12px;
+}
+
+.ds-report-rendered th, .ds-report-rendered td {
+  padding: 4px 10px;
+  border: 1px solid var(--color-gray-96);
+  text-align: left;
+  vertical-align: top;
 }
 
 .ds-ucards {
