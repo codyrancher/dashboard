@@ -426,8 +426,6 @@ export const tabs = shared('color-primitives-tab', 'primitives', false);
 
 export const groupsStore = (importDedupeSpec(), shared('color-dedupe-groups', null));
 
-export const marksStore = shared('color-usage-marks', {});
-
 export const choicesStore = shared('color-dedupe-choices', {});
 
 export const openStore = shared('color-dedupe-open', []);
@@ -559,7 +557,7 @@ export const GroupLinks = ({ groups, onShow }) => groups.map((g, i) => (
 ));
 
 export const Swatch = ({
-  color, background, onOpen, mark, groups, selected, onSelect
+  color, background, onOpen, groups, selected, onSelect
 }) => (
   <div className={`ds-card${ selected ? ' ds-card--selected' : '' }`}>
     <button type="button" className="ds-swatch" onClick={() => onOpen(color.name)} aria-haspopup="dialog" aria-label={`${ color.name }, ${ color.value }: show where it is used`}>
@@ -571,7 +569,6 @@ export const Swatch = ({
       <span>{color.uses === 1 ? '1 use' : `${ color.uses } uses`}</span>
       <ThemeBadge color={color} />
       {color.computed.length > 0 && <span className="ds-computed">Computed</span>}
-      {mark && <span className={`ds-mark ds-mark--${ mark }`}>{mark === 'right' ? 'Checked' : 'Wrong'}</span>}
       <CopyButton name={color.name} />
     </div>
     <div className="ds-meta">
@@ -657,12 +654,9 @@ export const Details = ({
   const color = colors.find((c) => c.name === name);
   const spec = specOf(name);
   const { base } = useRancher();
-  const [marks, setMarks] = useShared(marksStore);
   const [groups] = useGroups();
   const key = shortName(name);
-  const mark = marks[key];
   const at = names.indexOf(name);
-  const setMark = (value) => setMarks((all) => (value ? { ...all, [key]: value } : without(all, key)));
   const inGroups = groups.filter((g) => g.colors.includes(key));
 
   useEffect(() => {
@@ -703,19 +697,9 @@ export const Details = ({
           <p className="ds-muted"><NoUsage name={name} note={spec.note} /></p>
         ) : !joinUrl(base, '/') ? (
           <p className="ds-usage-error">Set the Rancher at the top of the page to see where Rancher shows it.</p>
-        ) : (
-          <>
-            {spec.usages.map((usage, i) => (
-              <UsageCard key={`${ name }-${ i }`} base={base} usage={usage} color={spec} viewport={VIEWPORT} colors={NO_COLORS} rings reload={0} header={false} />
-            ))}
-            <div className="ds-verify" role="group" aria-label="Your check of this color">
-              <span>Is the ring on this color?</span>
-              <button type="button" className="ds-copy" aria-pressed={mark === 'right'} onClick={() => setMark(mark === 'right' ? null : 'right')}>Yes</button>
-              <button type="button" className="ds-copy" aria-pressed={mark === 'wrong'} onClick={() => setMark(mark === 'wrong' ? null : 'wrong')}>No</button>
-              <span className="ds-muted">Saved in this browser, and counted at the top of Primitives.</span>
-            </div>
-          </>
-        )}
+        ) : spec.usages.map((usage, i) => (
+          <UsageCard key={`${ name }-${ i }`} base={base} usage={usage} color={spec} viewport={VIEWPORT} colors={NO_COLORS} rings reload={0} header={false} />
+        ))}
         <h3>Dedupe groups</h3>
         <p>
           {inGroups.length ? <>In <GroupLinks groups={inGroups} onShow={() => dialog.current?.close()} />.</> : 'In no group yet.'}
@@ -751,14 +735,12 @@ export const SelectionBar = ({ names, onClear }) => (
 
 export const Primitives = () => {
   const { themes, colors } = describedColors();
-  const [marks] = useShared(marksStore);
   const [groups] = useGroups();
   const [open, setOpen] = useState(null);
   const [selected, setSelected] = useState([]);
   const names = useMemo(() => colors.map((c) => c.name), [colors]);
   const groupsOf = (name) => groups.filter((g) => g.colors.includes(shortName(name)));
   const select = (name) => setSelected((current) => (current.includes(name) ? current.filter((n) => n !== name) : [...current, name]));
-  const marked = (mark) => Object.values(marks).filter((m) => m === mark).length;
 
   return (
     <div>
@@ -769,8 +751,6 @@ export const Primitives = () => {
           </span>
         ))}
         <span>{colors.filter((c) => c.computed.length).length} <span className="ds-computed">Computed</span></span>
-        <span>{marked('right')} <span className="ds-mark ds-mark--right">Checked</span></span>
-        <span>{marked('wrong')} <span className="ds-mark ds-mark--wrong">Wrong</span></span>
       </p>
       {groupByFamily(colors).map((group) => (
         <div key={group.title}>
@@ -782,7 +762,6 @@ export const Primitives = () => {
                 color={c}
                 background={themes.background}
                 onOpen={setOpen}
-                mark={marks[shortName(c.name)]}
                 groups={groupsOf(c.name)}
                 selected={selected.includes(c.name)}
                 onSelect={select}
@@ -2112,27 +2091,6 @@ export const Dedupe = () => {
   color: var(--color-red-488);
 }
 
-.ds-mark {
-  display: inline-flex;
-  align-items: center;
-  padding: 0 6px;
-  border: 1px solid var(--color-blue-451);
-  border-radius: 10px;
-  color: var(--color-blue-451);
-}
-
-.ds-mark--right {
-  border-color: var(--color-green-523);
-  background: var(--color-green-523);
-  color: var(--color-white);
-}
-
-.ds-mark--wrong {
-  border-color: var(--color-red-488);
-  background: var(--color-red-488);
-  color: var(--color-white);
-}
-
 .ds-select {
   display: inline-flex;
   align-items: center;
@@ -2164,14 +2122,14 @@ export const Dedupe = () => {
   margin-left: 0;
 }
 
-.ds-add-to-group, .ds-add-to-group label, .ds-dialog-nav, .ds-verify, .ds-group-editor, .ds-group-editor label, .ds-tags, .ds-group-add, .ds-similar {
+.ds-add-to-group, .ds-add-to-group label, .ds-dialog-nav, .ds-group-editor, .ds-group-editor label, .ds-tags, .ds-group-add, .ds-similar {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
 }
 
-.ds-add-to-group .ds-copy, .ds-dialog-nav .ds-copy, .ds-verify .ds-copy, .ds-group-editor .ds-copy, .ds-spec .ds-copy {
+.ds-add-to-group .ds-copy, .ds-dialog-nav .ds-copy, .ds-group-editor .ds-copy, .ds-spec .ds-copy {
   margin-left: 0;
 }
 
@@ -2206,10 +2164,6 @@ export const Dedupe = () => {
 
 .ds-dialog .ds-ucard {
   margin-bottom: 8px;
-}
-
-.ds-verify {
-  margin: 4px 0 12px;
 }
 
 .ds-rancher {
@@ -2291,7 +2245,7 @@ Use these as `var(--color-...)` instead of writing colors out or computing them 
 - **Uses** counts the references in shell and @rancher/components.
 - **Light + dark**, **Light only** and **Dark only** say which themes paint the color, through a theme variable or a component style. A sun marks the light theme and a moon the dark theme, and a color only the dark theme paints gets a dark badge. A dashed badge means nothing paints it: only a theme variable nothing reads, or a Sass variable that never reaches the CSS, refers to it.
 - **Computed** marks a color that master computed from another color (`darken()`, `color-mix()` and the like) before it became a primitive. The details say how.
-- **Checked** and **Wrong** are your answers in a color's details to whether the ring sits on it, kept in this browser. Under **Group**, a swatch links to the dedupe groups the color is in.
+- Under **Group**, a swatch links to the dedupe groups the color is in.
 
 They are defined in `pkg/rancher-components/src/components/design-system/_color-variables.scss`, and `yarn generate:colors` writes their values to `colors.ts`. A color that isn't here yet gets a new primitive there first.
 
