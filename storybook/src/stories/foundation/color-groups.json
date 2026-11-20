@@ -1,0 +1,94 @@
+[
+  {
+    "title": "Near-white grays",
+    "colors": [
+      "gray-46",
+      "gray-47",
+      "gray-48",
+      "gray-49"
+    ]
+  },
+  {
+    "title": "Light borders",
+    "colors": [
+      "gray-96",
+      "gray-98",
+      "gray-99",
+      "gray-100"
+    ]
+  },
+  {
+    "title": "Dark surfaces",
+    "colors": [
+      "gray-703",
+      "gray-705",
+      "gray-707",
+      "gray-719",
+      "gray-723"
+    ]
+  },
+  {
+    "title": "Dark slate blues",
+    "colors": [
+      "blue-609",
+      "blue-616",
+      "blue-619",
+      "blue-625",
+      "blue-628",
+      "blue-631"
+    ]
+  },
+  {
+    "title": "Link blues",
+    "colors": [
+      "blue-521",
+      "blue-523"
+    ]
+  },
+  {
+    "title": "Pale greens",
+    "colors": [
+      "green-80",
+      "green-82"
+    ]
+  },
+  {
+    "title": "Dark accent blues",
+    "colors": [
+      "blue-196",
+      "blue-231",
+      "blue-244",
+      "blue-282"
+    ]
+  },
+  {
+    "title": "Classic blue tints",
+    "colors": [
+      "blue-349-a14",
+      "blue-349-a15"
+    ]
+  },
+  {
+    "title": "Faint blue tints",
+    "colors": [
+      "blue-438-a5",
+      "blue-451-a5",
+      "blue-460-a5"
+    ]
+  },
+  {
+    "title": "Primary blue tints",
+    "colors": [
+      "blue-451-a14",
+      "blue-451-a15",
+      "blue-460-a15"
+    ]
+  },
+  {
+    "title": "Dark slate pair",
+    "colors": [
+      "blue-628",
+      "blue-631"
+    ]
+  }
+]

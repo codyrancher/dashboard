@@ -1,0 +1,5953 @@
+{
+  "white": {
+    "usages": [
+      {
+        "label": "Background of div.side-menu.menu-close",
+        "route": "/home",
+        "theme": "light",
+        "highlight": {
+          "selector": "div.side-menu.menu-close",
+          "color": true
+        }
+      }
+    ]
+  },
+  "white-a4": {
+    "usages": [
+      {
+        "label": "Background of div.barn-extensions__studio",
+        "route": "/c/local/uiplugins",
+        "theme": "dark",
+        "highlight": {
+          "selector": "div.barn-extensions__studio",
+          "color": true
+        }
+      }
+    ]
+  },
+  "white-a6": {
+    "usages": [
+      {
+        "label": "Background of li.cluster-switcher-row.active, with the cluster switcher open, its cluster list loading and the local row highlighted",
+        "route": "/c/local/explorer",
+        "theme": "classic dark",
+        "steps": [
+          {
+            "click": "[data-testid=cluster-switcher-trigger]"
+          },
+          {
+            "waitFor": ".cluster-switcher-flyout .switcher-local .cluster-switcher-row"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "(() => { let c = colorTool.componentOf(document.querySelector('.cluster-switcher-flyout')); while (c && !(c.data && 'listLoading' in c.data)) { c = c.parent; } if (c) { c.data.listLoading = true; } })()"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "document.querySelectorAll('.cluster-switcher-flyout .shimmer').forEach((e) => { e.style.backgroundPosition = '33% 0'; })"
+          },
+          {
+            "hover": ".switcher-local .cluster-switcher-row .row-main"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "li.cluster-switcher-row.active",
+          "color": true
+        }
+      }
+    ]
+  },
+  "white-a7": {
+    "usages": [
+      {
+        "label": "Gradient of div.skeleton-badge.shimmer, with the cluster switcher open, its cluster list loading and the local row highlighted",
+        "route": "/c/local/explorer",
+        "theme": "classic dark",
+        "steps": [
+          {
+            "click": "[data-testid=cluster-switcher-trigger]"
+          },
+          {
+            "waitFor": ".cluster-switcher-flyout .switcher-local .cluster-switcher-row"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "(() => { let c = colorTool.componentOf(document.querySelector('.cluster-switcher-flyout')); while (c && !(c.data && 'listLoading' in c.data)) { c = c.parent; } if (c) { c.data.listLoading = true; } })()"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "document.querySelectorAll('.cluster-switcher-flyout .shimmer').forEach((e) => { e.style.backgroundPosition = '33% 0'; })"
+          },
+          {
+            "hover": ".switcher-local .cluster-switcher-row .row-main"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "div.skeleton-badge.shimmer",
+          "color": true
+        }
+      }
+    ]
+  },
+  "white-a8": {
+    "note": "It's the scroll shadow the New View tab casts over tabs scrolling under it, and the tab strips here never overflow."
+  },
+  "white-a10": {
+    "usages": [
+      {
+        "label": "Background of span.switcher-group-count, with the cluster switcher open, its cluster list loading and the local row highlighted",
+        "route": "/c/local/explorer",
+        "theme": "classic dark",
+        "steps": [
+          {
+            "click": "[data-testid=cluster-switcher-trigger]"
+          },
+          {
+            "waitFor": ".cluster-switcher-flyout .switcher-local .cluster-switcher-row"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "(() => { let c = colorTool.componentOf(document.querySelector('.cluster-switcher-flyout')); while (c && !(c.data && 'listLoading' in c.data)) { c = c.parent; } if (c) { c.data.listLoading = true; } })()"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "document.querySelectorAll('.cluster-switcher-flyout .shimmer').forEach((e) => { e.style.backgroundPosition = '33% 0'; })"
+          },
+          {
+            "hover": ".switcher-local .cluster-switcher-row .row-main"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "span.switcher-group-count",
+          "color": true
+        }
+      }
+    ]
+  },
+  "white-a15": {
+    "usages": [
+      {
+        "label": "Gradient of span.skeleton-bar.shimmer, with the cluster switcher open, its cluster list loading and the local row highlighted",
+        "route": "/c/local/explorer",
+        "theme": "classic dark",
+        "steps": [
+          {
+            "click": "[data-testid=cluster-switcher-trigger]"
+          },
+          {
+            "waitFor": ".cluster-switcher-flyout .switcher-local .cluster-switcher-row"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "(() => { let c = colorTool.componentOf(document.querySelector('.cluster-switcher-flyout')); while (c && !(c.data && 'listLoading' in c.data)) { c = c.parent; } if (c) { c.data.listLoading = true; } })()"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "document.querySelectorAll('.cluster-switcher-flyout .shimmer').forEach((e) => { e.style.backgroundPosition = '33% 0'; })"
+          },
+          {
+            "hover": ".switcher-local .cluster-switcher-row .row-main"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "span.skeleton-bar.shimmer",
+          "color": true
+        }
+      }
+    ]
+  },
+  "white-a25": {
+    "note": "Its only rule, in Header.vue's scoped styles, matches no element."
+  },
+  "white-a30": {
+    "usages": [
+      {
+        "label": "Border of button.rc-button.btn",
+        "route": "/c/local/apps/charts/chart?repo-type=cluster&repo=dev-extension&chart=dev-extension",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 4000
+          }
+        ],
+        "highlight": {
+          "selector": "button.rc-button.btn",
+          "color": true
+        }
+      }
+    ]
+  },
+  "white-a65": {
+    "note": "Only the pin on the current cluster's row in the pinned shelf paints it, and nothing is pinned on this Rancher."
+  },
+  "black": {
+    "usages": [
+      {
+        "label": "Background of button.btn.bg-success, after Generate Response Times, with :active forced on it",
+        "route": "/diagnostic",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 6000
+          },
+          {
+            "click": "[data-testid=diagnostics-generate-response-times]"
+          },
+          {
+            "eval": "new Promise((res) => { const t0 = Date.now(); const iv = setInterval(() => { const b = document.querySelector('[data-testid=diagnostics-generate-response-times]'); if (/bg-success|bg-error/.test(b.className) || Date.now() - t0 > 45000) { clearInterval(iv); const p = colorTool.componentOf(b)?.proxy; if (p?.timer) clearTimeout(p.timer); res(b.className); } }, 100); })"
+          },
+          {
+            "force": "[data-testid=diagnostics-generate-response-times]",
+            "state": "active"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.bg-success",
+          "color": true
+        }
+      }
+    ]
+  },
+  "black-a0": {
+    "note": "It's fully transparent: it's the clear end of fades, so there's nothing to see."
+  },
+  "black-a4": {
+    "usages": [
+      {
+        "label": "Shadow of div.jump-to-dropdown, with \"config\" typed into Jump to",
+        "route": "/c/local/explorer",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\"[data-testid=\\\"nav-jump-to-input\\\"]\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=\"nav-jump-to-input\"]"
+          },
+          {
+            "type": "config"
+          },
+          {
+            "wait": 2000
+          }
+        ],
+        "highlight": {
+          "selector": "div.jump-to-dropdown",
+          "color": true
+        }
+      }
+    ]
+  },
+  "black-a5": {
+    "usages": [
+      {
+        "label": "Background of span.role, on the Project Membership tab",
+        "route": "/c/local/explorer/members",
+        "theme": "light",
+        "steps": [
+          {
+            "click": "[data-testid=btn-project-membership]"
+          },
+          {
+            "waitFor": "span.role"
+          },
+          {
+            "wait": 2000
+          }
+        ],
+        "highlight": {
+          "selector": "span.role",
+          "color": true
+        }
+      }
+    ]
+  },
+  "black-a10": {
+    "usages": [
+      {
+        "label": "Shadow of div.v-popper__inner, with the user menu open",
+        "route": "/home",
+        "theme": "light",
+        "steps": [
+          {
+            "click": "[data-testid=\"nav_header_showUserMenu\"]"
+          }
+        ],
+        "highlight": {
+          "selector": "div.v-popper__inner",
+          "color": true
+        }
+      }
+    ]
+  },
+  "black-a15": {
+    "usages": [
+      {
+        "label": "Shadow of div.v-popper__wrapper, with the user menu open",
+        "route": "/home",
+        "theme": "dark",
+        "steps": [
+          {
+            "click": "[data-testid=\"nav_header_showUserMenu\"]"
+          }
+        ],
+        "highlight": {
+          "selector": "div.v-popper__wrapper",
+          "color": true
+        }
+      }
+    ]
+  },
+  "black-a25": {
+    "usages": [
+      {
+        "label": "Shadow of div.v-popper__wrapper, with the user menu open",
+        "route": "/home",
+        "theme": "light",
+        "steps": [
+          {
+            "click": "[data-testid=\"nav_header_showUserMenu\"]"
+          }
+        ],
+        "highlight": {
+          "selector": "div.v-popper__wrapper",
+          "color": true
+        }
+      }
+    ]
+  },
+  "black-a28": {
+    "usages": [
+      {
+        "label": "Shadow of div.column-row.shown, with a column picked up in the View > Columns menu",
+        "route": "/c/local/explorer/pod",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "click": "[data-testid=table-views-view-columns]"
+          },
+          {
+            "waitFor": ".columns-panel .column-handle.grip"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "const h = document.querySelector('.columns-panel .column-handle.grip'); const r = h.getBoundingClientRect(); const x = r.x + r.width / 2; const y = r.y + r.height / 2; h.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 0 })); window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: x, clientY: y + 6 })); true"
+          },
+          {
+            "waitFor": "div.column-row.held"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "div.column-row.shown",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-9": {
+    "usages": [
+      {
+        "label": "Text of an info state badge, with the local cluster shown as updating in this frame only",
+        "route": "/home",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": "span.badge-state"
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const c = $store.getters[\"management/byId\"](\"management.cattle.io.cluster\", \"local\"); c.metadata.state = { ...c.metadata.state, name: \"updating\", transitioning: true, error: false }; true"
+          },
+          {
+            "waitFor": "span.badge-state.bg-info"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.badge-state.bg-info .msg",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-25": {
+    "usages": [
+      {
+        "label": "Background of tr.top-aligned",
+        "route": "/home",
+        "theme": "light",
+        "highlight": {
+          "selector": "tr.top-aligned",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-25-a75": {
+    "note": "It's the mask under the editor's search panel, and it matches the editor's own background, so it changes nothing you can see."
+  },
+  "gray-29": {
+    "usages": [
+      {
+        "label": "Background of tr.top-aligned",
+        "route": "/home",
+        "theme": "classic light",
+        "highlight": {
+          "selector": "tr.top-aligned",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-29-a75": {
+    "usages": [
+      {
+        "label": "Background of button.rc-button.btn, with the Emacs key map set in this tab only",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "eval": "[...document.querySelectorAll('body *')].find((e) => e.__vue_app__).__vue_app__.config.globalProperties.$store.commit('prefs/load', { key: 'keymap', value: 'emacs' })"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content > .cm-line:nth-child(2)"
+          },
+          {
+            "wait": 300
+          },
+          {
+            "key": "ArrowRight"
+          }
+        ],
+        "highlight": {
+          "selector": "button.rc-button.btn",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-32": {
+    "note": "It's the count box in a Fleet app's status summary, which needs an app that targets clusters, or Monitoring's dashboard metrics. Neither is on this Rancher."
+  },
+  "gray-39": {
+    "usages": [
+      {
+        "label": "Background of table.sortable-table.top-divider",
+        "route": "/c/local/explorer",
+        "theme": "light",
+        "highlight": {
+          "selector": "table.sortable-table.top-divider",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-45": {
+    "usages": [
+      {
+        "label": "Border of span.checkbox-custom::after, in the read-only config view of a deployment, on its Storage tab",
+        "route": "/c/local/explorer/apps.deployment/demo/hello-web?mode=view&as=config",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": "[data-testid=btn-storage]"
+          },
+          {
+            "click": "[data-testid=btn-storage]"
+          },
+          {
+            "wait": 2000
+          }
+        ],
+        "highlight": {
+          "selector": "span.checkbox-custom",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-46": {
+    "usages": [
+      {
+        "label": "Background of button.cluster.selector, with :hover forced on button.cluster.selector",
+        "route": "/home",
+        "theme": "light",
+        "steps": [
+          {
+            "force": "button.cluster.selector",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "button.cluster.selector",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-47": {
+    "usages": [
+      {
+        "label": "Background of span.tag.mr-2",
+        "route": "/c/local/explorer/node",
+        "theme": "light",
+        "highlight": {
+          "selector": "span.tag.mr-2",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-48": {
+    "usages": [
+      {
+        "label": "Background of div.item-card-pill.has-clean-tooltip",
+        "route": "/c/local/apps/charts",
+        "theme": "light",
+        "highlight": {
+          "selector": "div.item-card-pill.has-clean-tooltip",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-48-a15": {
+    "note": "Only a Banner with the default secondary color paints it, and every Banner in the dashboard sets another color."
+  },
+  "gray-49": {
+    "usages": [
+      {
+        "label": "Background of div.rc-counter-badge.inactive",
+        "route": "/c/_/auth/config",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          }
+        ],
+        "highlight": {
+          "selector": "div.rc-counter-badge.inactive",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-58": {
+    "usages": [
+      {
+        "label": "Background of div.cm-gutterElement, with YAML typed into the editor, a search open and a fold marker hovered",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "key": "Control+a"
+          },
+          {
+            "type": "# A comment\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: \"demo-config\"\n  namespace: default\ndata:\n  enabled: \"true\"\n  flag: true\n  other: null\n  list: [one, two]\n"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "(async () => { const content = document.querySelector('.rc-code-mirror--editor .cm-content'); content.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', code: 'KeyF', keyCode: 70, ctrlKey: true, bubbles: true, cancelable: true })); await new Promise((resolve) => setTimeout(resolve, 300)); const field = document.querySelector('.cm-search input[name=search]'); field.value = 'true'; field.dispatchEvent(new Event('input', { bubbles: true })); field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, bubbles: true, cancelable: true })); return true; })()"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "force": ".cm-foldGutter .cm-gutterElement:not([style*=\"hidden\"]):has(.rc-cm-fold-marker)",
+            "state": "hover",
+            "all": true
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "div.cm-gutterElement",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-67": {
+    "usages": [
+      {
+        "label": "Text of div.cm-line",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "dark",
+        "highlight": {
+          "selector": "div.cm-line",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-74": {
+    "usages": [
+      {
+        "label": "Border of th, in the chart README",
+        "route": "/c/local/apps/charts/chart?repo-type=cluster&repo=rancher-charts&chart=prometheus-federator",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".markdown table\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "(() => { const t = document.querySelector('.markdown table'); const b = [...document.querySelectorAll('.markdown blockquote')].filter((q) => q.compareDocumentPosition(t) & Node.DOCUMENT_POSITION_FOLLOWING).pop(); const m = document.querySelector('main.main-layout'); m.scrollTo({ top: m.scrollTop + b.getBoundingClientRect().top - 120, behavior: 'instant' }); })()"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "th",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-93": {
+    "usages": [
+      {
+        "label": "Background of div.cm-selectionBackground, with a line selected in the YAML editor",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "key": "Control+a"
+          },
+          {
+            "type": "# A comment\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: \"demo-config\"\n  namespace: default\ndata:\n  enabled: \"true\"\n  flag: true\n  other: null\n  list: [one, two]\n"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); v.dispatch({ selection: { anchor: 0, head: v.state.doc.line(1).to } }); true"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "div.cm-selectionBackground",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-96": {
+    "usages": [
+      {
+        "label": "Background of div.bar",
+        "route": "/c/local/explorer",
+        "theme": "light",
+        "highlight": {
+          "selector": "div.bar",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-96-a15": {
+    "note": "Only CronExpressionEditorModal paints it, and only its Storybook story renders that modal."
+  },
+  "gray-96-a85": {
+    "usages": [
+      {
+        "label": "Shadow of div.side-menu.menu-open, with the side menu open",
+        "route": "/home",
+        "theme": "light",
+        "steps": [
+          {
+            "click": ".menu-icon, [data-testid=\"top-level-menu\"] button"
+          }
+        ],
+        "highlight": {
+          "selector": "div.side-menu.menu-open",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-98": {
+    "usages": [
+      {
+        "label": "Key combo badge on the local cluster's icon, while Alt is held in another cluster",
+        "route": "/c/local/explorer",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": ".side-menu"
+          },
+          {
+            "eval": "const { $store, $router } = document.querySelector('#app').__vue_app__.config.globalProperties; $store.dispatch('management/findAll', { type: 'management.cattle.io.cluster' }).then((clusters) => {   const other = clusters.find((c) => c.id !== 'local' && c.isReady);   if (!other) { throw new Error('The badge needs another ready cluster to switch to, and this Rancher has none.'); }   return $router.push(`/c/${ other.id }/explorer`); });",
+            "wait": 4000
+          },
+          {
+            "eval": "document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Alt', code: 'AltLeft', altKey: true, bubbles: true })); true"
+          },
+          {
+            "wait": 800
+          }
+        ],
+        "highlight": {
+          "selector": "i.key-combo-icon",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-99": {
+    "usages": [
+      {
+        "label": "Background of button.btn.btn-sm",
+        "route": "/c/local/explorer",
+        "theme": "classic light",
+        "highlight": {
+          "selector": "button.btn.btn-sm",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-99-a0": {
+    "usages": [
+      {
+        "label": "Gradient of div.tabs.tab-bar-highlight, with a pod's logs open and its tab being dragged towards the right edge",
+        "route": "/c/local/explorer/pod",
+        "theme": "dark",
+        "steps": [
+          {
+            "click": "[data-testid=sortable-table-0-action-button]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[role=menuitem]",
+            "text": "View Logs"
+          },
+          {
+            "waitFor": ".horizontal-window-manager .tabs .tab.active"
+          },
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "document.querySelector('.horizontal-window-manager .tabs .tab.active').dispatchEvent(new DragEvent('dragstart', { bubbles: true, cancelable: true, dataTransfer: new DataTransfer() }))"
+          },
+          {
+            "wait": 800
+          },
+          {
+            "eval": "document.querySelector('.drag-area.right').dispatchEvent(new DragEvent('dragover', { bubbles: true, cancelable: true, dataTransfer: new DataTransfer() }))"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "div.tabs.tab-bar-highlight",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-99-a15": {
+    "note": "Only CronExpressionEditorModal paints it, and only its Storybook story renders that modal."
+  },
+  "gray-99-a85": {
+    "usages": [
+      {
+        "label": "Shadow of div.side-menu.menu-open, with the side menu open",
+        "route": "/home",
+        "theme": "classic light",
+        "steps": [
+          {
+            "click": ".menu-icon, [data-testid=\"top-level-menu\"] button"
+          }
+        ],
+        "highlight": {
+          "selector": "div.side-menu.menu-open",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-99-a90": {
+    "usages": [
+      {
+        "label": "Gradient of span.pin-effect-area.right, with a pod's logs open and its tab being dragged towards the right edge",
+        "route": "/c/local/explorer/pod",
+        "theme": "light",
+        "steps": [
+          {
+            "click": "[data-testid=sortable-table-0-action-button]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[role=menuitem]",
+            "text": "View Logs"
+          },
+          {
+            "waitFor": ".horizontal-window-manager .tabs .tab.active"
+          },
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "document.querySelector('.horizontal-window-manager .tabs .tab.active').dispatchEvent(new DragEvent('dragstart', { bubbles: true, cancelable: true, dataTransfer: new DataTransfer() }))"
+          },
+          {
+            "wait": 800
+          },
+          {
+            "eval": "document.querySelector('.drag-area.right').dispatchEvent(new DragEvent('dragover', { bubbles: true, cancelable: true, dataTransfer: new DataTransfer() }))"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "span.pin-effect-area.right",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-100": {
+    "usages": [
+      {
+        "label": "Border of div.rc-status-badge.none",
+        "route": "/c/_/auth/config",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          }
+        ],
+        "highlight": {
+          "selector": "div.rc-status-badge.none",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-124": {
+    "usages": [
+      {
+        "label": "Border of blockquote, in the chart README",
+        "route": "/c/local/apps/charts/chart?repo-type=cluster&repo=rancher-charts&chart=prometheus-federator",
+        "theme": "classic light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".markdown table\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "(() => { const t = document.querySelector('.markdown table'); const b = [...document.querySelectorAll('.markdown blockquote')].filter((q) => q.compareDocumentPosition(t) & Node.DOCUMENT_POSITION_FOLLOWING).pop(); const m = document.querySelector('main.main-layout'); m.scrollTo({ top: m.scrollTop + b.getBoundingClientRect().top - 120, behavior: 'instant' }); })()"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "blockquote",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-134": {
+    "usages": [
+      {
+        "label": "Background of button.btn.btn-sm, in Show Diff, with :hover forced on Split",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 4000
+          },
+          {
+            "click": ".cm-content"
+          },
+          {
+            "key": "Control+End"
+          },
+          {
+            "type": "\n# preview only"
+          },
+          {
+            "click": "button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "wait": 2000
+          },
+          {
+            "force": ".diff-mode button:not(.active)",
+            "state": "hover",
+            "all": true
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.btn-sm",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-155": {
+    "note": "Only styles for a log list on the diagnostic page paint it, and that page has no log list."
+  },
+  "gray-168": {
+    "note": "It's only a fallback in the editor theme, and the variable it falls back from is always set."
+  },
+  "gray-212": {
+    "usages": [
+      {
+        "label": "A namespace group label, with the pod list grouped by namespace in its View menu (not saved)",
+        "route": "/c/local/explorer/pod",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "click": "[data-testid=table-views-view-group]"
+          },
+          {
+            "click": "[data-testid^=table-views-group-]",
+            "text": "Namespace"
+          },
+          {
+            "waitFor": ".group-tab"
+          },
+          {
+            "key": "Escape"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": ".group-tab span",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-217": {
+    "note": "Only CollapsibleCard.vue paints it, and nothing renders that component."
+  },
+  "gray-220": {
+    "note": "Only RcSectionActions in @rancher/components paints it, and no dashboard page renders that component."
+  },
+  "gray-221": {
+    "usages": [
+      {
+        "label": "Border of div.remove-modal.modal-container, in the Delete dialog, with :hover forced on Delete",
+        "route": "/c/local/explorer/configmap",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "click": "[data-testid=sortable-table-0-action-button]"
+          },
+          {
+            "wait": 800
+          },
+          {
+            "click": "[role=menuitem]",
+            "text": "Delete"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "force": "[data-testid=prompt-remove-confirm-button]",
+            "state": "hover"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "div.remove-modal.modal-container",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-293": {
+    "usages": [
+      {
+        "label": "Text of div.cm-gutterElement.cm-activeLineGutter",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "dark",
+        "highlight": {
+          "selector": "div.cm-gutterElement.cm-activeLineGutter",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-346": {
+    "usages": [
+      {
+        "label": "Text of div.query-input.is-empty::before",
+        "route": "/home",
+        "theme": "dark",
+        "highlight": {
+          "selector": "div.query-input.is-empty",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-400": {
+    "usages": [
+      {
+        "label": "Text of input, in the read-only config view of a deployment, on its Storage tab",
+        "route": "/c/local/explorer/apps.deployment/demo/hello-web?mode=view&as=config",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": "[data-testid=btn-storage]"
+          },
+          {
+            "click": "[data-testid=btn-storage]"
+          },
+          {
+            "wait": 2000
+          }
+        ],
+        "highlight": {
+          "selector": "input",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-455": {
+    "note": "It's the default color of a cluster badge, which only shows on a cluster that has badge text and no badge color. No cluster on this Rancher has one."
+  },
+  "gray-459": {
+    "usages": [
+      {
+        "label": "Text of i.icon.icon-chevron-beginning::before",
+        "route": "/c/local/explorer",
+        "theme": "light",
+        "highlight": {
+          "selector": "i.icon.icon-chevron-beginning",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-465": {
+    "note": "Only RcSectionActions in @rancher/components paints it, and no dashboard page renders that component."
+  },
+  "gray-466": {
+    "usages": [
+      {
+        "label": "Background of span.checkbox-custom",
+        "route": "/c/local/explorer/workload",
+        "theme": "dark",
+        "highlight": {
+          "selector": "span.checkbox-custom",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-469": {
+    "usages": [
+      {
+        "label": "Text of p, in the chart README",
+        "route": "/c/local/apps/charts/chart?repo-type=cluster&repo=rancher-charts&chart=prometheus-federator",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".markdown table\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "(() => { const t = document.querySelector('.markdown table'); const b = [...document.querySelectorAll('.markdown blockquote')].filter((q) => q.compareDocumentPosition(t) & Node.DOCUMENT_POSITION_FOLLOWING).pop(); const m = document.querySelector('main.main-layout'); m.scrollTo({ top: m.scrollTop + b.getBoundingClientRect().top - 120, behavior: 'instant' }); })()"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "p",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-506": {
+    "usages": [
+      {
+        "label": "Text of div.cm-gutterElement.cm-activeLineGutter",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "light",
+        "highlight": {
+          "selector": "div.cm-gutterElement.cm-activeLineGutter",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-552": {
+    "usages": [
+      {
+        "label": "Background of button.btn.btn-sm",
+        "route": "/c/local/explorer",
+        "theme": "dark",
+        "highlight": {
+          "selector": "button.btn.btn-sm",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-581": {
+    "usages": [
+      {
+        "label": "Background of span.tag.mr-2",
+        "route": "/c/local/explorer/node",
+        "theme": "dark",
+        "highlight": {
+          "selector": "span.tag.mr-2",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-586": {
+    "usages": [
+      {
+        "label": "Background of div.bar",
+        "route": "/c/local/explorer/node",
+        "theme": "classic dark",
+        "highlight": {
+          "selector": "div.bar",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-586-a50": {
+    "note": "Only CountGauge's back circle paints it, and nothing renders CountGauge."
+  },
+  "gray-644": {
+    "note": "Only GitPicker.vue paints it, and nothing renders that component."
+  },
+  "gray-671": {
+    "usages": [
+      {
+        "label": "Background of li.child.nav-type, with :hover forced on li.child.nav-type",
+        "route": "/c/local/explorer",
+        "theme": "dark",
+        "steps": [
+          {
+            "force": "li.child.nav-type",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "li.child.nav-type",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-675": {
+    "usages": [
+      {
+        "label": "Background of tr.main-row, with :hover forced on tr.main-row",
+        "route": "/home",
+        "theme": "dark",
+        "steps": [
+          {
+            "force": "tr.main-row",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "tr.main-row",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-679-a75": {
+    "usages": [
+      {
+        "label": "Background of div.modal-overlay, in the Delete dialog, with :hover forced on Delete",
+        "route": "/c/local/explorer/configmap",
+        "theme": "dark",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "click": "[data-testid=sortable-table-0-action-button]"
+          },
+          {
+            "wait": 800
+          },
+          {
+            "click": "[role=menuitem]",
+            "text": "Delete"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "force": "[data-testid=prompt-remove-confirm-button]",
+            "state": "hover"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "div.modal-overlay",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-680": {
+    "note": "Its rules in SideNav.vue match no element, and in Group.vue it's only a fallback behind a variable every theme sets."
+  },
+  "gray-691": {
+    "usages": [
+      {
+        "label": "Background of div.cm-selectionBackground, with a line selected in the YAML editor",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "dark",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "key": "Control+a"
+          },
+          {
+            "type": "# A comment\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: \"demo-config\"\n  namespace: default\ndata:\n  enabled: \"true\"\n  flag: true\n  other: null\n  list: [one, two]\n"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); v.dispatch({ selection: { anchor: 0, head: v.state.doc.line(1).to } }); true"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "div.cm-selectionBackground",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-692": {
+    "note": "It's the count box in a Fleet app's status summary, which needs an app that targets clusters, or Monitoring's dashboard metrics. Neither is on this Rancher."
+  },
+  "gray-693": {
+    "note": "Only .bg-darker.btn:active paints it, and no button has the bg-darker class."
+  },
+  "gray-703": {
+    "usages": [
+      {
+        "label": "Background of div.jump-to-dropdown, with \"config\" typed into Jump to",
+        "route": "/c/local/explorer",
+        "theme": "dark",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\"[data-testid=\\\"nav-jump-to-input\\\"]\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=\"nav-jump-to-input\"]"
+          },
+          {
+            "type": "config"
+          },
+          {
+            "wait": 2000
+          }
+        ],
+        "highlight": {
+          "selector": "div.jump-to-dropdown",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-705": {
+    "usages": [
+      {
+        "label": "Background of div.jump-to-dropdown, with \"config\" typed into Jump to",
+        "route": "/c/local/explorer",
+        "theme": "classic dark",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\"[data-testid=\\\"nav-jump-to-input\\\"]\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=\"nav-jump-to-input\"]"
+          },
+          {
+            "type": "config"
+          },
+          {
+            "wait": 2000
+          }
+        ],
+        "highlight": {
+          "selector": "div.jump-to-dropdown",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-707": {
+    "usages": [
+      {
+        "label": "Background of table.sortable-table.top-divider",
+        "route": "/c/local/explorer/pod",
+        "theme": "classic dark",
+        "highlight": {
+          "selector": "table.sortable-table.top-divider",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-719": {
+    "usages": [
+      {
+        "label": "Background of div.cluster-badge-logo.disabled",
+        "route": "/home",
+        "theme": "dark",
+        "highlight": {
+          "selector": "div.cluster-badge-logo.disabled",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-719-a15": {
+    "note": "Only a Banner with the default secondary color paints it, and every Banner in the dashboard sets another color."
+  },
+  "gray-723": {
+    "usages": [
+      {
+        "label": "Background of div.side-menu.menu-close",
+        "route": "/home",
+        "theme": "dark",
+        "highlight": {
+          "selector": "div.side-menu.menu-close",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-743": {
+    "usages": [
+      {
+        "label": "Background of div.unlabeled-select.disabled",
+        "route": "/prefs",
+        "theme": "dark",
+        "highlight": {
+          "selector": "div.unlabeled-select.disabled",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-772": {
+    "usages": [
+      {
+        "label": "Background of div.menu-spacer",
+        "route": "/home",
+        "theme": "classic dark",
+        "highlight": {
+          "selector": "div.menu-spacer",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-777": {
+    "usages": [
+      {
+        "label": "Background of tr.top-aligned",
+        "route": "/home",
+        "theme": "dark",
+        "highlight": {
+          "selector": "tr.top-aligned",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-777-a30": {
+    "usages": [
+      {
+        "label": "Text of div.d2h-code-line, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "dark",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "div.d2h-code-line",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-777-a75": {
+    "usages": [
+      {
+        "label": "Background of div.toc-container, in the table of contents",
+        "route": "/c/_/manager/provisioning.cattle.io.cluster/create?mode=import&type=import&rkeType=rke2",
+        "theme": "dark",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".toc-container\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "div.toc-container",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-777-a90": {
+    "usages": [
+      {
+        "label": "Shadow of div.tabbed-container.side-tabs",
+        "route": "/c/local/explorer/configmap/create",
+        "theme": "dark",
+        "highlight": {
+          "selector": "div.tabbed-container.side-tabs",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-791": {
+    "usages": [
+      {
+        "label": "Text of div.cm-line",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "light",
+        "highlight": {
+          "selector": "div.cm-line",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-801": {
+    "usages": [
+      {
+        "label": "Background of button.btn.bg-disabled, with :hover forced on button.btn.bg-disabled",
+        "route": "/c/_/fleet",
+        "theme": "dark",
+        "steps": [
+          {
+            "force": "button.btn.bg-disabled",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.bg-disabled",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-801-a65": {
+    "note": "Only the pin on the current cluster's row in the pinned shelf paints it, and nothing is pinned on this Rancher."
+  },
+  "gray-806": {
+    "usages": [
+      {
+        "label": "Background of div.side-menu.menu-close",
+        "route": "/home",
+        "theme": "classic dark",
+        "highlight": {
+          "selector": "div.side-menu.menu-close",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-806-a6": {
+    "usages": [
+      {
+        "label": "Background of li.cluster-switcher-row.active, with the cluster switcher open, its cluster list loading and the local row highlighted",
+        "route": "/c/local/explorer",
+        "theme": "light",
+        "steps": [
+          {
+            "click": "[data-testid=cluster-switcher-trigger]"
+          },
+          {
+            "waitFor": ".cluster-switcher-flyout .switcher-local .cluster-switcher-row"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "(() => { let c = colorTool.componentOf(document.querySelector('.cluster-switcher-flyout')); while (c && !(c.data && 'listLoading' in c.data)) { c = c.parent; } if (c) { c.data.listLoading = true; } })()"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "document.querySelectorAll('.cluster-switcher-flyout .shimmer').forEach((e) => { e.style.backgroundPosition = '33% 0'; })"
+          },
+          {
+            "hover": ".switcher-local .cluster-switcher-row .row-main"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "li.cluster-switcher-row.active",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-806-a7": {
+    "usages": [
+      {
+        "label": "Gradient of div.skeleton-badge.shimmer, with the cluster switcher open, its cluster list loading and the local row highlighted",
+        "route": "/c/local/explorer",
+        "theme": "light",
+        "steps": [
+          {
+            "click": "[data-testid=cluster-switcher-trigger]"
+          },
+          {
+            "waitFor": ".cluster-switcher-flyout .switcher-local .cluster-switcher-row"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "(() => { let c = colorTool.componentOf(document.querySelector('.cluster-switcher-flyout')); while (c && !(c.data && 'listLoading' in c.data)) { c = c.parent; } if (c) { c.data.listLoading = true; } })()"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "document.querySelectorAll('.cluster-switcher-flyout .shimmer').forEach((e) => { e.style.backgroundPosition = '33% 0'; })"
+          },
+          {
+            "hover": ".switcher-local .cluster-switcher-row .row-main"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "div.skeleton-badge.shimmer",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-806-a8": {
+    "note": "It's the scroll shadow the New View tab casts over tabs scrolling under it, and the tab strips here never overflow."
+  },
+  "gray-806-a10": {
+    "usages": [
+      {
+        "label": "Background of span.switcher-group-count, with the cluster switcher open, its cluster list loading and the local row highlighted",
+        "route": "/c/local/explorer",
+        "theme": "light",
+        "steps": [
+          {
+            "click": "[data-testid=cluster-switcher-trigger]"
+          },
+          {
+            "waitFor": ".cluster-switcher-flyout .switcher-local .cluster-switcher-row"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "(() => { let c = colorTool.componentOf(document.querySelector('.cluster-switcher-flyout')); while (c && !(c.data && 'listLoading' in c.data)) { c = c.parent; } if (c) { c.data.listLoading = true; } })()"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "document.querySelectorAll('.cluster-switcher-flyout .shimmer').forEach((e) => { e.style.backgroundPosition = '33% 0'; })"
+          },
+          {
+            "hover": ".switcher-local .cluster-switcher-row .row-main"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "span.switcher-group-count",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-806-a15": {
+    "usages": [
+      {
+        "label": "Gradient of span.skeleton-bar.shimmer, with the cluster switcher open, its cluster list loading and the local row highlighted",
+        "route": "/c/local/explorer",
+        "theme": "light",
+        "steps": [
+          {
+            "click": "[data-testid=cluster-switcher-trigger]"
+          },
+          {
+            "waitFor": ".cluster-switcher-flyout .switcher-local .cluster-switcher-row"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "(() => { let c = colorTool.componentOf(document.querySelector('.cluster-switcher-flyout')); while (c && !(c.data && 'listLoading' in c.data)) { c = c.parent; } if (c) { c.data.listLoading = true; } })()"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "document.querySelectorAll('.cluster-switcher-flyout .shimmer').forEach((e) => { e.style.backgroundPosition = '33% 0'; })"
+          },
+          {
+            "hover": ".switcher-local .cluster-switcher-row .row-main"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "span.skeleton-bar.shimmer",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-806-a30": {
+    "usages": [
+      {
+        "label": "Text of div.d2h-code-line, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "div.d2h-code-line",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-806-a75": {
+    "usages": [
+      {
+        "label": "Background of button.rc-button.btn, with the Emacs key map set in this tab only",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "classic dark",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "eval": "[...document.querySelectorAll('body *')].find((e) => e.__vue_app__).__vue_app__.config.globalProperties.$store.commit('prefs/load', { key: 'keymap', value: 'emacs' })"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content > .cm-line:nth-child(2)"
+          },
+          {
+            "wait": 300
+          },
+          {
+            "key": "ArrowRight"
+          }
+        ],
+        "highlight": {
+          "selector": "button.rc-button.btn",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-806-a90": {
+    "usages": [
+      {
+        "label": "Shadow of div.tabbed-container.side-tabs",
+        "route": "/c/local/explorer/configmap/create",
+        "theme": "classic dark",
+        "highlight": {
+          "selector": "div.tabbed-container.side-tabs",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-826": {
+    "usages": [
+      {
+        "label": "Background of button.btn.btn-sm, in Show Diff, with :hover forced on Split",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "dark",
+        "steps": [
+          {
+            "wait": 4000
+          },
+          {
+            "click": ".cm-content"
+          },
+          {
+            "key": "Control+End"
+          },
+          {
+            "type": "\n# preview only"
+          },
+          {
+            "click": "button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "wait": 2000
+          },
+          {
+            "force": ".diff-mode button:not(.active)",
+            "state": "hover",
+            "all": true
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.btn-sm",
+          "color": true
+        }
+      }
+    ]
+  },
+  "gray-931": {
+    "usages": [
+      {
+        "label": "Border of div.unlabeled-select.disabled",
+        "route": "/prefs",
+        "theme": "dark",
+        "highlight": {
+          "selector": "div.unlabeled-select.disabled",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-11": {
+    "usages": [
+      {
+        "label": "Border of a.back-link, with :hover forced on a.back-link",
+        "route": "/about",
+        "theme": "dark",
+        "steps": [
+          {
+            "force": "a.back-link",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "a.back-link",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-11-a6": {
+    "usages": [
+      {
+        "label": "Background of li.cluster-switcher-row.active, with the cluster switcher open, its cluster list loading and the local row highlighted",
+        "route": "/c/local/explorer",
+        "theme": "dark",
+        "steps": [
+          {
+            "click": "[data-testid=cluster-switcher-trigger]"
+          },
+          {
+            "waitFor": ".cluster-switcher-flyout .switcher-local .cluster-switcher-row"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "(() => { let c = colorTool.componentOf(document.querySelector('.cluster-switcher-flyout')); while (c && !(c.data && 'listLoading' in c.data)) { c = c.parent; } if (c) { c.data.listLoading = true; } })()"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "document.querySelectorAll('.cluster-switcher-flyout .shimmer').forEach((e) => { e.style.backgroundPosition = '33% 0'; })"
+          },
+          {
+            "hover": ".switcher-local .cluster-switcher-row .row-main"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "li.cluster-switcher-row.active",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-11-a7": {
+    "usages": [
+      {
+        "label": "Gradient of div.skeleton-badge.shimmer, with the cluster switcher open, its cluster list loading and the local row highlighted",
+        "route": "/c/local/explorer",
+        "theme": "dark",
+        "steps": [
+          {
+            "click": "[data-testid=cluster-switcher-trigger]"
+          },
+          {
+            "waitFor": ".cluster-switcher-flyout .switcher-local .cluster-switcher-row"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "(() => { let c = colorTool.componentOf(document.querySelector('.cluster-switcher-flyout')); while (c && !(c.data && 'listLoading' in c.data)) { c = c.parent; } if (c) { c.data.listLoading = true; } })()"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "document.querySelectorAll('.cluster-switcher-flyout .shimmer').forEach((e) => { e.style.backgroundPosition = '33% 0'; })"
+          },
+          {
+            "hover": ".switcher-local .cluster-switcher-row .row-main"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "div.skeleton-badge.shimmer",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-11-a8": {
+    "note": "It's the scroll shadow the New View tab casts over tabs scrolling under it, and the tab strips here never overflow."
+  },
+  "red-11-a10": {
+    "usages": [
+      {
+        "label": "Background of span.switcher-group-count, with the cluster switcher open, its cluster list loading and the local row highlighted",
+        "route": "/c/local/explorer",
+        "theme": "dark",
+        "steps": [
+          {
+            "click": "[data-testid=cluster-switcher-trigger]"
+          },
+          {
+            "waitFor": ".cluster-switcher-flyout .switcher-local .cluster-switcher-row"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "(() => { let c = colorTool.componentOf(document.querySelector('.cluster-switcher-flyout')); while (c && !(c.data && 'listLoading' in c.data)) { c = c.parent; } if (c) { c.data.listLoading = true; } })()"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "document.querySelectorAll('.cluster-switcher-flyout .shimmer').forEach((e) => { e.style.backgroundPosition = '33% 0'; })"
+          },
+          {
+            "hover": ".switcher-local .cluster-switcher-row .row-main"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "span.switcher-group-count",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-11-a15": {
+    "usages": [
+      {
+        "label": "Gradient of span.skeleton-bar.shimmer, with the cluster switcher open, its cluster list loading and the local row highlighted",
+        "route": "/c/local/explorer",
+        "theme": "dark",
+        "steps": [
+          {
+            "click": "[data-testid=cluster-switcher-trigger]"
+          },
+          {
+            "waitFor": ".cluster-switcher-flyout .switcher-local .cluster-switcher-row"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "(() => { let c = colorTool.componentOf(document.querySelector('.cluster-switcher-flyout')); while (c && !(c.data && 'listLoading' in c.data)) { c = c.parent; } if (c) { c.data.listLoading = true; } })()"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "eval": "document.querySelectorAll('.cluster-switcher-flyout .shimmer').forEach((e) => { e.style.backgroundPosition = '33% 0'; })"
+          },
+          {
+            "hover": ".switcher-local .cluster-switcher-row .row-main"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "span.skeleton-bar.shimmer",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-60": {
+    "note": "Only styles for a log list on the diagnostic page paint it, and that page has no log list."
+  },
+  "red-79": {
+    "note": "It's the background of an outlined error status badge, such as a deactivated hosted provider's. Every provider on this Rancher is active."
+  },
+  "red-180": {
+    "note": "Only the confirm button of the auth provider's Disable dialog paints it. The capture script leaves that dialog alone."
+  },
+  "red-217": {
+    "usages": [
+      {
+        "label": "Background of div.cm-fat-cursor.cm-cursor-primary, with the Emacs key map set in this tab only",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "eval": "[...document.querySelectorAll('body *')].find((e) => e.__vue_app__).__vue_app__.config.globalProperties.$store.commit('prefs/load', { key: 'keymap', value: 'emacs' })"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content > .cm-line:nth-child(2)"
+          },
+          {
+            "wait": 300
+          },
+          {
+            "key": "ArrowRight"
+          }
+        ],
+        "highlight": {
+          "selector": "div.cm-fat-cursor.cm-cursor-primary",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-256": {
+    "note": "It borders a selected error badge on the Fleet dashboard, which needs an app in error. None was when these screenshots were taken."
+  },
+  "red-272": {
+    "note": "Only the SUSE Rancher Prime card in the What's new dialog paints it, and opening that dialog marks the release notes read in your preferences, so the capture script leaves it alone."
+  },
+  "red-348": {
+    "usages": [
+      {
+        "label": "The required marker on the Namespace field, creating a config map",
+        "route": "/c/local/explorer/configmap/create",
+        "theme": "classic light",
+        "steps": [
+          {
+            "waitFor": "span.required"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.required",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-348-a15": {
+    "usages": [
+      {
+        "label": "Background of div.banner__content",
+        "route": "/c/local/explorer/members",
+        "theme": "classic light",
+        "highlight": {
+          "selector": "div.banner__content",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-348-a30": {
+    "usages": [
+      {
+        "label": "Background of td.d2h-code-linenumber.d2h-del, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "classic light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "td.d2h-code-linenumber.d2h-del",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-348-a75": {
+    "usages": [
+      {
+        "label": "Background of del.d2h-change, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "classic light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "del.d2h-change",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-370": {
+    "note": "Its only use, in fleet/dashboard/ResourcePanel.vue, is commented out."
+  },
+  "red-372": {
+    "note": "Its rules on the diagnostic page, in ClusterLink.vue and in graph/Circle.vue match no element."
+  },
+  "red-387": {
+    "usages": [
+      {
+        "label": "Background of button.btn.role-primary, in the Delete dialog, with :hover forced on Delete",
+        "route": "/c/local/explorer/configmap",
+        "theme": "classic light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "click": "[data-testid=sortable-table-0-action-button]"
+          },
+          {
+            "wait": 800
+          },
+          {
+            "click": "[role=menuitem]",
+            "text": "Delete"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "force": "[data-testid=prompt-remove-confirm-button]",
+            "state": "hover"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.role-primary",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-405": {
+    "usages": [
+      {
+        "label": "Background of div.side-label.indicator",
+        "route": "/c/_/manager/provisioning.cattle.io.cluster/create",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          }
+        ],
+        "highlight": {
+          "selector": "div.side-label.indicator",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-450": {
+    "usages": [
+      {
+        "label": "Background of an error state badge, with the local cluster shown in error in this frame only",
+        "route": "/home",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": "span.badge-state"
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const c = $store.getters[\"management/byId\"](\"management.cattle.io.cluster\", \"local\"); c.metadata.state = { ...c.metadata.state, name: \"error\", transitioning: false, error: true }; true"
+          },
+          {
+            "waitFor": "span.badge-state.bg-error"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.badge-state.bg-error",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-450-a30": {
+    "usages": [
+      {
+        "label": "Background of td.d2h-code-linenumber.d2h-del, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "dark",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "td.d2h-code-linenumber.d2h-del",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-450-a75": {
+    "usages": [
+      {
+        "label": "Background of del.d2h-change, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "dark",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "del.d2h-change",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-488": {
+    "usages": [
+      {
+        "label": "The required marker on the Namespace field, creating a config map",
+        "route": "/c/local/explorer/configmap/create",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "span.required"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.required",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-488-a15": {
+    "usages": [
+      {
+        "label": "Background of div.banner__content",
+        "route": "/c/local/explorer/members",
+        "theme": "light",
+        "highlight": {
+          "selector": "div.banner__content",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-488-a30": {
+    "usages": [
+      {
+        "label": "Background of td.d2h-code-linenumber.d2h-del, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "td.d2h-code-linenumber.d2h-del",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-488-a75": {
+    "usages": [
+      {
+        "label": "Background of del.d2h-change, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "del.d2h-change",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-512": {
+    "usages": [
+      {
+        "label": "Background of button.btn.role-primary, in the Delete dialog, with :active forced on Delete",
+        "route": "/c/local/explorer/configmap",
+        "theme": "classic light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "click": "[data-testid=sortable-table-0-action-button]"
+          },
+          {
+            "wait": 800
+          },
+          {
+            "click": "[role=menuitem]",
+            "text": "Delete"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "force": "[data-testid=prompt-remove-confirm-button]",
+            "state": "active"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.role-primary",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-572": {
+    "usages": [
+      {
+        "label": "Background of button.btn.role-primary, in the Delete dialog, with :hover forced on Delete",
+        "route": "/c/local/explorer/configmap",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "click": "[data-testid=sortable-table-0-action-button]"
+          },
+          {
+            "wait": 800
+          },
+          {
+            "click": "[role=menuitem]",
+            "text": "Delete"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "force": "[data-testid=prompt-remove-confirm-button]",
+            "state": "hover"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.role-primary",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-630": {
+    "note": "It borders a selected error badge on the Fleet dashboard, which needs an app in error. None was when these screenshots were taken."
+  },
+  "red-707": {
+    "usages": [
+      {
+        "label": "Background of button.btn.role-primary, in the Delete dialog, with :active forced on Delete",
+        "route": "/c/local/explorer/configmap",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "click": "[data-testid=sortable-table-0-action-button]"
+          },
+          {
+            "wait": 800
+          },
+          {
+            "click": "[role=menuitem]",
+            "text": "Delete"
+          },
+          {
+            "wait": 1500
+          },
+          {
+            "force": "[data-testid=prompt-remove-confirm-button]",
+            "state": "active"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.role-primary",
+          "color": true
+        }
+      }
+    ]
+  },
+  "red-745": {
+    "usages": [
+      {
+        "label": "Background of div.banner__content",
+        "route": "/c/local/explorer/members",
+        "theme": "dark",
+        "highlight": {
+          "selector": "div.banner__content",
+          "color": true
+        }
+      }
+    ]
+  },
+  "orange-208": {
+    "note": "Only the SUSE Rancher Prime card in the What's new dialog paints it, and opening that dialog marks the release notes read in your preferences, so the capture script leaves it alone."
+  },
+  "orange-209": {
+    "note": "Only SelectIconGrid's partner items paint it, and no grid marks an item as a partner."
+  },
+  "orange-239": {
+    "usages": [
+      {
+        "label": "Text of span.cm-rancher-string, with YAML typed into the editor, a search open and a fold marker hovered",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "dark",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "key": "Control+a"
+          },
+          {
+            "type": "# A comment\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: \"demo-config\"\n  namespace: default\ndata:\n  enabled: \"true\"\n  flag: true\n  other: null\n  list: [one, two]\n"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "(async () => { const content = document.querySelector('.rc-code-mirror--editor .cm-content'); content.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', code: 'KeyF', keyCode: 70, ctrlKey: true, bubbles: true, cancelable: true })); await new Promise((resolve) => setTimeout(resolve, 300)); const field = document.querySelector('.cm-search input[name=search]'); field.value = 'true'; field.dispatchEvent(new Event('input', { bubbles: true })); field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, bubbles: true, cancelable: true })); return true; })()"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "force": ".cm-foldGutter .cm-gutterElement:not([style*=\"hidden\"]):has(.rc-cm-fold-marker)",
+            "state": "hover",
+            "all": true
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.cm-rancher-string",
+          "color": true
+        }
+      }
+    ]
+  },
+  "orange-243": {
+    "note": "It borders a selected warning badge on the Fleet dashboard, which needs an app in a warning state. None is on this Rancher."
+  },
+  "orange-249-a45": {
+    "usages": [
+      {
+        "label": "Background of span.cm-searchMatch.cm-searchMatch-selected, with YAML typed into the editor, a search open and a fold marker hovered",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "dark",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "key": "Control+a"
+          },
+          {
+            "type": "# A comment\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: \"demo-config\"\n  namespace: default\ndata:\n  enabled: \"true\"\n  flag: true\n  other: null\n  list: [one, two]\n"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "(async () => { const content = document.querySelector('.rc-code-mirror--editor .cm-content'); content.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', code: 'KeyF', keyCode: 70, ctrlKey: true, bubbles: true, cancelable: true })); await new Promise((resolve) => setTimeout(resolve, 300)); const field = document.querySelector('.cm-search input[name=search]'); field.value = 'true'; field.dispatchEvent(new Event('input', { bubbles: true })); field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, bubbles: true, cancelable: true })); return true; })()"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "force": ".cm-foldGutter .cm-gutterElement:not([style*=\"hidden\"]):has(.rc-cm-fold-marker)",
+            "state": "hover",
+            "all": true
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.cm-searchMatch.cm-searchMatch-selected",
+          "color": true
+        }
+      }
+    ]
+  },
+  "orange-249-a50": {
+    "usages": [
+      {
+        "label": "Background of span.cm-searchMatch.cm-searchMatch-selected, with YAML typed into the editor, a search open and a fold marker hovered",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "key": "Control+a"
+          },
+          {
+            "type": "# A comment\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: \"demo-config\"\n  namespace: default\ndata:\n  enabled: \"true\"\n  flag: true\n  other: null\n  list: [one, two]\n"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "(async () => { const content = document.querySelector('.rc-code-mirror--editor .cm-content'); content.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', code: 'KeyF', keyCode: 70, ctrlKey: true, bubbles: true, cancelable: true })); await new Promise((resolve) => setTimeout(resolve, 300)); const field = document.querySelector('.cm-search input[name=search]'); field.value = 'true'; field.dispatchEvent(new Event('input', { bubbles: true })); field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, bubbles: true, cancelable: true })); return true; })()"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "force": ".cm-foldGutter .cm-gutterElement:not([style*=\"hidden\"]):has(.rc-cm-fold-marker)",
+            "state": "hover",
+            "all": true
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.cm-searchMatch.cm-searchMatch-selected",
+          "color": true
+        }
+      }
+    ]
+  },
+  "orange-267": {
+    "note": "Only SelectIconGrid items in color group 4 paint it, and no grid in the dashboard reaches that group."
+  },
+  "orange-274": {
+    "note": "It borders a selected warning badge on the Fleet dashboard, which needs an app in a warning state. None is on this Rancher."
+  },
+  "orange-520": {
+    "usages": [
+      {
+        "label": "Text of span.cm-rancher-string, with YAML typed into the editor, a search open and a fold marker hovered",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "key": "Control+a"
+          },
+          {
+            "type": "# A comment\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: \"demo-config\"\n  namespace: default\ndata:\n  enabled: \"true\"\n  flag: true\n  other: null\n  list: [one, two]\n"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "(async () => { const content = document.querySelector('.rc-code-mirror--editor .cm-content'); content.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', code: 'KeyF', keyCode: 70, ctrlKey: true, bubbles: true, cancelable: true })); await new Promise((resolve) => setTimeout(resolve, 300)); const field = document.querySelector('.cm-search input[name=search]'); field.value = 'true'; field.dispatchEvent(new Event('input', { bubbles: true })); field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, bubbles: true, cancelable: true })); return true; })()"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "force": ".cm-foldGutter .cm-gutterElement:not([style*=\"hidden\"]):has(.rc-cm-fold-marker)",
+            "state": "hover",
+            "all": true
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.cm-rancher-string",
+          "color": true
+        }
+      }
+    ]
+  },
+  "orange-529": {
+    "note": "Only styles for a log list on the diagnostic page paint it, and that page has no log list."
+  },
+  "orange-629": {
+    "usages": [
+      {
+        "label": "Text of i.icon.icon-warning::before",
+        "route": "/c/_/fleet",
+        "theme": "dark",
+        "highlight": {
+          "selector": "i.icon.icon-warning",
+          "color": true
+        }
+      }
+    ]
+  },
+  "yellow-25": {
+    "note": "Only styles for a log list on the diagnostic page paint it, and that page has no log list."
+  },
+  "yellow-33": {
+    "note": "Only the Emacs key map's status panel paints it, and nothing opens that panel."
+  },
+  "yellow-73": {
+    "note": "Only SelectIconGrid items in color group 8 paint it, and no grid in the dashboard reaches that group."
+  },
+  "yellow-80": {
+    "usages": [
+      {
+        "label": "Background of span.badge-state.bg-warning",
+        "route": "/c/_/fleet",
+        "theme": "light",
+        "highlight": {
+          "selector": "span.badge-state.bg-warning",
+          "color": true
+        }
+      }
+    ]
+  },
+  "yellow-80-a15": {
+    "usages": [
+      {
+        "label": "Background of div.banner__content",
+        "route": "/c/_/manager/hostedprovider",
+        "theme": "light",
+        "highlight": {
+          "selector": "div.banner__content",
+          "color": true
+        }
+      }
+    ]
+  },
+  "yellow-80-a50": {
+    "usages": [
+      {
+        "label": "Background of td.d2h-code-linenumber.d2h-del, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "td.d2h-code-linenumber.d2h-del",
+          "color": true
+        }
+      }
+    ]
+  },
+  "yellow-80-a80": {
+    "note": "Only warning tooltips paint it, and LabeledTooltip never applies the warning class: it reads the global status instead of its own."
+  },
+  "yellow-105": {
+    "note": "Only .bg-warning.btn:hover paints it, and no button has the bg-warning class."
+  },
+  "yellow-117-a25": {
+    "usages": [
+      {
+        "label": "Background of span.cm-searchMatch, with YAML typed into the editor, a search open and a fold marker hovered",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "dark",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "key": "Control+a"
+          },
+          {
+            "type": "# A comment\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: \"demo-config\"\n  namespace: default\ndata:\n  enabled: \"true\"\n  flag: true\n  other: null\n  list: [one, two]\n"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "(async () => { const content = document.querySelector('.rc-code-mirror--editor .cm-content'); content.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', code: 'KeyF', keyCode: 70, ctrlKey: true, bubbles: true, cancelable: true })); await new Promise((resolve) => setTimeout(resolve, 300)); const field = document.querySelector('.cm-search input[name=search]'); field.value = 'true'; field.dispatchEvent(new Event('input', { bubbles: true })); field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, bubbles: true, cancelable: true })); return true; })()"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "force": ".cm-foldGutter .cm-gutterElement:not([style*=\"hidden\"]):has(.rc-cm-fold-marker)",
+            "state": "hover",
+            "all": true
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.cm-searchMatch",
+          "color": true
+        }
+      }
+    ]
+  },
+  "yellow-117-a40": {
+    "usages": [
+      {
+        "label": "Background of span.cm-searchMatch, with YAML typed into the editor, a search open and a fold marker hovered",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "key": "Control+a"
+          },
+          {
+            "type": "# A comment\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: \"demo-config\"\n  namespace: default\ndata:\n  enabled: \"true\"\n  flag: true\n  other: null\n  list: [one, two]\n"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "(async () => { const content = document.querySelector('.rc-code-mirror--editor .cm-content'); content.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', code: 'KeyF', keyCode: 70, ctrlKey: true, bubbles: true, cancelable: true })); await new Promise((resolve) => setTimeout(resolve, 300)); const field = document.querySelector('.cm-search input[name=search]'); field.value = 'true'; field.dispatchEvent(new Event('input', { bubbles: true })); field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, bubbles: true, cancelable: true })); return true; })()"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "force": ".cm-foldGutter .cm-gutterElement:not([style*=\"hidden\"]):has(.rc-cm-fold-marker)",
+            "state": "hover",
+            "all": true
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.cm-searchMatch",
+          "color": true
+        }
+      }
+    ]
+  },
+  "yellow-135": {
+    "usages": [
+      {
+        "label": "Background of span.badge-state.bg-warning",
+        "route": "/c/_/fleet/fleet.cattle.io.cluster/fleet-local/local",
+        "theme": "dark",
+        "steps": [
+          {
+            "wait": 3000
+          }
+        ],
+        "highlight": {
+          "selector": "span.badge-state.bg-warning",
+          "color": true
+        }
+      }
+    ]
+  },
+  "yellow-136": {
+    "usages": [
+      {
+        "label": "Background of span.badge-state.bg-warning",
+        "route": "/c/_/fleet",
+        "theme": "dark",
+        "highlight": {
+          "selector": "span.badge-state.bg-warning",
+          "color": true
+        }
+      }
+    ]
+  },
+  "yellow-150": {
+    "note": "Only .bg-warning.btn:active paints it, and no button has the bg-warning class."
+  },
+  "yellow-170-a50": {
+    "usages": [
+      {
+        "label": "Background of td.d2h-code-linenumber.d2h-del, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "dark",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "td.d2h-code-linenumber.d2h-del",
+          "color": true
+        }
+      }
+    ]
+  },
+  "yellow-186": {
+    "usages": [
+      {
+        "label": "Border of div.banner__content",
+        "route": "/c/_/manager/hostedprovider",
+        "theme": "classic light",
+        "highlight": {
+          "selector": "div.banner__content",
+          "color": true
+        }
+      }
+    ]
+  },
+  "yellow-186-a15": {
+    "usages": [
+      {
+        "label": "Background of div.banner__content",
+        "route": "/c/_/manager/hostedprovider",
+        "theme": "classic light",
+        "highlight": {
+          "selector": "div.banner__content",
+          "color": true
+        }
+      }
+    ]
+  },
+  "yellow-186-a50": {
+    "usages": [
+      {
+        "label": "Background of td.d2h-code-linenumber.d2h-del, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "classic light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "td.d2h-code-linenumber.d2h-del",
+          "color": true
+        }
+      }
+    ]
+  },
+  "yellow-186-a80": {
+    "note": "Only warning tooltips paint it, and LabeledTooltip never applies the warning class: it reads the global status instead of its own."
+  },
+  "yellow-259": {
+    "note": "Only .bg-warning.btn:hover paints it, and no button has the bg-warning class."
+  },
+  "yellow-445": {
+    "note": "Only .bg-warning.btn:active paints it, and no button has the bg-warning class."
+  },
+  "yellow-651": {
+    "usages": [
+      {
+        "label": "Text of i.icon.icon-warning::before",
+        "route": "/c/_/fleet",
+        "theme": "light",
+        "highlight": {
+          "selector": "i.icon.icon-warning",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-33": {
+    "usages": [
+      {
+        "label": "Background of button.rc-button.btn",
+        "route": "/home",
+        "theme": "suse light",
+        "highlight": {
+          "selector": "button.rc-button.btn",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-80": {
+    "usages": [
+      {
+        "label": "A tertiary button, hovered",
+        "route": "/home",
+        "theme": "suse light",
+        "steps": [
+          {
+            "force": "button.rc-button.btn.variant-tertiary",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "button.rc-button.btn.variant-tertiary",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-82": {
+    "usages": [
+      {
+        "label": "Background of div.rc-status-badge.success",
+        "route": "/c/_/manager/hostedprovider",
+        "theme": "light",
+        "highlight": {
+          "selector": "div.rc-status-badge.success",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-85": {
+    "usages": [
+      {
+        "label": "Background of a.router-link-active.router-link-exact-active",
+        "route": "/home",
+        "theme": "suse dark",
+        "highlight": {
+          "selector": "a.router-link-active.router-link-exact-active",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-85-a12": {
+    "usages": [
+      {
+        "label": "Background of span.segment-value, with a query typed",
+        "route": "/c/local/explorer/pod",
+        "theme": "suse dark",
+        "steps": [
+          {
+            "waitFor": "[data-testid=table-views-query]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=table-views-query]"
+          },
+          {
+            "type": "state:Running"
+          },
+          {
+            "waitFor": "span.segment-value"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.segment-value",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-85-a50": {
+    "usages": [
+      {
+        "label": "Text of div.column-row.locked, in the View > Columns menu",
+        "route": "/c/local/explorer/pod",
+        "theme": "suse dark",
+        "steps": [
+          {
+            "waitFor": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "click": "[data-testid=table-views-view-columns]"
+          },
+          {
+            "waitFor": ".columns-panel .column-row.locked"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "div.column-row.locked",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-101": {
+    "usages": [
+      {
+        "label": "Background of span.badge-state.bg-success",
+        "route": "/c/_/fleet",
+        "theme": "light",
+        "highlight": {
+          "selector": "span.badge-state.bg-success",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-119": {
+    "note": "It borders a selected Active badge on the Fleet dashboard, which needs a Ready app. None is on this Rancher."
+  },
+  "green-132": {
+    "usages": [
+      {
+        "label": "Text of i.icon.icon-checkmark::before",
+        "route": "/c/_/fleet",
+        "theme": "dark",
+        "highlight": {
+          "selector": "i.icon.icon-checkmark",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-138": {
+    "usages": [
+      {
+        "label": "Border of a.rc-button.btn, with :hover forced on a.rc-button.btn",
+        "route": "/home",
+        "theme": "suse dark",
+        "steps": [
+          {
+            "force": "a.rc-button.btn",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "a.rc-button.btn",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-158": {
+    "usages": [
+      {
+        "label": "Background of a.router-link-active.router-link-exact-active, with :hover forced on a.router-link-active.router-link-exact-active",
+        "route": "/home",
+        "theme": "suse dark",
+        "steps": [
+          {
+            "force": "a.router-link-active.router-link-exact-active",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "a.router-link-active.router-link-exact-active",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-183": {
+    "usages": [
+      {
+        "label": "Border of button.view-tab.new-view-tab::after, with :focus-visible forced on button.view-tab.new-view-tab",
+        "route": "/home",
+        "theme": "suse dark",
+        "steps": [
+          {
+            "force": "button.view-tab.new-view-tab",
+            "state": "focus-visible",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "button.view-tab.new-view-tab",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-187": {
+    "note": "Only --sizzle-0 holds it, and nothing uses that variable: ResourcesSummary builds --sizzle-<state> names."
+  },
+  "green-228": {
+    "usages": [
+      {
+        "label": "Background of a.rc-button.btn",
+        "route": "/home",
+        "theme": "suse dark",
+        "highlight": {
+          "selector": "a.rc-button.btn",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-228-a14": {
+    "usages": [
+      {
+        "label": "Background of div.column-row.shown, with a column picked up in the View > Columns menu",
+        "route": "/c/local/explorer/pod",
+        "theme": "suse dark",
+        "steps": [
+          {
+            "waitFor": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "click": "[data-testid=table-views-view-columns]"
+          },
+          {
+            "waitFor": ".columns-panel .column-handle.grip"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "const h = document.querySelector('.columns-panel .column-handle.grip'); const r = h.getBoundingClientRect(); const x = r.x + r.width / 2; const y = r.y + r.height / 2; h.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 0 })); window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: x, clientY: y + 6 })); true"
+          },
+          {
+            "waitFor": "div.column-row.held"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "div.column-row.shown",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-228-a15": {
+    "note": "Only the wash animation after pinning a cluster or setting a default table view paints it, and both of those save a preference."
+  },
+  "green-299": {
+    "note": "Only the SUSE Rancher Prime card in the What's new dialog paints it, and opening that dialog marks the release notes read in your preferences, so the capture script leaves it alone."
+  },
+  "green-319": {
+    "usages": [
+      {
+        "label": "Text of span.msg",
+        "route": "/home",
+        "theme": "dark",
+        "highlight": {
+          "selector": "span.msg",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-374": {
+    "usages": [
+      {
+        "label": "Background of span.badge-state.bg-success",
+        "route": "/home",
+        "theme": "classic light",
+        "highlight": {
+          "selector": "span.badge-state.bg-success",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-374-a15": {
+    "usages": [
+      {
+        "label": "Background of div.banner__content, on the Selectors tab of the create form",
+        "route": "/c/local/explorer/networking.k8s.io.networkpolicy/create",
+        "theme": "classic light",
+        "steps": [
+          {
+            "click": "[data-testid=btn-selectors]"
+          },
+          {
+            "waitFor": ".banner.success"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "div.banner__content",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-374-a25": {
+    "usages": [
+      {
+        "label": "Background of td.d2h-code-linenumber.d2h-ins, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "classic light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "td.d2h-code-linenumber.d2h-ins",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-374-a30": {
+    "usages": [
+      {
+        "label": "Background of td.d2h-code-linenumber.d2h-ins, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "classic light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "td.d2h-code-linenumber.d2h-ins",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-374-a50": {
+    "usages": [
+      {
+        "label": "Border of td.d2h-code-linenumber.d2h-ins, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "classic light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "td.d2h-code-linenumber.d2h-ins",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-432-a10": {
+    "usages": [
+      {
+        "label": "Background of span.badge-state.bg-success",
+        "route": "/home",
+        "theme": "dark",
+        "highlight": {
+          "selector": "span.badge-state.bg-success",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-432-a25": {
+    "usages": [
+      {
+        "label": "Background of td.d2h-code-linenumber.d2h-ins, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "dark",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "td.d2h-code-linenumber.d2h-ins",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-432-a30": {
+    "usages": [
+      {
+        "label": "Background of td.d2h-code-linenumber.d2h-ins, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "dark",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "td.d2h-code-linenumber.d2h-ins",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-432-a50": {
+    "usages": [
+      {
+        "label": "Border of td.d2h-code-linenumber.d2h-ins, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "dark",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "td.d2h-code-linenumber.d2h-ins",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-453": {
+    "usages": [
+      {
+        "label": "Border of a.rc-button.btn",
+        "route": "/home",
+        "theme": "suse light",
+        "highlight": {
+          "selector": "a.rc-button.btn",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-453-a14": {
+    "usages": [
+      {
+        "label": "Background of div.column-row.shown, with a column picked up in the View > Columns menu",
+        "route": "/c/local/explorer/pod",
+        "theme": "suse light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "click": "[data-testid=table-views-view-columns]"
+          },
+          {
+            "waitFor": ".columns-panel .column-handle.grip"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "const h = document.querySelector('.columns-panel .column-handle.grip'); const r = h.getBoundingClientRect(); const x = r.x + r.width / 2; const y = r.y + r.height / 2; h.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 0 })); window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: x, clientY: y + 6 })); true"
+          },
+          {
+            "waitFor": "div.column-row.held"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "div.column-row.shown",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-453-a15": {
+    "note": "Only the wash animation after pinning a cluster or setting a default table view paints it, and both of those save a preference."
+  },
+  "green-471": {
+    "usages": [
+      {
+        "label": "Background of button.btn.bg-success, after Generate Response Times, with :hover forced on it",
+        "route": "/diagnostic",
+        "theme": "classic light",
+        "steps": [
+          {
+            "wait": 6000
+          },
+          {
+            "click": "[data-testid=diagnostics-generate-response-times]"
+          },
+          {
+            "eval": "new Promise((res) => { const t0 = Date.now(); const iv = setInterval(() => { const b = document.querySelector('[data-testid=diagnostics-generate-response-times]'); if (/bg-success|bg-error/.test(b.className) || Date.now() - t0 > 45000) { clearInterval(iv); const p = colorTool.componentOf(b)?.proxy; if (p?.timer) clearTimeout(p.timer); res(b.className); } }, 100); })"
+          },
+          {
+            "force": "[data-testid=diagnostics-generate-response-times]",
+            "state": "hover"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.bg-success",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-515": {
+    "note": "It borders a selected Active badge on the Fleet dashboard, which needs a Ready app. None is on this Rancher."
+  },
+  "green-523": {
+    "usages": [
+      {
+        "label": "Background of div.indicator",
+        "route": "/c/local/explorer",
+        "theme": "light",
+        "highlight": {
+          "selector": "div.indicator",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-523-a10": {
+    "usages": [
+      {
+        "label": "Background of span.badge-state.bg-success",
+        "route": "/home",
+        "theme": "light",
+        "highlight": {
+          "selector": "span.badge-state.bg-success",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-523-a15": {
+    "usages": [
+      {
+        "label": "Background of div.banner__content, on the Selectors tab of the create form",
+        "route": "/c/local/explorer/networking.k8s.io.networkpolicy/create",
+        "theme": "light",
+        "steps": [
+          {
+            "click": "[data-testid=btn-selectors]"
+          },
+          {
+            "waitFor": ".banner.success"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "div.banner__content",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-523-a25": {
+    "usages": [
+      {
+        "label": "Background of td.d2h-code-linenumber.d2h-ins, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "td.d2h-code-linenumber.d2h-ins",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-523-a30": {
+    "usages": [
+      {
+        "label": "Background of td.d2h-code-linenumber.d2h-ins, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "td.d2h-code-linenumber.d2h-ins",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-523-a50": {
+    "usages": [
+      {
+        "label": "Border of td.d2h-code-linenumber.d2h-ins, with unsaved YAML edits in Show Diff",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "eval": "const v = colorTool.editorOf(document.querySelector('.rc-code-mirror--editor .cm-content')); const d = v.state.doc; const third = d.line(3); const sixth = d.line(6); v.dispatch({ changes: [{ from: 0, insert: '# demo comment\\n' }, { from: third.from, to: d.line(4).from }, { from: sixth.to - 2, to: sixth.to, insert: 'zz' }] }); true"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "click": ".footer .right > button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".d2h-diff-tbody tr\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "td.d2h-code-linenumber.d2h-ins",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-534": {
+    "usages": [
+      {
+        "label": "Background of a.router-link-active.router-link-exact-active",
+        "route": "/home",
+        "theme": "suse light",
+        "highlight": {
+          "selector": "a.router-link-active.router-link-exact-active",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-534-a12": {
+    "usages": [
+      {
+        "label": "Background of span.segment-value, with a query typed",
+        "route": "/c/local/explorer/pod",
+        "theme": "suse light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=table-views-query]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=table-views-query]"
+          },
+          {
+            "type": "state:Running"
+          },
+          {
+            "waitFor": "span.segment-value"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.segment-value",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-534-a50": {
+    "usages": [
+      {
+        "label": "Text of div.column-row.locked, in the View > Columns menu",
+        "route": "/c/local/explorer/pod",
+        "theme": "suse light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "click": "[data-testid=table-views-view-columns]"
+          },
+          {
+            "waitFor": ".columns-panel .column-row.locked"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "div.column-row.locked",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-574": {
+    "usages": [
+      {
+        "label": "Background of li.child.nav-type, with :hover forced on li.child.nav-type",
+        "route": "/c/local/explorer",
+        "theme": "suse dark",
+        "steps": [
+          {
+            "force": "li.child.nav-type",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "li.child.nav-type",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-591": {
+    "usages": [
+      {
+        "label": "Background of a.router-link-active.router-link-exact-active, with :hover forced on a.router-link-active.router-link-exact-active",
+        "route": "/home",
+        "theme": "suse light",
+        "steps": [
+          {
+            "force": "a.router-link-active.router-link-exact-active",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "a.router-link-active.router-link-exact-active",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-606": {
+    "usages": [
+      {
+        "label": "Background of button.rc-button.btn, with :hover forced on button.rc-button.btn",
+        "route": "/home",
+        "theme": "suse dark",
+        "steps": [
+          {
+            "force": "button.rc-button.btn",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "button.rc-button.btn",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-609": {
+    "usages": [
+      {
+        "label": "Border of button.view-tab.new-view-tab::after, with :focus-visible forced on button.view-tab.new-view-tab",
+        "route": "/home",
+        "theme": "suse light",
+        "steps": [
+          {
+            "force": "button.view-tab.new-view-tab",
+            "state": "focus-visible",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "button.view-tab.new-view-tab",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-623": {
+    "usages": [
+      {
+        "label": "Background of button.btn.bg-success, after Generate Response Times, with :active forced on it",
+        "route": "/diagnostic",
+        "theme": "classic light",
+        "steps": [
+          {
+            "wait": 6000
+          },
+          {
+            "click": "[data-testid=diagnostics-generate-response-times]"
+          },
+          {
+            "eval": "new Promise((res) => { const t0 = Date.now(); const iv = setInterval(() => { const b = document.querySelector('[data-testid=diagnostics-generate-response-times]'); if (/bg-success|bg-error/.test(b.className) || Date.now() - t0 > 45000) { clearInterval(iv); const p = colorTool.componentOf(b)?.proxy; if (p?.timer) clearTimeout(p.timer); res(b.className); } }, 100); })"
+          },
+          {
+            "force": "[data-testid=diagnostics-generate-response-times]",
+            "state": "active"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.bg-success",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-674": {
+    "note": "It's only a fallback in Group.vue, behind --rc-section-background-secondary, which every theme sets."
+  },
+  "green-685": {
+    "usages": [
+      {
+        "label": "Background of button.btn.bg-success, after Generate Response Times, with :hover forced on it",
+        "route": "/diagnostic",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 6000
+          },
+          {
+            "click": "[data-testid=diagnostics-generate-response-times]"
+          },
+          {
+            "eval": "new Promise((res) => { const t0 = Date.now(); const iv = setInterval(() => { const b = document.querySelector('[data-testid=diagnostics-generate-response-times]'); if (/bg-success|bg-error/.test(b.className) || Date.now() - t0 > 45000) { clearInterval(iv); const p = colorTool.componentOf(b)?.proxy; if (p?.timer) clearTimeout(p.timer); res(b.className); } }, 100); })"
+          },
+          {
+            "force": "[data-testid=diagnostics-generate-response-times]",
+            "state": "hover"
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.bg-success",
+          "color": true
+        }
+      }
+    ]
+  },
+  "green-688": {
+    "usages": [
+      {
+        "label": "Background of button.rc-button.btn",
+        "route": "/home",
+        "theme": "suse dark",
+        "highlight": {
+          "selector": "button.rc-button.btn",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-11": {
+    "note": "Only styles for a log list on the diagnostic page paint it, and that page has no log list."
+  },
+  "blue-40": {
+    "usages": [
+      {
+        "label": "Background of button.rc-button.btn",
+        "route": "/home",
+        "theme": "light",
+        "highlight": {
+          "selector": "button.rc-button.btn",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-77": {
+    "note": "It's the background of an outlined info status badge, such as a node's \"+N more\" IP badge. Every node on this Rancher has a single IP."
+  },
+  "blue-82": {
+    "usages": [
+      {
+        "label": "Background of button.rc-button.btn, with :hover forced on button.rc-button.btn",
+        "route": "/home",
+        "theme": "light",
+        "steps": [
+          {
+            "force": "button.rc-button.btn",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "button.rc-button.btn",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-143": {
+    "note": "Only the SUSE Rancher Prime card in the What's new dialog paints it, and opening that dialog marks the release notes read in your preferences, so the capture script leaves it alone."
+  },
+  "blue-155": {
+    "note": "It borders a selected Pending badge on the Fleet dashboard, which needs a pending app. None is on this Rancher."
+  },
+  "blue-182": {
+    "usages": [
+      {
+        "label": "Border of div.labeled-select.disabled, in the read-only config view of a deployment, on its Storage tab",
+        "route": "/c/local/explorer/apps.deployment/demo/hello-web?mode=view&as=config",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=btn-storage]"
+          },
+          {
+            "click": "[data-testid=btn-storage]"
+          },
+          {
+            "wait": 2000
+          }
+        ],
+        "highlight": {
+          "selector": "div.labeled-select.disabled",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-183": {
+    "note": "Only ImagePercentageBar.vue paints it, and nothing renders that component."
+  },
+  "blue-186": {
+    "usages": [
+      {
+        "label": "Background of button.btn.bg-disabled, with :hover forced on button.btn.bg-disabled",
+        "route": "/c/_/fleet",
+        "theme": "classic light",
+        "steps": [
+          {
+            "force": "button.btn.bg-disabled",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.bg-disabled",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-196": {
+    "usages": [
+      {
+        "label": "Background of a.router-link-active.router-link-exact-active",
+        "route": "/home",
+        "theme": "dark",
+        "highlight": {
+          "selector": "a.router-link-active.router-link-exact-active",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-196-a12": {
+    "usages": [
+      {
+        "label": "Background of span.segment-value, with a query typed",
+        "route": "/c/local/explorer/pod",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": "[data-testid=table-views-query]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=table-views-query]"
+          },
+          {
+            "type": "state:Running"
+          },
+          {
+            "waitFor": "span.segment-value"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.segment-value",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-196-a50": {
+    "usages": [
+      {
+        "label": "Text of div.column-row.locked, in the View > Columns menu",
+        "route": "/c/local/explorer/pod",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "click": "[data-testid=table-views-view-columns]"
+          },
+          {
+            "waitFor": ".columns-panel .column-row.locked"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "div.column-row.locked",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-199": {
+    "usages": [
+      {
+        "label": "Background of span.tab-badge",
+        "route": "/c/local/uiplugins",
+        "theme": "dark",
+        "highlight": {
+          "selector": "span.tab-badge",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-224": {
+    "usages": [
+      {
+        "label": "Text of input::placeholder, in the read-only config view of a deployment, on its Storage tab",
+        "route": "/c/local/explorer/apps.deployment/demo/hello-web?mode=view&as=config",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=btn-storage]"
+          },
+          {
+            "click": "[data-testid=btn-storage]"
+          },
+          {
+            "wait": 2000
+          }
+        ],
+        "highlight": {
+          "selector": "input",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-230": {
+    "usages": [
+      {
+        "label": "Text of input::placeholder, in the read-only config view of a deployment, on its Storage tab",
+        "route": "/c/local/explorer/apps.deployment/demo/hello-web?mode=view&as=config",
+        "theme": "classic light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=btn-storage]"
+          },
+          {
+            "click": "[data-testid=btn-storage]"
+          },
+          {
+            "wait": 2000
+          }
+        ],
+        "highlight": {
+          "selector": "input",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-231": {
+    "usages": [
+      {
+        "label": "Keys in the YAML editor, creating a config map",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": "span.cm-rancher-key"
+          }
+        ],
+        "highlight": {
+          "selector": "span.cm-rancher-key",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-244": {
+    "usages": [
+      {
+        "label": "The active Home item in the side menu, hovered",
+        "route": "/home",
+        "theme": "dark",
+        "steps": [
+          {
+            "force": "a.router-link-active.router-link-exact-active",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "a.router-link-active.router-link-exact-active",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-270": {
+    "usages": [
+      {
+        "label": "Background of button.btn.btn-sm, in Show Diff, with :active forced on Split",
+        "route": "/c/local/explorer/configmap/cattle-capi-system/capi-additional-rbac-roles?mode=edit&as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 4000
+          },
+          {
+            "click": ".cm-content"
+          },
+          {
+            "key": "Control+End"
+          },
+          {
+            "type": "\n# preview only"
+          },
+          {
+            "click": "button.role-secondary",
+            "text": "Show Diff"
+          },
+          {
+            "wait": 2000
+          },
+          {
+            "force": ".diff-mode button:not(.active)",
+            "state": "active",
+            "all": true
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.btn-sm",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-282": {
+    "usages": [
+      {
+        "label": "Border of a.rc-button.btn",
+        "route": "/home",
+        "theme": "dark",
+        "highlight": {
+          "selector": "a.rc-button.btn",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-313": {
+    "usages": [
+      {
+        "label": "Background of button.btn.bg-disabled, with :active forced on button.btn.bg-disabled",
+        "route": "/c/_/fleet",
+        "theme": "light",
+        "steps": [
+          {
+            "force": "button.btn.bg-disabled",
+            "state": "active",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.bg-disabled",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-315": {
+    "usages": [
+      {
+        "label": "Background of div.side-label.indicator",
+        "route": "/c/_/manager/provisioning.cattle.io.cluster/create",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          }
+        ],
+        "highlight": {
+          "selector": "div.side-label.indicator",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-320": {
+    "usages": [
+      {
+        "label": "Background of button.btn.bg-disabled, with :active forced on button.btn.bg-disabled",
+        "route": "/c/_/fleet",
+        "theme": "classic light",
+        "steps": [
+          {
+            "force": "button.btn.bg-disabled",
+            "state": "active",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.bg-disabled",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-349": {
+    "usages": [
+      {
+        "label": "Background of a.router-link-active.router-link-exact-active",
+        "route": "/home",
+        "theme": "classic light",
+        "highlight": {
+          "selector": "a.router-link-active.router-link-exact-active",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-349-a5": {
+    "usages": [
+      {
+        "label": "Background of tr.main-row.row-selected, with a row selected",
+        "route": "/c/local/explorer/pod",
+        "theme": "classic light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=sortable-table-0-checkbox] .checkbox-custom"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=sortable-table-0-checkbox] .checkbox-custom"
+          },
+          {
+            "waitFor": "tr.main-row.row-selected"
+          }
+        ],
+        "highlight": {
+          "selector": "tr.main-row.row-selected",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-349-a12": {
+    "usages": [
+      {
+        "label": "Background of span.segment-value, with a query typed",
+        "route": "/c/local/explorer/pod",
+        "theme": "classic light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=table-views-query]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=table-views-query]"
+          },
+          {
+            "type": "state:Running"
+          },
+          {
+            "waitFor": "span.segment-value"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.segment-value",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-349-a14": {
+    "usages": [
+      {
+        "label": "A column picked up in the View > Columns menu of the pod list",
+        "route": "/c/local/explorer/pod",
+        "steps": [
+          {
+            "waitFor": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "click": "[data-testid=table-views-view-columns]"
+          },
+          {
+            "waitFor": ".columns-panel .column-handle.grip"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "const h = document.querySelector('.columns-panel .column-handle.grip'); const r = h.getBoundingClientRect(); const x = r.x + r.width / 2; const y = r.y + r.height / 2; h.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 0 })); window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: x, clientY: y + 6 })); true"
+          },
+          {
+            "waitFor": "div.column-row.held"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "div.column-row.held",
+          "color": true
+        },
+        "theme": "classic light"
+      }
+    ]
+  },
+  "blue-349-a15": {
+    "usages": [
+      {
+        "label": "Background of button.rc-button.btn",
+        "route": "/home",
+        "theme": "classic light",
+        "highlight": {
+          "selector": "button.rc-button.btn",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-349-a50": {
+    "usages": [
+      {
+        "label": "Text of div.column-row.locked, with the View > Columns menu open",
+        "route": "/c/local/explorer/configmap",
+        "theme": "classic light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\"[data-testid=\\\"table-views-view-menu\\\"]\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=\"table-views-view-menu\"]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=\"table-views-view-columns\"]"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "div.column-row.locked",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-361": {
+    "usages": [
+      {
+        "label": "Border of button.view-tab.new-view-tab::after, with :focus-visible forced on button.view-tab.new-view-tab",
+        "route": "/home",
+        "theme": "dark",
+        "steps": [
+          {
+            "force": "button.view-tab.new-view-tab",
+            "state": "focus-visible",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "button.view-tab.new-view-tab",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-379": {
+    "usages": [
+      {
+        "label": "Border of div.table-view-query",
+        "route": "/home",
+        "theme": "light",
+        "highlight": {
+          "selector": "div.table-view-query",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-406": {
+    "usages": [
+      {
+        "label": "Background of div.side-label.indicator",
+        "route": "/c/_/manager/provisioning.cattle.io.cluster/create",
+        "theme": "dark",
+        "steps": [
+          {
+            "wait": 3000
+          }
+        ],
+        "highlight": {
+          "selector": "div.side-label.indicator",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-407-a10": {
+    "note": "Only GitPicker.vue paints it, and nothing renders that component."
+  },
+  "blue-424": {
+    "usages": [
+      {
+        "label": "Border of div.table-view-query",
+        "route": "/home",
+        "theme": "dark",
+        "highlight": {
+          "selector": "div.table-view-query",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-434": {
+    "usages": [
+      {
+        "label": "Background of a.router-link-active.router-link-exact-active, with :hover forced on a.router-link-active.router-link-exact-active",
+        "route": "/home",
+        "theme": "classic light",
+        "steps": [
+          {
+            "force": "a.router-link-active.router-link-exact-active",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "a.router-link-active.router-link-exact-active",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-438": {
+    "usages": [
+      {
+        "label": "Background of span.tab-badge",
+        "route": "/c/local/uiplugins",
+        "theme": "suse light",
+        "highlight": {
+          "selector": "span.tab-badge",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-438-a5": {
+    "note": "Nothing in Rancher paints this. It is --link-light-bg in the modern theme, which no component reads."
+  },
+  "blue-449": {
+    "usages": [
+      {
+        "label": "Border of span.checkbox-custom::after, in the read-only config view of a deployment, on its Storage tab",
+        "route": "/c/local/explorer/apps.deployment/demo/hello-web?mode=view&as=config",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=btn-storage]"
+          },
+          {
+            "click": "[data-testid=btn-storage]"
+          },
+          {
+            "wait": 2000
+          }
+        ],
+        "highlight": {
+          "selector": "span.checkbox-custom",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-451": {
+    "usages": [
+      {
+        "label": "Border of a.rc-button.btn",
+        "route": "/home",
+        "theme": "light",
+        "highlight": {
+          "selector": "a.rc-button.btn",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-451-a5": {
+    "usages": [
+      {
+        "label": "A selected row in the pod list",
+        "route": "/c/local/explorer/pod",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=sortable-table-0-checkbox] .checkbox-custom"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=sortable-table-0-checkbox] .checkbox-custom"
+          },
+          {
+            "waitFor": "tr.main-row.row-selected"
+          }
+        ],
+        "highlight": {
+          "selector": "tr.main-row.row-selected",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-451-a14": {
+    "usages": [
+      {
+        "label": "A column picked up in the View > Columns menu of the pod list",
+        "route": "/c/local/explorer/pod",
+        "steps": [
+          {
+            "waitFor": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "click": "[data-testid=table-views-view-columns]"
+          },
+          {
+            "waitFor": ".columns-panel .column-handle.grip"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "const h = document.querySelector('.columns-panel .column-handle.grip'); const r = h.getBoundingClientRect(); const x = r.x + r.width / 2; const y = r.y + r.height / 2; h.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 0 })); window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: x, clientY: y + 6 })); true"
+          },
+          {
+            "waitFor": "div.column-row.held"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "div.column-row.held",
+          "color": true
+        },
+        "theme": "light"
+      }
+    ]
+  },
+  "blue-451-a15": {
+    "usages": [
+      {
+        "label": "The next page button under the config map list, at 10 rows a page",
+        "route": "/c/local/explorer/configmap",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "document.querySelector('#app').__vue_app__.config.globalProperties.$store.commit('prefs/load', { key: 'per-page', value: 10 }); true"
+          },
+          {
+            "waitFor": "[data-testid=pagination-next]:not([disabled])"
+          },
+          {
+            "wait": 1000
+          }
+        ],
+        "highlight": {
+          "selector": "[data-testid=pagination-next]",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-458": {
+    "usages": [
+      {
+        "label": "Border of span.checkbox-custom::after, in the read-only config view of a deployment, on its Storage tab",
+        "route": "/c/local/explorer/apps.deployment/demo/hello-web?mode=view&as=config",
+        "theme": "classic light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=btn-storage]"
+          },
+          {
+            "click": "[data-testid=btn-storage]"
+          },
+          {
+            "wait": 2000
+          }
+        ],
+        "highlight": {
+          "selector": "span.checkbox-custom",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-459": {
+    "note": "It's only a fallback in the editor theme, and the variable it falls back from is always set."
+  },
+  "blue-460": {
+    "usages": [
+      {
+        "label": "Border of div.banner__content.closable",
+        "route": "/c/local/explorer/node",
+        "theme": "light",
+        "highlight": {
+          "selector": "div.banner__content.closable",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-460-a5": {
+    "note": "Nothing in Rancher paints this. It is --info-light-bg in the modern theme, which no component reads."
+  },
+  "blue-460-a10": {
+    "usages": [
+      {
+        "label": "Background of an info state badge, with the local cluster shown as updating in this frame only",
+        "route": "/home",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "span.badge-state"
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const c = $store.getters[\"management/byId\"](\"management.cattle.io.cluster\", \"local\"); c.metadata.state = { ...c.metadata.state, name: \"updating\", transitioning: true, error: false }; true"
+          },
+          {
+            "waitFor": "span.badge-state.bg-info"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.badge-state.bg-info",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-460-a15": {
+    "usages": [
+      {
+        "label": "The description banner on the node list",
+        "route": "/c/local/explorer/node",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "document.querySelector('#app').__vue_app__.config.globalProperties.$store.commit('prefs/load', { key: 'hide-desc', value: [] }); true"
+          },
+          {
+            "waitFor": "div.banner__content.closable"
+          }
+        ],
+        "highlight": {
+          "selector": "div.banner__content.closable",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-460-a30": {
+    "usages": [
+      {
+        "label": "Background of an info state badge, with the local cluster shown as updating in this frame only",
+        "route": "/home",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": "span.badge-state"
+          },
+          {
+            "eval": "const { $store } = document.querySelector(\"#app\").__vue_app__.config.globalProperties; const c = $store.getters[\"management/byId\"](\"management.cattle.io.cluster\", \"local\"); c.metadata.state = { ...c.metadata.state, name: \"updating\", transitioning: true, error: false }; true"
+          },
+          {
+            "waitFor": "span.badge-state.bg-info"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.badge-state.bg-info",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-466": {
+    "usages": [
+      {
+        "label": "Text of div.query-input.is-empty::before",
+        "route": "/home",
+        "theme": "light",
+        "highlight": {
+          "selector": "div.query-input.is-empty",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-467": {
+    "note": "It borders a selected Pending badge on the Fleet dashboard, which needs a pending app. None is on this Rancher."
+  },
+  "blue-483": {
+    "usages": [
+      {
+        "label": "Text of label, in the read-only config view of a deployment, on its Storage tab",
+        "route": "/c/local/explorer/apps.deployment/demo/hello-web?mode=view&as=config",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": "[data-testid=btn-storage]"
+          },
+          {
+            "click": "[data-testid=btn-storage]"
+          },
+          {
+            "wait": 2000
+          }
+        ],
+        "highlight": {
+          "selector": "label",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-484": {
+    "usages": [
+      {
+        "label": "Background of a.router-link-active.router-link-exact-active, with :hover forced on a.router-link-active.router-link-exact-active",
+        "route": "/home",
+        "theme": "light",
+        "steps": [
+          {
+            "force": "a.router-link-active.router-link-exact-active",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "a.router-link-active.router-link-exact-active",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-485": {
+    "note": "It's the info status color of the Rc pills, such as a node's \"+N more\" IP badge. Every node on this Rancher has a single IP."
+  },
+  "blue-500": {
+    "note": "Only graph/LinePlot.vue paints it, and nothing renders that component."
+  },
+  "blue-508": {
+    "usages": [
+      {
+        "label": "Text of span.cm-rancher-comment",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "light",
+        "highlight": {
+          "selector": "span.cm-rancher-comment",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-521": {
+    "usages": [
+      {
+        "label": "Background of a.router-link-active.router-link-exact-active",
+        "route": "/home",
+        "theme": "light",
+        "highlight": {
+          "selector": "a.router-link-active.router-link-exact-active",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-521-a12": {
+    "usages": [
+      {
+        "label": "Background of span.segment-value, with a query typed",
+        "route": "/c/local/explorer/pod",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=table-views-query]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=table-views-query]"
+          },
+          {
+            "type": "state:Running"
+          },
+          {
+            "waitFor": "span.segment-value"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.segment-value",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-521-a50": {
+    "usages": [
+      {
+        "label": "Text of div.column-row.locked, in the View > Columns menu",
+        "route": "/c/local/explorer/pod",
+        "theme": "light",
+        "steps": [
+          {
+            "waitFor": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=table-views-view-menu]"
+          },
+          {
+            "click": "[data-testid=table-views-view-columns]"
+          },
+          {
+            "waitFor": ".columns-panel .column-row.locked"
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "div.column-row.locked",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-523": {
+    "usages": [
+      {
+        "label": "Link text, the names in the config map list",
+        "route": "/c/local/explorer/configmap",
+        "theme": "light",
+        "highlight": {
+          "selector": ".sortable-table tbody td a",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-529": {
+    "usages": [
+      {
+        "label": "Background of a.rc-button.btn, with :hover forced on a.rc-button.btn",
+        "route": "/home",
+        "theme": "light",
+        "steps": [
+          {
+            "force": "a.rc-button.btn",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "a.rc-button.btn",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-541": {
+    "usages": [
+      {
+        "label": "Background of button.btn.role-primary, in the Force Update dialog, with :hover forced on Update",
+        "route": "/c/_/fleet/fleet.cattle.io.gitrepo/fleet-default/pr19443-source",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "click": "[data-testid=masthead-action-menu]"
+          },
+          {
+            "wait": 800
+          },
+          {
+            "click": "[role=menuitem]",
+            "text": "Force Update"
+          },
+          {
+            "wait": 2000
+          },
+          {
+            "force": "button.btn.bg-info",
+            "state": "hover",
+            "all": true
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.role-primary",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-548": {
+    "note": "Only styles for a log list on the diagnostic page paint it, and that page has no log list."
+  },
+  "blue-552": {
+    "usages": [
+      {
+        "label": "Text of span.cm-rancher-key",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "light",
+        "highlight": {
+          "selector": "span.cm-rancher-key",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-564": {
+    "usages": [
+      {
+        "label": "An item in the user menu, hovered",
+        "route": "/home",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": "[data-testid=nav_header_showUserMenu]"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=nav_header_showUserMenu]"
+          },
+          {
+            "waitFor": "[role=menuitem]"
+          },
+          {
+            "force": "[role=menuitem]",
+            "state": "hover",
+            "all": true
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "[role=menuitem]",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-571": {
+    "note": "It's only a fallback in Group.vue, behind --rc-section-background-secondary, which every theme sets."
+  },
+  "blue-579": {
+    "usages": [
+      {
+        "label": "Background of button.btn.bg-primary, with :active forced on button.btn.bg-primary",
+        "route": "/c/_/fleet",
+        "theme": "classic light",
+        "steps": [
+          {
+            "force": "button.btn.bg-primary",
+            "state": "active",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.bg-primary",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-609": {
+    "usages": [
+      {
+        "label": "Background of div.cm-gutterElement, with YAML typed into the editor, a search open and a fold marker hovered",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "dark",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "key": "Control+a"
+          },
+          {
+            "type": "# A comment\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: \"demo-config\"\n  namespace: default\ndata:\n  enabled: \"true\"\n  flag: true\n  other: null\n  list: [one, two]\n"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "(async () => { const content = document.querySelector('.rc-code-mirror--editor .cm-content'); content.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', code: 'KeyF', keyCode: 70, ctrlKey: true, bubbles: true, cancelable: true })); await new Promise((resolve) => setTimeout(resolve, 300)); const field = document.querySelector('.cm-search input[name=search]'); field.value = 'true'; field.dispatchEvent(new Event('input', { bubbles: true })); field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, bubbles: true, cancelable: true })); return true; })()"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "force": ".cm-foldGutter .cm-gutterElement:not([style*=\"hidden\"]):has(.rc-cm-fold-marker)",
+            "state": "hover",
+            "all": true
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "div.cm-gutterElement",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-616": {
+    "usages": [
+      {
+        "label": "A selected row in the pod list",
+        "route": "/c/local/explorer/pod",
+        "theme": "dark",
+        "steps": [
+          {
+            "waitFor": "[data-testid=sortable-table-0-checkbox] .checkbox-custom"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=sortable-table-0-checkbox] .checkbox-custom"
+          },
+          {
+            "waitFor": "tr.main-row.row-selected"
+          }
+        ],
+        "highlight": {
+          "selector": "tr.main-row.row-selected",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-619": {
+    "usages": [
+      {
+        "label": "Disabled input text, in the read-only config view of a config map",
+        "route": "/c/local/explorer/configmap/kube-system/kube-root-ca.crt?mode=view&as=config",
+        "theme": "light",
+        "highlight": {
+          "selector": "input:disabled",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-624": {
+    "note": "Only SelectIconGrid items in color group 7 paint it, and no grid in the dashboard reaches that group."
+  },
+  "blue-625": {
+    "usages": [
+      {
+        "label": "Disabled input text, in the read-only config view of a config map",
+        "route": "/c/local/explorer/configmap/kube-system/kube-root-ca.crt?mode=view&as=config",
+        "theme": "classic light",
+        "highlight": {
+          "selector": "input:disabled",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-628": {
+    "usages": [
+      {
+        "label": "Background of button.cluster.selector, with :hover forced on button.cluster.selector",
+        "route": "/home",
+        "theme": "dark",
+        "steps": [
+          {
+            "force": "button.cluster.selector",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "button.cluster.selector",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-631": {
+    "usages": [
+      {
+        "label": "Background of div.bar",
+        "route": "/c/local/explorer/node",
+        "theme": "dark",
+        "highlight": {
+          "selector": "div.bar",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-633": {
+    "usages": [
+      {
+        "label": "Background of span.badge-state.bg-success",
+        "route": "/c/_/fleet",
+        "theme": "dark",
+        "highlight": {
+          "selector": "span.badge-state.bg-success",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-635": {
+    "usages": [
+      {
+        "label": "Background of button.rc-button.btn, with :hover forced on button.rc-button.btn",
+        "route": "/home",
+        "theme": "dark",
+        "steps": [
+          {
+            "force": "button.rc-button.btn",
+            "state": "hover",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "button.rc-button.btn",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-641": {
+    "note": "Only .bg-link.btn:active paints it, and nothing uses the bg-link class."
+  },
+  "blue-648": {
+    "usages": [
+      {
+        "label": "Background of button.btn.bg-primary, with :active forced on button.btn.bg-primary",
+        "route": "/c/_/fleet",
+        "theme": "light",
+        "steps": [
+          {
+            "force": "button.btn.bg-primary",
+            "state": "active",
+            "all": true
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.bg-primary",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-671": {
+    "usages": [
+      {
+        "label": "Background of button.btn.role-primary, in the Force Update dialog, with :active forced on Update",
+        "route": "/c/_/fleet/fleet.cattle.io.gitrepo/fleet-default/pr19443-source",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          },
+          {
+            "click": "[data-testid=masthead-action-menu]"
+          },
+          {
+            "wait": 800
+          },
+          {
+            "click": "[role=menuitem]",
+            "text": "Force Update"
+          },
+          {
+            "wait": 2000
+          },
+          {
+            "force": "button.btn.bg-info",
+            "state": "active",
+            "all": true
+          },
+          {
+            "wait": 1500
+          }
+        ],
+        "highlight": {
+          "selector": "button.btn.role-primary",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-695": {
+    "usages": [
+      {
+        "label": "Background of button.rc-button.btn",
+        "route": "/home",
+        "theme": "dark",
+        "highlight": {
+          "selector": "button.rc-button.btn",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-708-a35": {
+    "usages": [
+      {
+        "label": "Background of div.slide-in-glass.slide-in-glass-open, in the Show Configuration drawer's YAML tab with a search open",
+        "route": "/c/_/manager/provisioning.cattle.io.cluster/fleet-local/local",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\"[data-testid=\\\"show-configuration-cta\\\"]\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": "[data-testid=\"show-configuration-cta\"]"
+          },
+          {
+            "wait": 3000
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (!document.querySelector(\".chrome .overlay\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".chrome [data-testid=\"btn-yaml-tab\"]"
+          },
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".chrome .rc-code-mirror--editor .cm-line\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 2000
+          },
+          {
+            "click": ".chrome .rc-code-mirror--editor .cm-content > .cm-line:nth-child(3)"
+          },
+          {
+            "wait": 300
+          },
+          {
+            "eval": "(async () => { const content = document.querySelector('.rc-code-mirror--editor .cm-content'); content.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', code: 'KeyF', keyCode: 70, ctrlKey: true, bubbles: true, cancelable: true })); await new Promise((resolve) => setTimeout(resolve, 300)); const field = document.querySelector('.cm-search input[name=search]'); field.value = 'name'; field.dispatchEvent(new Event('input', { bubbles: true })); field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, bubbles: true, cancelable: true })); return true; })()"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "document.querySelector('.chrome .body').scrollTop += 400"
+          },
+          {
+            "wait": 800
+          }
+        ],
+        "highlight": {
+          "selector": "div.slide-in-glass.slide-in-glass-open",
+          "color": true
+        }
+      }
+    ]
+  },
+  "blue-711": {
+    "note": "Only the SUSE Rancher Prime card in the What's new dialog paints it, and opening that dialog marks the release notes read in your preferences, so the capture script leaves it alone."
+  },
+  "purple-467": {
+    "note": "Only SelectIconGrid items in color group 6 paint it, and no grid in the dashboard reaches that group."
+  },
+  "purple-524": {
+    "note": "Only TableSparkLine.vue paints it, and nothing renders that component."
+  },
+  "purple-553": {
+    "note": "Only graph/LinePlot.vue paints it, and nothing renders that component."
+  },
+  "pink-247": {
+    "usages": [
+      {
+        "label": "Text of span.cm-rancher-keyword, with YAML typed into the editor, a search open and a fold marker hovered",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "dark",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "key": "Control+a"
+          },
+          {
+            "type": "# A comment\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: \"demo-config\"\n  namespace: default\ndata:\n  enabled: \"true\"\n  flag: true\n  other: null\n  list: [one, two]\n"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "(async () => { const content = document.querySelector('.rc-code-mirror--editor .cm-content'); content.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', code: 'KeyF', keyCode: 70, ctrlKey: true, bubbles: true, cancelable: true })); await new Promise((resolve) => setTimeout(resolve, 300)); const field = document.querySelector('.cm-search input[name=search]'); field.value = 'true'; field.dispatchEvent(new Event('input', { bubbles: true })); field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, bubbles: true, cancelable: true })); return true; })()"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "force": ".cm-foldGutter .cm-gutterElement:not([style*=\"hidden\"]):has(.rc-cm-fold-marker)",
+            "state": "hover",
+            "all": true
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.cm-rancher-keyword",
+          "color": true
+        }
+      }
+    ]
+  },
+  "pink-389": {
+    "usages": [
+      {
+        "label": "Border of div.count-container.clickable",
+        "route": "/c/_/fleet/management.cattle.io.fleetworkspace/fleet-default",
+        "theme": "light",
+        "steps": [
+          {
+            "wait": 3000
+          }
+        ],
+        "highlight": {
+          "selector": "div.count-container.clickable",
+          "color": true
+        }
+      }
+    ]
+  },
+  "pink-500": {
+    "usages": [
+      {
+        "label": "Text of span.cm-rancher-keyword, with YAML typed into the editor, a search open and a fold marker hovered",
+        "route": "/c/local/explorer/configmap/create?as=yaml",
+        "theme": "light",
+        "steps": [
+          {
+            "eval": "new Promise((resolve) => { const t0 = Date.now(); const tick = () => { if (document.querySelector(\".rc-code-mirror--editor .cm-content\") || Date.now() - t0 > 90000) { resolve(); } else { setTimeout(tick, 250); } }; tick(); })"
+          },
+          {
+            "wait": 1000
+          },
+          {
+            "click": ".rc-code-mirror--editor .cm-content"
+          },
+          {
+            "key": "Control+a"
+          },
+          {
+            "type": "# A comment\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: \"demo-config\"\n  namespace: default\ndata:\n  enabled: \"true\"\n  flag: true\n  other: null\n  list: [one, two]\n"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "eval": "(async () => { const content = document.querySelector('.rc-code-mirror--editor .cm-content'); content.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', code: 'KeyF', keyCode: 70, ctrlKey: true, bubbles: true, cancelable: true })); await new Promise((resolve) => setTimeout(resolve, 300)); const field = document.querySelector('.cm-search input[name=search]'); field.value = 'true'; field.dispatchEvent(new Event('input', { bubbles: true })); field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, bubbles: true, cancelable: true })); return true; })()"
+          },
+          {
+            "wait": 500
+          },
+          {
+            "force": ".cm-foldGutter .cm-gutterElement:not([style*=\"hidden\"]):has(.rc-cm-fold-marker)",
+            "state": "hover",
+            "all": true
+          },
+          {
+            "wait": 500
+          }
+        ],
+        "highlight": {
+          "selector": "span.cm-rancher-keyword",
+          "color": true
+        }
+      }
+    ]
+  }
+}

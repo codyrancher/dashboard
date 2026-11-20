@@ -2,7 +2,8 @@ import { createApp } from 'vue';
 import ColorToolPanel from './ColorToolPanel.vue';
 import { loadStoredOverrides, setExternalOverrides } from './colors';
 import {
-  Highlight, Step, centerInView, clearForced, clearRings, describe, locate, lockTheme, onLoginPage, onRingMove, pageReady, ring, runSteps, showRings
+  Highlight, Step, centerInView, clearForced, clearRings, componentOf, describe, editorOf, locate, lockTheme, onLoginPage, onRingMove, pageReady, ring, runSteps,
+  showRings
 } from './page';
 
 const SOURCE = 'rancher-color-tool';
@@ -231,7 +232,8 @@ function mountPanel() {
  * The page answers `hello` when it starts and `status` (`loading`, `login`, `running`, `done` or `error`) as it works.
  * `done` and `rect` carry the ringed element's `rect` (`{ x, y, width, height }` in the page's viewport) when it moves.
  * Until someone scrolls, clicks or types in the page, it brings the ringed element back into view when the page moves it
- * out (a table that loads late, say).
+ * out (a table that loads late, say). Eval steps can call `colorTool.componentOf(el)` for the component that rendered an
+ * element, and `colorTool.editorOf(el)` for the CodeMirror view an element is in.
  */
 export default function colorTool(context: any) {
   const query = new URLSearchParams(window.location.search);
@@ -246,6 +248,7 @@ export default function colorTool(context: any) {
     console.warn(`color tool: ${ (e as Error).message }`); // eslint-disable-line no-console
   }
   if (framed) {
+    (window as any).colorTool = { componentOf, editorOf };
     keepFocus();
     listen();
   } else {
