@@ -427,7 +427,12 @@ describe('pluginProduct', () => {
         const plugin = createMockPlugin() as PluginRecordingRoutes;
 
         plugin.routes = [];
-        (plugin.addRoute as jest.Mock).mockImplementation((route) => plugin.routes.push({ route }));
+        (plugin.addRoute as jest.Mock).mockImplementation((parentOrRoute, optionalRoute) => {
+          const parent = typeof parentOrRoute === 'string' ? parentOrRoute : undefined;
+          const route = typeof parentOrRoute === 'string' ? optionalRoute : parentOrRoute;
+
+          plugin.routes.push({ parent, route });
+        });
         (plugin.DSL as jest.Mock).mockReturnValue(createMockDSL());
 
         return plugin;

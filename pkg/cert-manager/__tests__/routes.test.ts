@@ -44,9 +44,11 @@ async function extensionRoutes(): Promise<RouteRecordRaw[]> {
   const extension = await import('../index');
   const routes: RouteRecordRaw[] = [];
   const plugin = {
-    extendProduct:              jest.fn(),
-    addProduct:                 jest.fn(),
-    addRoute:                   jest.fn((route: RouteRecordRaw) => routes.push(route)),
+    extendProduct: jest.fn(),
+    addProduct:    jest.fn(),
+    addRoute:      jest.fn((parentOrRoute: string | RouteRecordRaw, optionalRoute?: RouteRecordRaw) => {
+      routes.push((typeof parentOrRoute === 'string' ? optionalRoute : parentOrRoute) as RouteRecordRaw);
+    }),
     enableServerSidePagination: jest.fn(),
     _setStartRouteWithProduct:  jest.fn(),
     DSL:                        jest.fn().mockReturnValue({}),

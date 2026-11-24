@@ -129,6 +129,21 @@ describe('Home Page', { testIsolation: false }, () => {
     homePage.waitForPage();
   }));
 
+  it('does not log layout deprecation warnings on load', { tags: ['@generic', '@adminUser', '@standardUser'] }, () => {
+    cy.visit(HomePagePo.url, {
+      onBeforeLoad(win) {
+        cy.spy(win.console, 'warn').as('consoleWarn');
+      },
+    });
+    homePage.waitForPage();
+
+    cy.get('@consoleWarn').should((spy: any) => {
+      const layoutWarnings = spy.getCalls().filter((call: any) => call.args.some((arg: unknown) => typeof arg === 'string' && arg.includes('Layouts have been deprecated')));
+
+      expect(layoutWarnings).to.have.length(0);
+    });
+  });
+
   qase(1427, it('Can use the Manage, Import Existing, and Create buttons', { tags: ['@generic', '@adminUser', '@standardUser'] }, () => {
     /**
      * Click 'Manage' button and verify user lands on the Cluster Management page

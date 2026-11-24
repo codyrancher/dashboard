@@ -1,5 +1,5 @@
 import { SCC } from '@shell/store/features';
-import { REGISTRATION_NOTIFICATION_ID } from './config/constants';
+import { REGISTRATION_NOTIFICATION_ID, SETTING_PAGE_NAME } from './config/constants';
 const { IF_HAVE } = require('@shell/store/type-map');
 
 jest.doMock('@rancher/auto-import', () => ({ importTypes: jest.fn() }), { virtual: true });
@@ -37,6 +37,25 @@ describe('extension: rancher-prime', () => {
         ifFeature: SCC
       })
     );
+  });
+
+  it('should register routes with the default parent to avoid layout deprecation warnings', async() => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    try {
+      const { Plugin } = await import('@shell/core/plugin');
+      const routing = (await import('./routing/index')).default;
+      const realPlugin = new Plugin('rancher-prime');
+
+      realPlugin.addRoutes(routing);
+
+      expect(realPlugin.routes).toHaveLength(1);
+      expect(realPlugin.routes[0].parent).toStrictEqual('default');
+      expect(realPlugin.routes[0].route).toStrictEqual(expect.objectContaining({ name: SETTING_PAGE_NAME }));
+      expect(warnSpy).toHaveBeenCalledTimes(0);
+    } finally {
+      warnSpy.mockRestore();
+    }
   });
 });
 

@@ -712,7 +712,7 @@ export abstract class BasePluginProduct {
         }
 
         // add the route for the group page/parent
-        plugin.addRoute(route);
+        plugin.addRoute('default', route);
 
         // add children routes
         this.addRoutes(plugin, `${ parentName }`, child.sideMenu.children);
@@ -726,7 +726,7 @@ export abstract class BasePluginProduct {
           component: child.component, extendProduct: this.extendParentRoutes, startRouteWithProduct: this.startRouteWithProduct
         });
 
-        plugin.addRoute(route);
+        plugin.addRoute('default', route);
       } else if (isProductChildWithType(child)) {
         // Validate type-based children don't have component property
         // The type guard ensures child has 'type', so we just need to check component doesn't exist
@@ -745,7 +745,7 @@ export abstract class BasePluginProduct {
           const resourceRoutes = pluginProductsHelpers.generateResourceRoutes(parentName, child, { extendProduct: this.extendParentRoutes, startRouteWithProduct: this.startRouteWithProduct });
 
           resourceRoutes.forEach((resRoute) => {
-            plugin.addRoute(resRoute);
+            plugin.addRoute('default', resRoute);
           });
 
           // So a later registration extending this product does not add them a second time

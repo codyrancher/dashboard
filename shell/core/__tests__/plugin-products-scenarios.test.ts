@@ -584,13 +584,14 @@ describe('pluginProduct', () => {
         expect(pluginProduct.newProduct).toBe(true);
         // 2 custom page routes + resource CRUD routes (list + detail = 2 from mock) = 4
         expect(mockPlugin.addRoute).toHaveBeenCalledTimes(4);
-        // Verify addRoute was called for both custom pages and resource routes
-        const routeCalls = (mockPlugin.addRoute as jest.Mock).mock.calls;
-        const hasCustomRoutes = routeCalls.some((call) => call[0]?.name?.includes('dashboard'));
-        const hasResourceRoutes = routeCalls.some((call) => call[0]?.name?.includes('provisioning.cattle.io.cluster'));
-
-        expect(hasCustomRoutes).toBe(true);
-        expect(hasResourceRoutes).toBe(true);
+        expect(mockPlugin.addRoute).toHaveBeenCalledWith(
+          'default',
+          expect.objectContaining({ name: expect.stringContaining('dashboard') })
+        );
+        expect(mockPlugin.addRoute).toHaveBeenCalledWith(
+          'default',
+          expect.objectContaining({ name: expect.stringContaining('provisioning.cattle.io.cluster') })
+        );
       });
     });
 
@@ -654,11 +655,10 @@ describe('pluginProduct', () => {
 
         // The group's own route should include the group name in the route name
         // This ensures the side-menu can highlight the correct item
-        const routeCalls = (mockPlugin.addRoute as jest.Mock).mock.calls;
-        const groupRoute = routeCalls.find((call) => call[0]?.name?.includes('monitoring'));
-
-        expect(groupRoute).toBeDefined();
-        expect(groupRoute[0].name).toStrictEqual(expect.stringContaining('monitoring'));
+        expect(mockPlugin.addRoute).toHaveBeenCalledWith(
+          'default',
+          expect.objectContaining({ name: expect.stringContaining('monitoring') })
+        );
       });
     });
 
